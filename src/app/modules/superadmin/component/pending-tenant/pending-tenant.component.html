@@ -1,1 +1,54 @@
-<p>pending-tenant works!</p>
+<header class="app-header">
+  <div class="logo"><span class="logo-icon"></span> Insight IQ</div>
+  <nav class="header-nav">
+    <a href="#" class="sign-out">SIGN OUT</a>
+  </nav>
+</header>
+
+<main class="content-area">
+  <section class="page-title-section">
+    <h2>Processing Tenant Registration</h2>
+  </section>
+
+  <section class="table-card">
+    <h3>Pending Tenant Registrations</h3>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Business Name</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tenant of tenants">
+            <td>{{ tenant.name }}</td>
+            <td>{{ tenant.email }}</td>
+            <td>{{ tenant.phone }}</td>
+            <td>{{ tenant.businessName }}</td>
+            <td>
+              <span [ngClass]="getStatusClass(tenant.status)">
+                {{ tenant.status }}
+              </span>
+            </td>
+            <td>
+              <button class="details-button" (click)="viewDetails(tenant)">
+                See details
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="tenants.length === 0">
+            <td colspan="6" style="text-align: center">
+              No pending registrations found.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

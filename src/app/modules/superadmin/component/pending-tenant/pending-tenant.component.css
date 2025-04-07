@@ -1,0 +1,182 @@
+/* Basic Reset & Body (Optional - place in styles.css for global) */
+:host {
+  display: block; /* Ensure component takes up block space */
+  font-family: sans-serif; /* Basic font */
+  background-color: #f4f7f6; /* Light background for the page */
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.app-header {
+  background-color: #007bff; /* Primary blue color */
+  color: white;
+  padding: 10px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.logo-icon {
+  /* Add styles for your logo icon here if using one */
+  margin-right: 8px;
+  /* Example: background-image: url(...); width: 24px; height: 24px; */
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+}
+
+.sign-out {
+  color: white;
+  text-decoration: none;
+  margin-right: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.sign-out:hover {
+  text-decoration: underline;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.menu-button span {
+  display: block;
+  width: 22px;
+  height: 3px;
+  background-color: white;
+  margin: 4px 0;
+  border-radius: 1px;
+}
+
+/* Content Area Styles */
+.content-area {
+  padding: 20px 30px;
+}
+
+.page-title-section h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+  padding-bottom: 8px;
+  border-bottom: 3px solid #007bff; /* Blue underline */
+  display: inline-block; /* Make underline only span the text */
+  margin-bottom: 30px;
+}
+
+/* Table Card Styles */
+.table-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  padding: 25px;
+  border: 1px solid #e0e0e0; /* Subtle border */
+}
+
+.table-card h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #444;
+  text-align: center; /* Centered as per image */
+}
+
+.table-container {
+  overflow-x: auto; /* Allows horizontal scroll on small screens if needed */
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+th,
+td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0; /* Light lines between rows */
+  vertical-align: middle;
+}
+
+th {
+  background-color: #f8f9fa; /* Very light grey for header */
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1; /* Slight hover effect for rows */
+}
+
+/* Status Styles */
+.status-approved {
+  color: #4caf50; /* Green */
+  font-weight: 500;
+}
+
+.status-rejected {
+  color: #f44336; /* Red */
+  font-weight: 500;
+}
+
+.status-pending {
+  color: #ff9800; /* Orange */
+  font-weight: 500;
+}
+
+/* Details Button Styles */
+.details-button {
+  background-color: #007bff; /* Match header blue */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.details-button:hover {
+  background-color: #0058b5; /* Match header blue */
+}
+
+/* Responsive considerations (optional basic example) */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 10px 15px;
+  }
+  .content-area {
+    padding: 15px;
+  }
+  th,
+  td {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+  .details-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  .sign-out {
+    margin-right: 10px;
+  }
+}

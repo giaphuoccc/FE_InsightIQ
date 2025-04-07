@@ -1,1 +1,79 @@
-<p>pending-tenant-details works!</p>
+<div class="page-container">
+  <main class="content-area">
+    <section class="page-title-section">
+      <h2>Processing Tenant Registration</h2>
+    </section>
+
+    <div *ngIf="isLoading" class="loading-indicator">
+      Loading tenant details...
+    </div>
+
+    <div *ngIf="errorMessage && !isLoading" class="error-message-inline">
+      Error: {{ errorMessage }}
+      <button (click)="loadTenantDetails(tenantId!)">Retry</button>
+      <button (click)="goBack()">Back to List</button>
+    </div>
+
+    <section class="detail-card" *ngIf="tenant && !isLoading && !errorMessage">
+      <h3>Pending Tenant Registrations</h3>
+
+      <div class="tenant-info">
+        <div class="info-section">
+          <h4>Personal information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Name:</label>
+              <span>{{ tenant.name }}</span>
+            </div>
+            <div class="info-item">
+              <label>Phone:</label>
+              <span>{{ tenant.phone }}</span>
+            </div>
+            <div class="info-item full-width">
+              <label>Email:</label>
+              <span>{{ tenant.email }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h4>Business information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Business name:</label>
+              <span>{{ tenant.businessName }}</span>
+            </div>
+            <div class="info-item">
+              <label>Business website link:</label>
+              <span>{{ tenant.businessWebsite || "N/A" }}</span>
+            </div>
+            <div class="info-item">
+              <label>Business address:</label>
+              <span>{{ tenant.businessAddress || "N/A" }}</span>
+            </div>
+            <div class="info-item">
+              <label>Tax code:</label>
+              <span>{{ tenant.taxCode || "N/A" }}</span>
+            </div>
+            <div class="info-item">
+              <label>Business sector:</label>
+              <span>{{ tenant.businessSector || "N/A" }}</span>
+            </div>
+            <div class="info-item">
+              <label>Profession:</label>
+              <span>{{ tenant.profession || "N/A" }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="approve-button" (click)="approve()">Approve</button>
+        <button class="reject-button" (click)="reject()">Reject</button>
+      </div>
+    </section>
+    <div class="back-button-container" *ngIf="!isLoading && !errorMessage">
+      <button (click)="goBack()">Back to List</button>
+    </div>
+  </main>
+</div>

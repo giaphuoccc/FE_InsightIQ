@@ -1,0 +1,147 @@
+/* Basic Structure (Adapt based on your global styles/layout) */
+:host {
+  display: block;
+}
+
+.page-container {
+  display: flex; /* If using sidebar */
+}
+
+/* .content-area { ... styles from previous component or global ... } */
+/* .page-title-section { ... styles from previous component or global ... } */
+
+/* Loading/Error Styles */
+.loading-indicator,
+.error-message-inline {
+  padding: 20px;
+  text-align: center;
+  font-size: 1.1em;
+  color: #555;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  margin: 20px;
+}
+.error-message-inline {
+  color: #d32f2f; /* Red color for errors */
+  background-color: #ffcdd2;
+  border: 1px solid #d32f2f;
+}
+.error-message-inline button {
+  margin-left: 15px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* Detail Card Styles */
+.detail-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  padding: 25px 35px;
+  margin: 20px auto; /* Centered with margin */
+  max-width: 900px; /* Optional max width */
+  border: 1px solid #e0e0e0;
+}
+
+.detail-card h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #444;
+  text-align: center;
+}
+
+/* Info Sections */
+.info-section {
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee; /* Separator line */
+}
+.info-section:last-child {
+  border-bottom: none;
+  margin-bottom: 10px; /* Less margin before action buttons */
+}
+
+.info-section h4 {
+  font-size: 0.9rem; /* Smaller than card title */
+  font-weight: 600;
+  color: #3f51b5; /* Blue color like title underline */
+  margin-bottom: 15px;
+  border-bottom: 1px solid #c5cae9;
+  display: inline-block;
+  padding-bottom: 3px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  ); /* Responsive grid */
+  gap: 15px 25px; /* Row and Column gap */
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column; /* Stack label above value */
+  /* Or use: display: block; for simple stacking */
+}
+.info-item.full-width {
+  grid-column: 1 / -1; /* Make item span full width */
+}
+
+.info-item label {
+  font-weight: 500;
+  color: #666;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.info-item span {
+  font-size: 1rem;
+  color: #333;
+  word-break: break-word; /* Prevent long text overflow */
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.action-buttons button {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-left: 15px;
+  transition: opacity 0.2s ease;
+}
+.action-buttons button:hover {
+  opacity: 0.85;
+}
+
+.approve-button {
+  background-color: #4caf50; /* Green */
+  color: white;
+}
+
+.reject-button {
+  background-color: #f44336; /* Red */
+  color: white;
+}
+
+.back-button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.back-button-container button {
+  padding: 8px 15px;
+  cursor: pointer;
+}
