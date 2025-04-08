@@ -6,64 +6,6 @@
   min-height: 100vh;
 }
 
-/* Header Styles */
-.app-header {
-  background-color: #007bff; /* Primary blue color */
-  color: white;
-  padding: 10px 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-}
-
-.logo-icon {
-  /* Add styles for your logo icon here if using one */
-  margin-right: 8px;
-  /* Example: background-image: url(...); width: 24px; height: 24px; */
-}
-
-.header-nav {
-  display: flex;
-  align-items: center;
-}
-
-.sign-out {
-  color: white;
-  text-decoration: none;
-  margin-right: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.sign-out:hover {
-  text-decoration: underline;
-}
-
-.menu-button {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 5px;
-}
-
-.menu-button span {
-  display: block;
-  width: 22px;
-  height: 3px;
-  background-color: white;
-  margin: 4px 0;
-  border-radius: 1px;
-}
-
 /* Content Area Styles */
 .content-area {
   padding: 20px 30px;
