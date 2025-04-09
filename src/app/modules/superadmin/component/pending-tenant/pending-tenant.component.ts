@@ -1,17 +1,14 @@
-// src/app/modules/superadmin/component/pending-tenant/pending-tenant-list.component.ts
-import { Component, OnInit } from '@angular/core';
+// src/app/modules/superadmin/component/pending-tenant/pending-tenant.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core'; // Import OnInit, OnDestroy
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router'; // <-- Import Router
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs'; // Import Subscription for cleanup
 
-// Assume Tenant interface includes an 'id' field
-interface Tenant {
-  id: string; // Make sure your tenant data has an ID
-  name: string;
-  email: string;
-  phone: string;
-  businessName: string;
-  status: 'Approved' | 'Rejected' | 'Pending';
-}
+// Import the service and the list item interface
+import {
+  TenantService,
+  TenantListItem,
+} from '../../../../core/superadmin.service';
 
 @Component({
   selector: 'app-pending-tenant-list',
@@ -20,52 +17,57 @@ interface Tenant {
   templateUrl: './pending-tenant.component.html',
   styleUrls: ['./pending-tenant.component.css'],
 })
-export class PendingTenantComponent implements OnInit {
-  // Sample Data (Ensure tenants have unique IDs)
-  tenants: Tenant[] = [
-    {
-      id: 't1',
-      name: 'John Doe',
-      email: 'abc123@gmail.com',
-      phone: '0903331312',
-      businessName: 'ABC Group',
-      status: 'Approved',
-    },
-    {
-      id: 't2',
-      name: 'Alice Smith',
-      email: 'alice.smith@abc.com',
-      phone: '0912345678',
-      businessName: 'TechPro Solutions',
-      status: 'Rejected',
-    },
-    {
-      id: 't3',
-      name: 'Emily Tran',
-      email: 'emily.tran@yahoo.com',
-      phone: '0987654321',
-      businessName: "Tran's Boutique",
-      status: 'Pending',
-    },
-    // ... Add other tenants with unique IDs
-    {
-      id: 'trigger-error',
-      name: 'Test Error',
-      email: 'error@test.com',
-      phone: '0000000000',
-      businessName: 'Error Inc.',
-      status: 'Pending',
-    }, // For testing error handling
-  ];
+// Implement OnInit and OnDestroy
+export class PendingTenantComponent implements OnInit, OnDestroy {
+  // Remove hardcoded data, initialize as empty array
+  tenants: TenantListItem[] = [];
+  // Add loading and error states
+  isLoading = true;
+  errorMessage: string | null = null;
+  // To hold the subscription
+  private tenantsSub: Subscription | null = null;
 
-  constructor(private router: Router) {} // <-- Inject Router
+  // Inject Router AND TenantService
+  constructor(
+    private router: Router,
+    private tenantService: TenantService // Inject the service
+  ) {}
 
+  // Runs when the component is initialized
   ngOnInit(): void {
-    // Load tenant list data if not hardcoded
+    this.loadTenants(); // Call the function to load data
   }
 
+  // Function to load tenants from the service
+  loadTenants(): void {
+    this.isLoading = true; // Start loading
+    this.errorMessage = null; // Clear previous errors
+
+    // Call the service method and subscribe
+    this.tenantsSub = this.tenantService.getTenants().subscribe({
+      next: (data) => {
+        this.tenants = data; // Assign fetched data to the component property
+        this.isLoading = false; // Stop loading
+        console.log('Pending tenants loaded:', this.tenants);
+      },
+      error: (err) => {
+        console.error('Error loading pending tenants:', err);
+        // Use the error message processed by the service's handleError
+        this.errorMessage =
+          err.message || 'Failed to load tenant list. Please try again.';
+        this.isLoading = false; // Stop loading
+      },
+    });
+  }
+
+  // Runs just before the component is destroyed
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    this.tenantsSub?.unsubscribe();
+  }
+
+  // Keep existing methods
   getStatusClass(status: string): string {
-    // (Keep existing implementation)
     switch (status) {
       case 'Approved':
         return 'status-approved';
@@ -78,17 +80,14 @@ export class PendingTenantComponent implements OnInit {
     }
   }
 
-  viewDetails(tenant: Tenant): void {
-    console.log('Navigating to details for tenant ID:', tenant.id);
+  viewDetails(tenant: TenantListItem): void {
+    // Use TenantListItem type here
     if (tenant.id) {
-      // Navigate to the detail route, passing the tenant's ID
-      this.router.navigate(['/pendingtenant', tenant.id]); // <-- Use router.navigate
+      // Note: Ensure your route for details matches how it was defined
+      // Assuming it was '/pendingtenant/:id'
+      this.router.navigate(['/pendingtenant', tenant.id]);
     } else {
-      console.error(
-        'Cannot navigate to details: Tenant ID is missing.',
-        tenant
-      );
-      alert('Cannot view details for this tenant: ID is missing.');
+      console.error('Cannot navigate: Tenant ID is missing.', tenant);
     }
   }
 }
