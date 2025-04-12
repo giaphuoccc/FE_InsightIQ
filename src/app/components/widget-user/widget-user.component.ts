@@ -43,6 +43,8 @@ export class WidgetUserComponent implements OnInit, AfterViewInit {
   isChatting = false;
   messageText: string = '';
   messages: ChatMessage[] = [];
+  isBotResponding: boolean = false; // Biến trạng thái mới
+  botResponseTimeoutId: any = null; // Lưu ID của setTimeout
 
   @ViewChild('chatBox') chatBoxRef!: ElementRef;
 
@@ -122,6 +124,9 @@ export class WidgetUserComponent implements OnInit, AfterViewInit {
         textarea.style.height = '40px';
       }
 
+      // Đánh dấu là bot đang phản hồi
+      this.isBotResponding = true;
+      this.cdRef.detectChanges(); // Yêu cầu Angular cập nhật DOM ngay lập tức
       // Cuộn xuống hiển thị tin nhắn vừa gửi
       this.scrollToBottomIfNeeded();
 
@@ -265,23 +270,31 @@ export class WidgetUserComponent implements OnInit, AfterViewInit {
       };
     }
 
+
     // Giả lập bot trả lời sau 0.5 giây
+    // Lưu timeout ID để có thể huỷ nếu cần
     this.ngZone.run(() => {
+    this.botResponseTimeoutId = setTimeout(() => {
+      // Kiểm tra timeout ID có hợp lệ không trước khi thực hiện
+      if(!this.botResponseTimeoutId) return;
+
+      // Thêm 1 tin nhắn bot
+      this.messages.push(botResponse);
+      console.log('Added bot message:', botResponse);
+
+      // Xét trạng thái và timeout ID về null sau khi phản hồi xong
+      this.isBotResponding = false;
+      this.botResponseTimeoutId = null;
+
+      // Yêu cầu Angular cập nhật DOM
+      this.cdRef.detectChanges();
+      console.log('Change detection triggered for bot message.');
+
+      // Chờ thêm 1 nhịp để DOM render xong, rồi cuộn xuống
       setTimeout(() => {
-        // 1. Thêm tin nhắn bot
-        this.messages.push(botResponse);
-        console.log('Added bot message:', botResponse);
-
-        // 2. Yêu cầu Angular cập nhật DOM
-        this.cdRef.detectChanges();
-        console.log('Change detection triggered for bot message.');
-
-        // 3. Chờ thêm 1 “nhịp” để DOM render xong, rồi cuộn
-        setTimeout(() => {
-          this.scrollToBottom();
-        }, 0);
-
-      }, 500); // tuỳ chỉnh độ trễ bot phản hồi
+        this.scrollToBottom();
+      }, 0);
+    }, 5000); // Thay đổi độ trễ ở đây nếu cần
     });
   }
 
@@ -308,5 +321,13 @@ export class WidgetUserComponent implements OnInit, AfterViewInit {
   generateId(): string {
     // Hàm tạo ID đơn giản
     return Math.random().toString(36).substring(2, 15);
+  }
+  stopBotResponse(): void{
+    if(this.botResponseTimeoutId){
+      clearTimeout(this.botResponseTimeoutId);
+      this.botResponseTimeoutId = null; // Xóa id đã lưu
+      this.isBotResponding = false; // Reset trạng thái chatbot đang phản hồi về false
+      this.cdRef.detectChanges(); // Yêu cầu Angular cập nhật giao diện ngay
+    }
   }
 }

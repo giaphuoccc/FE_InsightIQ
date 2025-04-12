@@ -49,8 +49,12 @@
                   (keydown)="handleKeyDown($event)">
         </textarea>
       </div>
-      <button class="send-btn" (click)="onSendMessage()" [disabled]="!messageText.trim()">
+      <button *ngIf="!isBotResponding" class="send-btn" (click)="onSendMessage()" [disabled]="!messageText.trim()">
         <img src="assets/send-icon.png" class="send-icon" />
+      </button>
+      
+      <button *ngIf="isBotResponding" class="stop-btn" (click) = "stopBotResponse()">
+        <img src="assets/icon/user/stop-icon.png">
       </button>
     </div>
   </div>

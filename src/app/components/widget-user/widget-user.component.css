@@ -268,3 +268,40 @@
   max-width: 100%;
   overflow-x: auto;
 }
+
+/* Nút Ngưng (Stop) - Kiểu dáng cơ bản */
+.stop-btn {
+  width: 44px;
+  height: 44px;
+  margin-left: 10px;
+  /* border-radius: 50%; */ /* Bỏ hoặc giữ tùy ý */
+  background-color: transparent; /* Nền trong suốt */
+  border: none;                 /* Không có viền */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease; /* Chỉ transition hiệu ứng phóng to */
+}
+
+.stop-btn:hover {
+  /* background-color: transparent; */ /* Không cần đổi nền khi hover */
+  transform: scale(1.05); /* Giữ lại hiệu ứng phóng to nếu muốn */
+}
+
+/* Định dạng cho thẻ IMG/SVG bên trong nút stop giữ nguyên */
+.stop-btn img {
+  /* Điều chỉnh kích thước cho icon tạm thời nếu cần */
+ width: 130%; /* Kích thước ví dụ - bạn có thể thay đổi */
+ height: 130%; /* Kích thước ví dụ - bạn có thể thay đổi */
+ object-fit: contain; /* Đảm bảo icon không bị méo khi thay đổi kích thước */
+}
+/* Hoặc CSS cho SVG nếu bạn dùng */
+/*
+.stop-btn .stop-icon-svg {
+  width: 18px;
+  height: 18px;
+  fill: #d84315;
+}
+*/
