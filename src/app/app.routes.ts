@@ -1,9 +1,9 @@
 // app.routes.ts (Standalone approach)
 import { Routes } from '@angular/router';
-import { LoginComponent } from './modules/authentication/login/login.component';
-import { RegisterComponent } from './modules/authentication/register/register.component';
-import { PendingTenantComponent } from './modules/superadmin/component/pending-tenant/pending-tenant.component';
-import { PendingTenantDetailComponent } from './modules/superadmin/component/pending-tenant-details/pending-tenant-details.component';
+import { LoginComponent } from './components/authentication/login/login.component';
+import { RegisterComponent } from './components/authentication/register/register.component';
+import { PendingTenantComponent } from './components/superadmin/component/pending-tenant/pending-tenant.component';
+import { PendingTenantDetailComponent } from './components/superadmin/component/pending-tenant-details/pending-tenant-details.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },

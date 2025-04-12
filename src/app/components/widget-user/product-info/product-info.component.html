@@ -1,0 +1,54 @@
+<!-- Chỉ hiển thị nếu có dữ liệu sản phẩm -->
+<div *ngIf="productData" class="product-info-layout message-content">
+
+  <!-- Ảnh sản phẩm (nếu có)
+  <img *ngIf="productData.imageUrl"
+       [src]="productData.imageUrl"
+       [alt]="productData.name"
+       class="product-image"> -->
+
+  <!-- Tên sản phẩm -->
+  <h4 class="product-name">
+    {{ productData.name }}
+  </h4>
+
+  <!-- Giá sản phẩm, dùng pipe Angular để format tiền tệ -->
+  <p class="product-price">
+    <strong>Giá:</strong>
+    {{ productData.price | currency:'VND':'symbol':'1.0-0' }}
+  </p>
+
+  <!-- Mô tả ngắn gọn (nếu có) -->
+  <p *ngIf="productData.shortDescription" class="product-description">
+    {{ productData.shortDescription }}
+  </p>
+
+  <!-- Thông số kỹ thuật (nếu có mảng specifications) -->
+  <div *ngIf="productData.specifications && productData.specifications.length > 0"
+       class="product-specs">
+    <strong>Thông số kỹ thuật:</strong>
+    <ul>
+      <li *ngFor="let spec of productData.specifications">
+        <span>{{ spec.label }}:</span> {{ spec.value }}
+      </li>
+    </ul>
+  </div>
+
+  <!-- Khuyến mãi (nếu có) -->
+  <p *ngIf="productData.promotion" class="product-promotion">
+    <strong>Khuyến mãi:</strong>
+    {{ productData.promotion }}
+  </p>
+
+  <!-- Tình trạng hàng (nếu có) -->
+  <p *ngIf="productData.stockStatus" class="product-stock">
+    <strong>Tình trạng:</strong>
+    {{ productData.stockStatus }}
+  </p>
+
+  <!-- Bảo hành (nếu có) -->
+  <p *ngIf="productData.warranty" class="product-warranty">
+    <strong>Bảo hành:</strong>
+    {{ productData.warranty }}
+  </p>
+</div>

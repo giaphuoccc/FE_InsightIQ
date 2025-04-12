@@ -1,0 +1,42 @@
+.comparison-wrapper {
+  background: #e9f4ff;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.intro,
+.conclusion {
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: #333;
+}
+
+.comparison-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.product-card {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Cấu hình chia 2 cột */
+  width: calc(50% - 0.5rem); /* trừ khoảng cách 1rem đã chia đều cho 2 */
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .product-card {
+    width: 100%;
+  }
+}
+
+.product-card h4 {
+  margin-top: 0;
+  font-weight: bold;
+}
