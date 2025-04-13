@@ -1,0 +1,154 @@
+/* comment-detail.component.css */
+
+:host {
+  display: block;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color: #333;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+/* Container */
+.detail-container {
+  padding: 20px;
+  max-width: 800px; /* Adjust as needed */
+  margin: 20px auto;
+  background-color: #f8f9fa;
+}
+
+.detail-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+/* Card Style for Sections */
+.card {
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Comment Metadata */
+.comment-metadata {
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+.comment-metadata p {
+  margin-top: 5px;
+  font-style: italic;
+  padding-left: 10px;
+  border-left: 3px solid #cbd5e1;
+}
+.comment-metadata strong {
+  color: #2d3748;
+}
+.comment-metadata small {
+  display: block;
+  margin-top: 8px;
+  color: #718096;
+}
+
+/* Chat Log Styles */
+.chat-log {
+  /* Optional: Add max-height and scroll for long logs */
+  /* max-height: 500px; */
+  /* overflow-y: auto; */
+}
+
+.chat-log-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.chat-message {
+  margin-bottom: 15px;
+  max-width: 80%; /* Prevent messages from taking full width */
+  display: flex; /* Use flex to easily position timestamp */
+  flex-direction: column;
+}
+
+.chat-message p.message-text {
+  margin: 0;
+  padding: 10px 15px;
+  border-radius: 15px; /* Bubble shape */
+  line-height: 1.4;
+  font-size: 14px;
+  word-wrap: break-word; /* Ensure long words break */
+}
+
+.chat-message span.message-timestamp {
+  font-size: 0.7rem; /* Smaller timestamp */
+  color: #718096; /* Grey color */
+  margin-top: 4px;
+}
+
+/* User Message Styling */
+.user-message {
+  align-items: flex-end; /* Align content (timestamp) to the right */
+  margin-left: auto; /* Push the whole bubble to the right */
+}
+
+.user-message p.message-text {
+  background-color: #dbeafe; /* Light blue */
+  color: #1e3a8a; /* Darker blue text */
+  border-bottom-right-radius: 5px; /* Slightly flatten one corner */
+}
+
+.user-message span.message-timestamp {
+  text-align: right;
+}
+
+/* Bot Message Styling */
+.bot-message {
+  align-items: flex-start; /* Align content (timestamp) to the left */
+  margin-right: auto; /* Push the whole bubble to the left */
+}
+
+.bot-message p.message-text {
+  background-color: #e2e8f0; /* Light grey */
+  color: #2d3748;
+  border-bottom-left-radius: 5px; /* Slightly flatten one corner */
+}
+
+.bot-message span.message-timestamp {
+  text-align: left;
+}
+
+/* Disliked Message Styling */
+.disliked-message p.message-text {
+  border: 2px solid #f87171; /* Red border */
+  background-color: #fee2e2; /* Lighter red background */
+}
+
+/* Actions Area */
+.actions-area {
+  text-align: left;
+  margin-top: 10px;
+}
+
+.back-button {
+  background-color: #6c757d; /* Grey */
+  color: white;
+}
+
+.back-button:hover {
+  background-color: #5a6268; /* Darker grey */
+}

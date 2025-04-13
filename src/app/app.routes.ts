@@ -4,13 +4,18 @@ import { LoginComponent } from './modules/authentication/login/login.component';
 import { RegisterComponent } from './modules/authentication/register/register.component';
 import { PendingTenantComponent } from './modules/superadmin/component/pending-tenant/pending-tenant.component';
 import { PendingTenantDetailComponent } from './modules/superadmin/component/pending-tenant-details/pending-tenant-details.component';
+import { ReportManagementComponent } from './shared/reports/report-management/report-management.component';
+import { CommentDetailComponent } from './shared/reports/comment-detail/comment-detail.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  
+
   //PENDING TENANT SECTION
   { path: 'pendingtenant', component: PendingTenantComponent },
   { path: 'pendingtenant/:id', component: PendingTenantDetailComponent }, // <-- NEW
-  { path: '', redirectTo: '/pendingtenant', pathMatch: 'full' },
+  // { path: '', redirectTo: '/pendingtenant', pathMatch: 'full' },
+
+  { path: 'viewreport', component: ReportManagementComponent },
+  { path: 'report-conversation/:id', component: CommentDetailComponent },
 ];

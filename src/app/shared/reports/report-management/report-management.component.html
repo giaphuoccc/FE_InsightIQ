@@ -1,1 +1,86 @@
-<p>report-management works!</p>
+<div class="reports-container">
+  <h2 class="page-title">Reports and Statistics</h2>
+
+  <section class="filter-section card">
+    <div class="filter-controls">
+      <div class="form-group">
+        <label for="start-date">Start date</label>
+        <input
+          type="date"
+          id="start-date"
+          class="date-input"
+          [(ngModel)]="startDate"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="end-date">End date</label>
+        <input
+          type="date"
+          id="end-date"
+          class="date-input"
+          [(ngModel)]="endDate"
+        />
+      </div>
+
+      <button class="filter-button" (click)="onFilterData()">
+        Filter Data
+      </button>
+    </div>
+  </section>
+
+  <div *ngIf="isLoadingStats || isLoadingComments" class="loading-message">
+    Loading report data...
+  </div>
+  <div *ngIf="errorMessage" class="error-message">
+    Error: {{ errorMessage }} Please try again later.
+  </div>
+
+  <section class="statistics-section" *ngIf="stats && !isLoadingStats">
+    <div class="stats-grid">
+      <div class="stat-box card">
+        <span class="stat-label">Likes</span>
+        <span class="stat-value">{{ stats.likes }}</span>
+      </div>
+      <div class="stat-box card">
+        <span class="stat-label">Dislikes</span>
+        <span class="stat-value">{{ stats.dislikes }}</span>
+      </div>
+      <div class="stat-box card">
+        <span class="stat-label">Response time</span>
+        <span class="stat-value">{{ stats.responseTime }}s</span>
+      </div>
+      <div class="stat-box card">
+        <span class="stat-label">Number of stops</span>
+        <span class="stat-value">{{ stats.stops }}</span>
+      </div>
+      <div class="stat-box card">
+        <span class="stat-label">Chat time</span>
+        <span class="stat-value">{{ stats.chatTime }}s</span>
+      </div>
+      <div class="stat-box card">
+        <span class="stat-label">Rate out of range</span>
+        <span class="stat-value">{{ stats.rateOutOfRange }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="comments-section card" *ngIf="!isLoadingComments">
+    <h3 class="comment-title">Comment</h3>
+    <div *ngIf="comments.length === 0 && !errorMessage" class="empty-comments">
+      No comments found for the selected period.
+    </div>
+    <div class="comments-list" *ngIf="comments.length > 0">
+      <div *ngFor="let comment of comments" class="comment-item">
+        <p class="comment-text">"{{ comment.text }}"</p>
+        <button class="detail-button" (click)="onSeeCommentDetail(comment.id)">
+          See detail
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="download-area">
+    <button class="download-button" (click)="onDownload()">Download</button>
+  </div>
+</div>

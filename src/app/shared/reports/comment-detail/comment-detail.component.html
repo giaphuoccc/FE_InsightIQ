@@ -1,1 +1,54 @@
-<p>comment-detail works!</p>
+<div class="detail-container">
+  <h2 class="detail-title">Chat Conversation Detail</h2>
+
+  <div *ngIf="isLoading" class="loading-indicator card">
+    Loading chat details...
+  </div>
+
+  <div *ngIf="errorMessage && !isLoading" class="error-message card">
+    <p><strong>Error:</strong> {{ errorMessage }}</p>
+    <button (click)="goBack()" class="back-button">Back to Reports</button>
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage">
+    <div class="comment-metadata card">
+      <strong>Details for Comment ID:</strong> {{ commentId || "N/A" }}
+    </div>
+
+    <div class="chat-log card">
+      <h3 class="chat-log-title">Conversation Log</h3>
+
+      <div *ngIf="chatMessage.length === 0" class="empty-chat">
+        No chat messages found for this comment.
+      </div>
+
+      <div
+        *ngFor="let message of chatMessage"
+        class="chat-message"
+        [class.user-message]="message.sender === 'user'"
+        [class.bot-message]="message.sender === 'bot'"
+      >
+        <p
+          class="message-text"
+          [class.disliked-message-text]="message.isDisliked"
+        >
+          {{ message.text }}
+        </p>
+        <span class="message-timestamp">{{
+          message.timestamp | date : "yyyy-MM-dd HH:mm:ss"
+        }}</span>
+
+        <span
+          *ngIf="message.isDisliked"
+          class="disliked-indicator"
+          title="User disliked this message"
+          >❗</span
+        >
+      </div>
+    </div>
+
+    <div class="actions-area">
+      <button class="back-button" (click)="goBack()">Back to Reports</button>
+    </div>
+  </div>
+</div>
