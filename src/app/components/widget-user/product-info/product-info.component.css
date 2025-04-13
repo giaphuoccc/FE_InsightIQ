@@ -1,0 +1,11 @@
+/* (Dán CSS từ bước trước vào đây) */
+.product-info-layout {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  /* ... (các style khác) ... */
+  .product-specs li span {
+    font-weight: 500;
+    min-width: 80px;
+    display: inline-block;
+  }

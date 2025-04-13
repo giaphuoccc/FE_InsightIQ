@@ -1,0 +1,96 @@
+.product-promotion-wrapper {
+    border: 1px solid #e0e0e0;
+    background-color: #f0f8ff; /* Màu xanh nhạt gợi cảm giác ưu đãi */
+    padding: 12px;
+    border-radius: 6px;
+    margin: 5px 0;
+    font-size: 0.9em;
+    line-height: 1.4; /* Cải thiện khoảng cách dòng */
+  }
+  
+  .product-promotion-wrapper p {
+    margin: 4px 0; /* Khoảng cách giữa các dòng p */
+  }
+  
+  /* Đoạn tiêu đề chính */
+  .product-promotion-wrapper > p:first-child {
+    margin-bottom: 8px; /* Tăng khoảng cách dưới dòng tiêu đề */
+    font-weight: 500; /* Đậm hơn một chút */
+  }
+  
+  .promotion-content {
+    display: flex;
+    gap: 12px; /* Tăng khoảng cách giữa ảnh và text */
+    margin-top: 8px;
+  }
+  
+  .product-image {
+    max-width: 55px; /* Tăng kích thước ảnh một chút */
+    width: 55px; /* Đặt chiều rộng cố định */
+    height: auto;
+    object-fit: contain; /* Đảm bảo ảnh không bị méo */
+    border-radius: 4px;
+    align-self: flex-start; /* Căn ảnh lên trên */
+    border: 1px solid #eee; /* Thêm viền nhẹ cho ảnh */
+  }
+  
+  .promotion-details {
+    flex-grow: 1; /* Cho phép phần text chiếm hết không gian */
+  }
+  
+  .description {
+    font-weight: bold; /* Mô tả khuyến mãi đậm */
+    margin-bottom: 6px !important; /* Tăng khoảng cách dưới mô tả */
+  }
+  
+  .price {
+    font-size: 1em;
+  }
+  
+  .original-price {
+    text-decoration: line-through; /* Gạch ngang giá gốc */
+    color: #666;
+    font-size: 0.9em;
+  }
+  
+  .discounted-price strong, .discount-percent strong {
+    color: #d9534f; /* Màu đỏ cho giá/tỷ lệ giảm */
+    font-weight: bold;
+    font-size: 1.1em;
+  }
+  
+   .discounted-price span {
+     font-size: 0.9em;
+     color: #5cb85c; /* Màu xanh lá cho phần trăm giảm */
+     margin-left: 5px; /* Khoảng cách nhỏ trước % */
+   }
+  
+  .gift {
+    color: #5cb85c; /* Màu xanh lá cho quà tặng */
+    font-style: italic;
+  }
+  
+  /* Thêm icon quà tặng */
+  .gift::before {
+    content: "🎁 "; /* Biểu tượng quà tặng */
+    display: inline-block; /* Cho phép content hiển thị */
+    margin-right: 3px;
+  }
+  
+  .validity, .conditions {
+    font-size: 0.85em;
+    color: #555;
+  }
+  
+  /* Thêm icon lịch và điều kiện */
+  .validity::before {
+     content: "⏳ "; /* Biểu tượng đồng hồ cát */
+     display: inline-block;
+     margin-right: 3px;
+  }
+  
+  .conditions::before {
+     content: "ℹ️ "; /* Biểu tượng thông tin */
+     display: inline-block;
+     margin-right: 3px;
+  }

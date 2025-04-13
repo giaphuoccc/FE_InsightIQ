@@ -1,0 +1,38 @@
+h1 {
+    color: #1DAEFF; /* màu xanh giống trên Figma */
+    font-size: 300%; /* bạn có thể điều chỉnh giữa 24px - 32px tùy theo cảm nhận */
+    font-weight: bold;
+    text-align: center;
+    margin-top: 4%; /* tạo khoảng cách phía trên nếu cần */
+  }
+  
+  .button-container {
+    display: flex;
+    flex-direction: row; /* Quan trọng: xếp theo hàng ngang */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc nếu cần */
+    gap: 40px; /* Khoảng cách giữa các nút */
+    margin-top: 5%; /* Cách dòng chữ 'Hello, Admin' phía trên */
+    flex-wrap: wrap; /* Đảm bảo responsive khi thu nhỏ màn hình */
+  }
+
+  /* Style cho từng nút */
+dashboard-action-button {
+  flex: 0 1 160px; /* mặc định 160px mỗi nút */
+}
+
+/* Tablet: 2 nút mỗi hàng (màn hình từ 768px trở xuống) */
+@media (max-width: 768px) {
+  dashboard-action-button {
+    flex: 0 1 calc(50% - 40px); /* mỗi hàng 2 nút, trừ gap */
+  }
+}
+
+/* Mobile: 1 nút mỗi hàng (màn hình từ 480px trở xuống) */
+@media (max-width: 480px) {
+  dashboard-action-button {
+    flex: 0 1 100%;
+    display: flex;
+    justify-content: center;
+  }
+}

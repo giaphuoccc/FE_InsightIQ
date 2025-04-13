@@ -1,0 +1,61 @@
+<div class="chatbot-toggle-btn" (click)="toggleChatbox()" *ngIf="!showChatbox"> 💬 </div>
+
+<div class="chatbot-box" [ngClass]="{ 'expanded': isChatting }" *ngIf="showChatbox">
+  <button class="close-btn" (click)="toggleChatbox()">X</button>
+
+  <ng-container *ngIf="!isChatting">
+    <img src="assets/icon-chatbot.png" class="chat-icon" />
+    <h3 class="title">AI Assistant</h3>
+    <div>
+      <div class="input-group">
+        <input type="text" placeholder="Please enter your phone number" class="chat-input" />
+      </div>
+      <div class="input-group">
+        <input type="text" placeholder="Please enter your name" class="chat-input" />
+      </div>
+      <button class="start-btn" (click)="startChat()">START CHAT</button>
+    </div>
+  </ng-container>
+
+  <div *ngIf="isChatting" class="chat-container">
+    <div class="chat-box" #chatBox>
+      <div *ngFor="let msg of messages" class="message-wrapper"
+           [ngClass]="{ 'user-message-wrapper': msg.sender === 'user', 'bot-message-wrapper': msg.sender === 'bot' }">
+        <div class="message" [ngClass]="{ 'user-message': msg.sender === 'user', 'bot-message': msg.sender === 'bot' }">
+
+          <ng-container [ngSwitch]="msg.type">
+
+            <app-product-info *ngSwitchCase="'productInfo'" [productData]="msg.content"></app-product-info>
+
+            <app-product-comparison *ngSwitchCase="'productComparison'" [data]="msg.content"></app-product-comparison>
+
+            <product-promotion *ngSwitchCase="'productPromotion'" [promotionData]="msg.content"></product-promotion>
+            <p *ngSwitchDefault>{{ msg.content }}</p>
+
+          </ng-container>
+
+          <span class="timestamp" *ngIf="msg.timestamp">
+            {{ msg.timestamp | date:'shortTime':'':'vi' }} </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="message-input">
+      <div class="input-wrapper">
+        <textarea class="chat-input auto-expand"
+                  placeholder="Type a message..." rows="1"
+                  [(ngModel)]="messageText"
+                  (input)="autoExpand($event)"
+                  (keydown)="handleKeyDown($event)">
+        </textarea>
+      </div>
+      <button *ngIf="!isBotResponding" class="send-btn" (click)="onSendMessage()" [disabled]="!messageText.trim()">
+        <img src="assets/send-icon.png" class="send-icon" />
+      </button>
+      
+      <button *ngIf="isBotResponding" class="stop-btn" (click) = "stopBotResponse()">
+        <img src="assets/icon/user/stop-icon.png">
+      </button>
+    </div>
+  </div>
+</div>
