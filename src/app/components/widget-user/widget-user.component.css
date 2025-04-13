@@ -340,10 +340,8 @@
 
 /* Icon bên trong nút header (áp dụng cho <img> trong .clear-btn) */
 .header-buttons .header-icon {
-  margin-top: 200%;
-  margin-right: 500%;
-  width: 400%; /* Chỉnh kích thước icon cây chổi ở đây */
-  height: 400%; /* Chỉnh kích thước icon cây chổi ở đây */
+  width: 58px; /* Chỉnh kích thước icon cây chổi ở đây */
+  height: 58px; /* Chỉnh kích thước icon cây chổi ở đây */
   object-fit: contain; /* Đảm bảo icon không bị méo */
 }
 
