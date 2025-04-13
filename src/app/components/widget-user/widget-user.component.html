@@ -2,7 +2,7 @@
 
 <div class="chatbot-box" [ngClass]="{ 'expanded': isChatting }" *ngIf="showChatbox">
   <div class="header-buttons">
-    <button class="clear-btn" (click)="clearChat()" title="Xóa đoạn chat">
+    <button *ngIf="isChatting" class="clear-btn" (click)="clearChat()" title="Xóa đoạn chat">
       <img src="assets/icon/user/clear-chat-icon.png" alt="Clear Chat" class="header-icon">
     </button>
     <button class="close-btn" (click)="toggleChatbox()" title="Đóng chat">
