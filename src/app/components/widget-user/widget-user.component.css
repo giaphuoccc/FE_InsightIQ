@@ -351,4 +351,32 @@
     line-height: 1;
 }
 
-/* --- KẾT THÚC KHỐI CSS MỚI --- */
+
+/* Container cho nút like/dislike */
+.feedback-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 18px;
+}
+
+/* Icon mặc định */
+.feedback-buttons i {
+  cursor: pointer;
+  color: #888;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.feedback-buttons i:hover {
+  transform: scale(1.1);
+}
+
+/* Khi like */
+.feedback-buttons .active-like {
+  color: #42a5f5; /* Màu xanh dương */
+}
+
+/* Khi dislike */
+.feedback-buttons .active-dislike {
+  color: #ef5350; /* Màu đỏ nhạt */
+}

@@ -7,6 +7,9 @@ export interface ChatMessage {
   content: any;
   timestamp: Date;
   id?: string;
+
+  liked?: boolean;
+  disliked?: boolean;
 }
 
 // --- Component chính của chatbot ---
@@ -360,4 +363,24 @@ export class WidgetUserComponent implements OnInit, AfterViewInit {
       }, 0);
     })
   }
+
+  toggleLike(msg: ChatMessage): void{
+    // Nếu đang like thì chuyển sang dislike và ngược lại
+    msg.liked = !msg.liked;
+
+    // Nếu đã like thì đảm bảo tắt dislike
+    if(msg.liked){
+      msg.disliked = false;
+    }
+  }
+
+  // Xử lý khi người dùng bấm nút Dislike
+toggleDislike(msg: ChatMessage): void {
+  msg.disliked = !msg.disliked;
+
+  // Nếu đã dislike thì đảm bảo tắt like
+  if (msg.disliked) {
+    msg.liked = false;
+  }
+}
 }
