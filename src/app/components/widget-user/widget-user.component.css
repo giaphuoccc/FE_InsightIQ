@@ -146,7 +146,7 @@
   /* Con cuộn */
   flex: 1;
   overflow-y: auto;
-
+  margin-top: 4%;
   padding: 10px;
   display: flex;
   flex-direction: column;
