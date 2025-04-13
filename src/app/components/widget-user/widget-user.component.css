@@ -56,9 +56,6 @@
 
 /* Nút đóng chat */
 .close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   background: none;
   border: none;
   color: #888;
@@ -305,3 +302,55 @@
   fill: #d84315;
 }
 */
+
+/* --- BẮT ĐẦU KHỐI CSS MỚI --- */
+
+/* Container cho các nút ở header */
+.header-buttons {
+  position: absolute; /* Đặt vị trí tuyệt đối so với .chatbot-box */
+  top: 10px;        /* Cách lề trên 10px */
+  right: 10px;       /* Cách lề phải 10px */
+  display: flex;     /* Dùng flexbox để xếp nút ngang nhau */
+  align-items: center; /* Căn các nút theo chiều dọc */
+  gap: 8px;          /* Khoảng cách giữa nút cây chổi và nút X */
+  z-index: 10;       /* Đảm bảo nút nằm trên các nội dung khác trong header */
+}
+
+/* Nút Xóa Chat (Cây chổi) */
+.clear-btn {
+  background: none; /* Nền trong suốt */
+  border: none;     /* Không có viền */
+  color: #888;     /* Màu icon (nếu là font icon) hoặc không ảnh hưởng nếu là img */
+  cursor: pointer;
+  padding: 0;       /* Bỏ padding mặc định */
+  display: flex;    /* Để căn giữa icon bên trong */
+  align-items: center;
+  justify-content: center;
+  /* Đặt kích thước cho nút bấm nếu muốn */
+  width: 24px;
+  height: 24px;
+  transition: color 0.3s; /* Hiệu ứng khi hover (cho màu icon nếu dùng font) */
+}
+
+.clear-btn:hover {
+  color: #000; /* Đổi màu khi hover (cho màu icon nếu dùng font) */
+  /* Bạn có thể thêm hiệu ứng khác như opacity nếu muốn */
+  /* opacity: 0.7; */
+}
+
+/* Icon bên trong nút header (áp dụng cho <img> trong .clear-btn) */
+.header-buttons .header-icon {
+  margin-top: 200%;
+  margin-right: 500%;
+  width: 400%; /* Chỉnh kích thước icon cây chổi ở đây */
+  height: 400%; /* Chỉnh kích thước icon cây chổi ở đây */
+  object-fit: contain; /* Đảm bảo icon không bị méo */
+}
+
+/* Đảm bảo .close-btn cũng có padding và line-height (nên có từ bước trước) */
+.close-btn {
+    padding: 0;
+    line-height: 1;
+}
+
+/* --- KẾT THÚC KHỐI CSS MỚI --- */

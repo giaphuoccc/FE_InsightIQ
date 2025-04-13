@@ -48,6 +48,7 @@ export class WidgetUserComponent implements OnInit, AfterViewInit {
 
   @ViewChild('chatBox') chatBoxRef!: ElementRef;
 
+
   constructor(
     private cdRef: ChangeDetectorRef,
     private ngZone: NgZone
@@ -329,5 +330,34 @@ export class WidgetUserComponent implements OnInit, AfterViewInit {
       this.isBotResponding = false; // Reset trạng thái chatbot đang phản hồi về false
       this.cdRef.detectChanges(); // Yêu cầu Angular cập nhật giao diện ngay
     }
+  }
+
+  // Phương thức xử lý xóa đoạn chat
+  clearChat(): void{
+    console.log('Clear chat button clicked!'); // Log để kiểm tra
+
+    // Ngừng phản hồi chatbot nếu nó đang trả lời
+    this.stopBotResponse();
+
+    // Ghi đè lại mảng tin nhắn bằng cách gán giá trị mới cho biến message
+    this.messages = [
+      {
+        id: this.generateId(), // Tạo id mới
+        sender: 'bot',
+        type: 'text',
+        content: 'Xin chào! Bạn muốn hỏi về sản phẩm nào ạ?',
+        timestamp: new Date() // Lấy thời gian hiện tại
+      }
+    ];
+
+    // Thông báo cho Angular biết để lấy dữ liệu cập nhật theo giao diện
+    this.cdRef.detectChanges();
+
+    // Cuộn xuống dưới cùng khung chat
+    this.ngZone.runOutsideAngular(()=>{
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 0);
+    })
   }
 }

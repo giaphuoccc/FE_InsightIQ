@@ -1,7 +1,14 @@
 <div class="chatbot-toggle-btn" (click)="toggleChatbox()" *ngIf="!showChatbox"> 💬 </div>
 
 <div class="chatbot-box" [ngClass]="{ 'expanded': isChatting }" *ngIf="showChatbox">
-  <button class="close-btn" (click)="toggleChatbox()">X</button>
+  <div class="header-buttons">
+    <button class="clear-btn" (click)="clearChat()" title="Xóa đoạn chat">
+      <img src="assets/icon/user/clear-chat-icon.png" alt="Clear Chat" class="header-icon">
+    </button>
+    <button class="close-btn" (click)="toggleChatbox()" title="Đóng chat">
+      <img src="assets/icon/user/clear-chat-icon.png" alt="Đóng chat" class="header-icon">
+    </button>
+  </div>
 
   <ng-container *ngIf="!isChatting">
     <img src="assets/icon-chatbot.png" class="chat-icon" />
