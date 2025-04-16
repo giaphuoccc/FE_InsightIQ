@@ -1,0 +1,114 @@
+<!-- Section: Personal information -->
+<section class="personal-info">
+  <h3 class="section-title">Personal information</h3>
+  <div class="info-row">
+    <div class="info-item">
+      <span class="info-label">Name:</span>
+      <input *ngIf="isEditing" [(ngModel)]="user.name" class="info-value" />
+      <span *ngIf="!isEditing" class="info-value">{{ user.name }}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Phone:</span>
+      <input *ngIf="isEditing" [(ngModel)]="user.phone" class="info-value" />
+      <span *ngIf="!isEditing" class="info-value">{{ user.phone }}</span>
+    </div>
+  </div>
+  <div class="info-item" style="position: relative">
+    <span class="info-label">Email:</span>
+
+    <ng-container *ngIf="isEditing; else viewEmail">
+      <input
+        [(ngModel)]="user.email"
+        name="email"
+        #emailInput="ngModel"
+        required
+        email
+        class="info-value"
+        style="width: 250px"
+      />
+
+      <!-- Lỗi định vị dưới input -->
+      <div
+        *ngIf="emailInput.invalid && emailInput.touched"
+        class="error-message"
+        style="position: absolute; top: 100%; left: 0; margin-top: 4px"
+      >
+        *Emails must follow a standard format (e.g. name&#64;example.com)
+      </div>
+    </ng-container>
+
+    <ng-template #viewEmail>
+      <span class="info-value">{{ user.email }}</span>
+    </ng-template>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- Section: Business information -->
+<section class="business-info">
+  <h3 class="section-title">Business information</h3>
+  <div class="info-row">
+    <div class="info-item">
+      <span class="info-label">Business name:</span>
+      <input
+        *ngIf="isEditing"
+        [(ngModel)]="user.businessName"
+        class="info-value"
+      />
+      <span *ngIf="!isEditing" class="info-value">{{ user.businessName }}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Company website link:</span>
+      <input *ngIf="isEditing" [(ngModel)]="user.website" class="info-value" />
+      <span *ngIf="!isEditing" class="info-value">{{ user.website }}</span>
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="info-item">
+      <span class="info-label">Tax code:</span>
+      <span class="info-value">{{ user.taxCode }}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Profession:</span>
+      <input
+        *ngIf="isEditing"
+        [(ngModel)]="user.profession"
+        class="info-value"
+      />
+      <span *ngIf="!isEditing" class="info-value">{{ user.profession }}</span>
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="info-item">
+      <span class="info-label">Business address:</span>
+      <input *ngIf="isEditing" [(ngModel)]="user.address" class="info-value" />
+      <span *ngIf="!isEditing" class="info-value">{{ user.address }}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Business sector:</span>
+      <input *ngIf="isEditing" [(ngModel)]="user.sector" class="info-value" />
+      <span *ngIf="!isEditing" class="info-value">{{ user.sector }}</span>
+    </div>
+  </div>
+</section>
+
+<!-- Action buttons -->
+<div class="action-buttons">
+  <button
+    class="action-button edit-btn"
+    *ngIf="!isEditing"
+    (click)="toggleEdit()"
+  >
+    Edit Information
+  </button>
+
+  <div *ngIf="isEditing" style="display: flex; gap: 20px">
+    <button class="action-button update-btn" (click)="update()">Update</button>
+    <button class="action-button cancel-btn" (click)="cancel()">Cancel</button>
+  </div>
+
+  <button class="action-button change-btn">Change password</button>
+</div>
