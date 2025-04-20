@@ -1,0 +1,127 @@
+:host {
+  display: block;
+  font-family: sans-serif; /* Basic font */
+}
+
+.payment-container {
+  padding: 24px; /* Equivalent to p-6 */
+  max-width: 448px; /* Equivalent to max-w-md */
+  margin: 40px auto 0 auto; /* Equivalent to mt-10 mx-auto */
+  border: 1px solid #e5e7eb; /* Equivalent to border */
+  border-radius: 0.5rem; /* Equivalent to rounded-lg */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Equivalent to shadow-lg */
+}
+
+.payment-title {
+  font-size: 1.5rem; /* Equivalent to text-2xl */
+  font-weight: 600; /* Equivalent to font-semibold */
+  margin-bottom: 24px; /* Equivalent to mb-6 */
+  text-align: center;
+}
+
+.loading-indicator,
+.no-details-message {
+  text-align: center;
+  padding: 16px 0; /* Equivalent to py-4 */
+  color: #6b7280; /* Equivalent to text-gray-500 */
+}
+
+.error-message {
+  text-align: center;
+  color: #dc2626; /* Equivalent to text-red-600 */
+}
+
+.error-message.general-error {
+  padding: 12px; /* Equivalent to p-3 */
+  border: 1px solid #fecaca; /* Equivalent to border-red-300 */
+  background-color: #fef2f2; /* Equivalent to bg-red-50 */
+  border-radius: 0.25rem; /* Equivalent to rounded */
+  margin-bottom: 1rem; /* Equivalent to mb-4 */
+}
+
+.error-message.payment-error {
+  padding-top: 1rem; /* Equivalent to pt-4 */
+}
+
+/* Invoice Summary Box */
+.invoice-summary {
+  background-color: #f9fafb; /* Equivalent to bg-gray-50 */
+  padding: 16px; /* Equivalent to p-4 */
+  border-radius: 0.25rem; /* Equivalent to rounded */
+  margin-bottom: 24px; /* Equivalent to mb-6 */
+}
+
+.invoice-summary__title {
+  font-size: 1.125rem; /* Equivalent to text-lg */
+  font-weight: 500; /* Equivalent to font-medium */
+  margin-bottom: 12px; /* Equivalent to mb-3 */
+  text-align: center;
+}
+
+/* Style for the optional invoice description */
+.invoice-description {
+  text-align: center;
+  font-size: 0.875rem; /* text-sm */
+  color: #4b5563; /* text-gray-600 */
+  margin-bottom: 12px;
+}
+
+.invoice-summary__item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px; /* Equivalent to mb-1 */
+}
+
+.invoice-summary__item--subtle {
+  font-size: 0.875rem; /* Equivalent to text-sm */
+  color: #4b5563; /* Equivalent to text-gray-600 */
+  margin-bottom: 12px; /* Equivalent to mb-3 */
+}
+
+.invoice-summary__total {
+  border-top: 1px solid #e5e7eb; /* Equivalent to border-t */
+  padding-top: 12px; /* Equivalent to pt-3 */
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600; /* Equivalent to font-semibold */
+  font-size: 1.125rem; /* Equivalent to text-lg */
+}
+
+/* Payment Gateway Info */
+.payment-gateway-info {
+  margin-bottom: 24px; /* Equivalent to mb-6 */
+  text-align: center;
+  font-size: 0.875rem; /* Equivalent to text-sm */
+  color: #6b7280; /* Equivalent to text-gray-500 */
+}
+
+/* Payment Button */
+.payment-button {
+  width: 100%; /* Equivalent to w-full */
+  background-color: #2563eb; /* Equivalent to bg-blue-600 */
+  color: white; /* Equivalent to text-white */
+  padding: 12px 16px; /* Equivalent to py-3 px-4 */
+  border: none;
+  border-radius: 0.25rem; /* Equivalent to rounded */
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out; /* Equivalent to transition duration-200 */
+  font-size: 1.125rem; /* Equivalent to text-lg */
+  font-weight: 600; /* Equivalent to font-semibold */
+}
+
+.payment-button:hover {
+  background-color: #1d4ed8; /* Equivalent to hover:bg-blue-700 */
+}
+
+.payment-button:disabled {
+  opacity: 0.5; /* Equivalent to disabled:opacity-50 */
+  cursor: not-allowed;
+}
+
+/* Processing Indicator */
+.processing-indicator {
+  text-align: center;
+  padding: 16px 0; /* Equivalent to py-4 */
+  color: #2563eb; /* Equivalent to text-blue-600 */
+}

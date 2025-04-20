@@ -1,1 +1,62 @@
-<p>current-subscription works!</p>
+<div class="current-subscription-container">
+  <h3 class="current-subscription-title">Current subscription</h3>
+
+  <div *ngIf="isLoading" class="loading-indicator">Loading...</div>
+  <div *ngIf="error && !isLoading" class="error-message">{{ error }}</div>
+
+  <div *ngIf="currentSubscription$ | async as currentSub; else noSubscription">
+    <div class="subscription-details">
+      <div class="detail-item">
+        <span class="detail-label">Plan:</span>
+        <span class="detail-value">{{ currentSub.planName }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Price:</span>
+        <span class="detail-value"
+          >{{ currentSub.currency }}{{ currentSub.price }} /
+          {{ currentSub.billingCycle }}</span
+        >
+      </div>
+      <div class="detail-item" *ngIf="currentSub.interactionLimit">
+        <span class="detail-label">Interactions:</span>
+        <span class="detail-value">{{
+          currentSub.interactionLimit === "Unlimited"
+            ? "Unlimited"
+            : (currentSub.interactionLimit | number) + "/mo"
+        }}</span>
+      </div>
+      <div class="detail-item" *ngIf="currentSub.paymentMethod">
+        <span class="detail-label">Payment Method:</span>
+        <span class="detail-value">{{ currentSub.paymentMethod }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Status:</span>
+        <span
+          class="detail-value status-{{
+            currentSub.status | lowercase | replace : ' ' : '-'
+          }}"
+        >
+          {{ currentSub.status }}
+        </span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Next Billing Date:</span>
+        <span class="detail-value">{{
+          currentSub.nextBillingDate | date : "yyyy-MM-dd"
+        }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="needsPayment(currentSub)" class="pay-button-container">
+      <button (click)="payOutstandingInvoice()" class="pay-invoice-button">
+        Pay Invoice
+      </button>
+    </div>
+  </div>
+
+  <ng-template #noSubscription>
+    <div *ngIf="!isLoading && !error" class="no-subscription-message">
+      You do not have an active subscription.
+    </div>
+  </ng-template>
+</div>

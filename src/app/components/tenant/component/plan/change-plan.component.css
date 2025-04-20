@@ -1,0 +1,155 @@
+:host {
+  display: block; /* Ensures the component takes up block space */
+  font-family: sans-serif; /* Basic font */
+}
+
+.change-plan__container {
+  padding: 24px;
+  max-width: 900px; /* Equivalent to max-w-4xl */
+  margin: 0 auto; /* Center the container */
+}
+
+.change-plan__title,
+.payg-section-title {
+  font-size: 1.5rem; /* Equivalent to text-2xl */
+  font-weight: 600; /* Equivalent to font-semibold */
+  margin-bottom: 24px; /* Equivalent to mb-6 */
+  text-align: center;
+}
+
+.loading-indicator,
+.no-plans-message {
+  text-align: center;
+  padding: 16px 0; /* Equivalent to py-4 */
+  color: #6b7280; /* Equivalent to text-gray-500 */
+}
+
+.error-message {
+  text-align: center;
+  padding: 16px 0; /* Equivalent to py-4 */
+  color: #dc2626; /* Equivalent to text-red-600 */
+}
+
+/* Grid layout for fixed plans */
+.plan-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Default to 1 column */
+  gap: 24px; /* Equivalent to gap-6 */
+  margin-bottom: 32px; /* Equivalent to mb-8 */
+}
+
+/* Medium screens and up: 3 columns */
+@media (min-width: 768px) {
+  /* md breakpoint */
+  .plan-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Styling for individual plan cards */
+.plan-card,
+.payg-card {
+  border: 1px solid #d1d5db; /* Equivalent to border border-gray-300 */
+  border-radius: 0.5rem; /* Equivalent to rounded-lg */
+  padding: 24px; /* Equivalent to p-6 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Equivalent to shadow-md */
+  display: flex;
+  flex-direction: column; /* Equivalent to flex-col */
+}
+
+.plan-card--recommended {
+  border-color: #3b82f6; /* Equivalent to border-blue-500 */
+}
+
+.plan-card__title,
+.payg-card__title {
+  font-size: 1.25rem; /* Equivalent to text-xl */
+  font-weight: 600; /* Equivalent to font-semibold */
+  margin-bottom: 0.5rem; /* Equivalent to mb-2 */
+}
+
+.plan-card__price {
+  font-size: 1.875rem; /* Equivalent to text-3xl */
+  font-weight: 700; /* Equivalent to font-bold */
+  margin-bottom: 1rem; /* Equivalent to mb-4 */
+}
+
+.plan-card__price-cycle {
+  font-size: 1rem; /* Equivalent to text-base */
+  font-weight: 400; /* Equivalent to font-normal */
+  color: #6b7280; /* Equivalent to text-gray-500 */
+}
+
+.plan-card__features,
+.payg-card__features {
+  margin-bottom: 1rem; /* Equivalent to mb-4 */
+  list-style: none;
+  padding: 0;
+  font-size: 0.875rem; /* Equivalent to text-sm */
+  color: #4b5563; /* Equivalent to text-gray-600 */
+  flex-grow: 1; /* Equivalent to flex-grow */
+}
+
+.plan-card__features li,
+.payg-card__features li {
+  margin-bottom: 0.25rem; /* Equivalent to space-y-1 */
+}
+
+.plan-card__button,
+.payg-card__button {
+  margin-top: auto; /* Equivalent to mt-auto */
+  width: 100%; /* Equivalent to w-full */
+  color: white; /* Equivalent to text-white */
+  padding: 0.5rem 1rem; /* Equivalent to py-2 px-4 */
+  border: none;
+  border-radius: 0.25rem; /* Equivalent to rounded */
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out; /* Equivalent to transition duration-200 */
+  font-weight: 500;
+}
+
+.plan-card__button {
+  background-color: #2563eb; /* Equivalent to bg-blue-600 */
+}
+
+.plan-card__button:hover {
+  background-color: #1d4ed8; /* Equivalent to hover:bg-blue-700 */
+}
+
+.plan-card__button:disabled,
+.payg-card__button:disabled {
+  opacity: 0.5; /* Equivalent to disabled:opacity-50 */
+  cursor: not-allowed;
+}
+
+/* Pay-As-You-Go Specific Styles */
+.payg-card-container {
+  display: flex;
+  justify-content: center; /* Equivalent to justify-center */
+}
+
+.payg-card {
+  width: 100%;
+  max-width: 320px; /* Equivalent to max-w-xs */
+}
+
+.payg-card__price {
+  font-size: 1.875rem; /* Equivalent to text-3xl */
+  font-weight: 700; /* Equivalent to font-bold */
+  margin-bottom: 0.25rem; /* Equivalent to mb-1 */
+}
+
+.payg-card__unit {
+  font-size: 0.875rem; /* Equivalent to text-sm */
+  color: #6b7280; /* Equivalent to text-gray-500 */
+  margin-bottom: 1rem; /* Equivalent to mb-4 */
+}
+
+.payg-card__button {
+  background-color: #16a34a; /* Equivalent to bg-green-600 */
+}
+
+.payg-card__button:hover {
+  background-color: #15803d; /* Equivalent to hover:bg-green-700 */
+}

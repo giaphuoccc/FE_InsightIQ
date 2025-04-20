@@ -1,1 +1,65 @@
-<p>payment works!</p>
+<div class="payment-container">
+  <h2 class="payment-title">Pay</h2>
+
+  <div *ngIf="isLoadingInvoice" class="loading-indicator">
+    Loading billing details...
+  </div>
+  <div
+    *ngIf="!isLoadingInvoice && error && !isProcessingPayment"
+    class="error-message general-error"
+  >
+    {{ error }}
+  </div>
+
+  <div *ngIf="invoicePreview$ | async as invoice">
+    <div class="invoice-summary">
+      <h3 class="invoice-summary__title">BILL</h3>
+      <p *ngIf="invoice.invoiceDescription" class="invoice-description">
+        {{ invoice.invoiceDescription }}
+      </p>
+
+      <div class="invoice-summary__item">
+        <span
+          >{{ invoice.planName }}
+          {{ isPayingExistingInvoice ? "Invoice" : "Subscription" }}</span
+        >
+        <span>{{ invoice.currency }}{{ invoice.subtotal.toFixed(2) }}</span>
+      </div>
+      <div class="invoice-summary__item invoice-summary__item--subtle">
+        <span>Tax</span>
+        <span>{{ invoice.currency }}{{ invoice.tax.toFixed(2) }}</span>
+      </div>
+      <div class="invoice-summary__total">
+        <span>Total</span>
+        <span>{{ invoice.currency }}{{ invoice.total.toFixed(2) }}</span>
+      </div>
+    </div>
+
+    <div class="payment-gateway-info">You will be processed via VNPAY.</div>
+
+    <button
+      class="payment-button"
+      (click)="confirmPayment()"
+      [disabled]="isProcessingPayment || isLoadingInvoice || !invoice"
+    >
+      {{ isProcessingPayment ? "Processing..." : "Pay" }}
+    </button>
+
+    <div *ngIf="isProcessingPayment" class="processing-indicator">
+      Processing your payment...
+    </div>
+    <div
+      *ngIf="!isProcessingPayment && error"
+      class="error-message payment-error"
+    >
+      {{ error }}
+    </div>
+  </div>
+
+  <div
+    *ngIf="!isLoadingInvoice && !error && !(invoicePreview$ | async)"
+    class="no-details-message"
+  >
+    Unable to display billing details.
+  </div>
+</div>

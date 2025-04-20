@@ -1,1 +1,63 @@
-<p>change-plan works!</p>
+<div class="change-plan__container">
+  <h2 class="change-plan__title">Subscription plan</h2>
+
+  <div *ngIf="isLoading" class="loading-indicator">Loading plans...</div>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!isLoading && !error && (availablePlans$ | async) as plans">
+    <div class="plan-grid">
+      <ng-container *ngFor="let plan of plans">
+        <div
+          *ngIf="plan.id !== 'payg'"
+          class="plan-card"
+          [class.plan-card--recommended]="plan.isRecommended"
+        >
+          <h3 class="plan-card__title">{{ plan.name }}</h3>
+          <p class="plan-card__price">
+            {{ plan.currency }}{{ plan.price }}
+            <span class="plan-card__price-cycle">/ month</span>
+          </p>
+          <ul class="plan-card__features">
+            <li *ngFor="let feature of plan.features">- {{ feature }}</li>
+          </ul>
+          <button
+            class="plan-card__button"
+            (click)="selectPlan(plan.id)"
+            [disabled]="isLoading"
+          >
+            {{ isLoading ? "Processing..." : "Pay" }}
+          </button>
+        </div>
+      </ng-container>
+    </div>
+
+    <h3 class="payg-section-title">Pay-As-You-Go Plan</h3>
+    <div class="payg-card-container">
+      <ng-container *ngFor="let plan of plans">
+        <div *ngIf="plan.id === 'payg'" class="payg-card">
+          <h3 class="payg-card__title">{{ plan.name }}</h3>
+          <p class="payg-card__price">
+            {{ plan.currency }}{{ plan.payAsYouGoRate }}
+          </p>
+          <p class="payg-card__unit">per {{ plan.payAsYouGoUnit }}</p>
+          <ul class="payg-card__features">
+            <li *ngFor="let feature of plan.features">- {{ feature }}</li>
+          </ul>
+          <button
+            class="payg-card__button"
+            (click)="selectPlan(plan.id)"
+            [disabled]="isLoading"
+          >
+            {{ isLoading ? "Processing..." : "Buy" }}
+          </button>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div
+    *ngIf="!isLoading && !error && !(availablePlans$ | async)?.length"
+    class="no-plans-message"
+  >
+    No subscription plans available at this moment.
+  </div>
+</div>

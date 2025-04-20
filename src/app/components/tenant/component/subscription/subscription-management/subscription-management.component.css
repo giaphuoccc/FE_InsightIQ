@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  font-family: sans-serif;
+}
+
+.subscription-management-container {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+.management-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.current-sub-section {
+  margin-bottom: 32px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+.action-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 0.375rem;
+  background-color: #fff;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.action-button:hover {
+  background-color: #f0f0f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
