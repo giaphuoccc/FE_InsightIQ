@@ -1,0 +1,90 @@
+:host {
+  display: block;
+  font-family: sans-serif;
+}
+
+.current-subscription-container {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem; /* rounded-md */
+  background-color: #f9fafb; /* bg-gray-50 */
+}
+
+.current-subscription-title {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 500; /* font-medium */
+  margin-bottom: 12px;
+  color: #374151; /* text-gray-700 */
+}
+
+.loading-indicator,
+.no-subscription-message {
+  text-align: center;
+  padding: 16px 0;
+  color: #6b7280; /* text-gray-500 */
+}
+
+.error-message {
+  text-align: center;
+  padding: 16px 0;
+  color: #dc2626; /* text-red-600 */
+}
+
+.subscription-details {
+  /* Optional: Use grid for alignment if needed */
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f4f6; /* border-gray-100 */
+  font-size: 0.875rem; /* text-sm */
+}
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #6b7280; /* text-gray-500 */
+  margin-right: 8px;
+}
+
+.detail-value {
+  color: #1f2937; /* text-gray-800 */
+  font-weight: 500;
+}
+
+/* Status-specific styling */
+.detail-value.status-active {
+  color: #059669; /* text-green-600 */
+}
+.detail-value.status-pending-payment,
+.detail-value.status-past-due {
+  color: #d97706; /* text-amber-600 */
+  font-weight: 600;
+}
+.detail-value.status-cancelled {
+  color: #ef4444; /* text-red-500 */
+}
+
+/* Pay Button */
+.pay-button-container {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.pay-invoice-button {
+  background-color: #ef4444; /* bg-red-500 */
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 0.375rem; /* rounded-md */
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.pay-invoice-button:hover {
+  background-color: #dc2626; /* bg-red-600 */
+}

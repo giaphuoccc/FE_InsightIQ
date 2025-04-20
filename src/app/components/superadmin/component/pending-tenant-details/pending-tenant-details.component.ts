@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common'; // Needed for *ngIf, *ngFor, etc.
 import {
-  TenantService,
+  SuperAdminService,
   TenantDetail,
 } from '../../../../core/superadmin.service';
 import { Subscription } from 'rxjs';
@@ -25,7 +25,7 @@ export class PendingTenantDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute, // To get route parameters (like ID)
     private router: Router, // To navigate programmatically (e.g., after approve/reject)
-    private tenantService: TenantService // Service to fetch data
+    private superAdminService: SuperAdminService // Service to fetch data
   ) {}
 
   ngOnInit(): void {
@@ -53,7 +53,7 @@ export class PendingTenantDetailComponent implements OnInit {
     this.errorMessage = null;
     this.tenant = null; // Reset tenant data
 
-    this.tenantSub = this.tenantService.getTenantById(id).subscribe({
+    this.tenantSub = this.superAdminService.getTenantById(id).subscribe({
       next: (data) => {
         this.tenant = data;
         this.isLoading = false;
@@ -77,7 +77,7 @@ export class PendingTenantDetailComponent implements OnInit {
     if (!this.tenant) return;
     console.log('Approving tenant:', this.tenant.id);
     // Call service, handle response/error, maybe navigate back
-    this.tenantService.approveTenant(this.tenant.id).subscribe({
+    this.superAdminService.approveTenant(this.tenant.id).subscribe({
       next: () => {
         alert('Tenant Approved!'); // Simple feedback
         this.router.navigate(['/pendingtenant']); // Navigate back to list
@@ -91,7 +91,7 @@ export class PendingTenantDetailComponent implements OnInit {
     if (!this.tenant) return;
     console.log('Rejecting tenant:', this.tenant.id);
     // Call service, handle response/error, maybe navigate back
-    this.tenantService.rejectTenant(this.tenant.id).subscribe({
+    this.superAdminService.rejectTenant(this.tenant.id).subscribe({
       next: () => {
         alert('Tenant Rejected!'); // Simple feedback
         this.router.navigate(['/pendingtenant']); // Navigate back to list

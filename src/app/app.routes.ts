@@ -1,4 +1,3 @@
-// app.routes.ts (Standalone approach)
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/authentication/login/login.component';
 import { RegisterComponent } from './components/authentication/register/register.component';
@@ -6,15 +5,51 @@ import { PendingTenantComponent } from './components/superadmin/component/pendin
 import { PendingTenantDetailComponent } from './components/superadmin/component/pending-tenant-details/pending-tenant-details.component';
 import { WidgetUserComponent } from './components/widget-user/widget-user.component';
 import { TenantManagementComponent } from './components/tenant/component/profile/edit-profile/TenantManagementComponent/tenant-management.component';
+import { ReportManagementComponent } from './shared/reports/report-management/report-management.component';
+import { CommentDetailComponent } from './shared/reports/comment-detail/comment-detail.component';
+import { PaymentComponent } from './components/tenant/component/payment/payment.component';
+import { ChangePlanComponent } from './components/tenant/component/plan/change-plan.component';
+import { SubscriptionManagementComponent } from './components/tenant/component/subscription/subscription-management/subscription-management.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  
-  //PENDING TENANT SECTION
+
+  // PENDING TENANT SECTION
   { path: 'pendingtenant', component: PendingTenantComponent },
-  { path: 'pendingtenant/:id', component: PendingTenantDetailComponent }, // <-- NEW
-  { path: '', redirectTo: '/pendingtenant', pathMatch: 'full' },
-  {path: 'widget-user', component: WidgetUserComponent},
-  {path: 'tenant-management', component: TenantManagementComponent}
+  { path: 'pendingtenant/:id', component: PendingTenantDetailComponent },
+
+  // Default Route
+  // { path: '', redirectTo: '/pendingtenant', pathMatch: 'full' },
+
+  // WIDGET
+  { path: 'widget-user', component: WidgetUserComponent },
+
+  // TENANT MANAGEMENT
+  { path: 'tenant-management', component: TenantManagementComponent },
+
+  // REPORTING SECTION
+  { path: 'viewreport', component: ReportManagementComponent },
+  { path: 'report-conversation/:id', component: CommentDetailComponent },
+
+  // BILLING SECTION (Tenant)
+  {
+    path: 'billing',
+    component: SubscriptionManagementComponent,
+  },
+  {
+    path: 'billing/plans',
+    component: ChangePlanComponent,
+  },
+  {
+    path: 'billing/pay/:planId',
+    component: PaymentComponent,
+  },
+  {
+    path: 'billing/pay-invoice',
+    component: PaymentComponent,
+  },
+
+  // Optional: Add fallback route
+  // { path: '**', redirectTo: '/login' }
 ];

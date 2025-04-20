@@ -34,7 +34,7 @@ export interface TenantDetail {
 @Injectable({
   providedIn: 'root',
 })
-export class TenantService {
+export class SuperAdminService {
   // Keep apiUrl and HttpClient for other methods or future use
   private apiUrl = 'http://localhost:3000/api/tenants';
 

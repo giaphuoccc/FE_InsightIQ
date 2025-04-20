@@ -1,1 +1,17 @@
-<p>subscription-management works!</p>
+<div class="subscription-management-container">
+  <h1 class="management-title">Billing & Subscription</h1>
+
+  <app-current-subscription
+    class="current-sub-section"
+  ></app-current-subscription>
+
+  <div class="action-buttons">
+    <button class="action-button" routerLink="/billing/plans">
+      Change / View Plans
+    </button>
+
+    <button class="action-button" routerLink="/billing/history">
+      View Payment History
+    </button>
+  </div>
+</div>

@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs'; // Import Subscription for cleanup
 
 // Import the service and the list item interface
 import {
-  TenantService,
+  SuperAdminService,
   TenantListItem,
 } from '../../../../core/superadmin.service';
 
@@ -30,7 +30,7 @@ export class PendingTenantComponent implements OnInit, OnDestroy {
   // Inject Router AND TenantService
   constructor(
     private router: Router,
-    private tenantService: TenantService // Inject the service
+    private superAdminService: SuperAdminService // Inject the service
   ) {}
 
   // Runs when the component is initialized
@@ -44,7 +44,7 @@ export class PendingTenantComponent implements OnInit, OnDestroy {
     this.errorMessage = null; // Clear previous errors
 
     // Call the service method and subscribe
-    this.tenantsSub = this.tenantService.getTenants().subscribe({
+    this.tenantsSub = this.superAdminService.getTenants().subscribe({
       next: (data) => {
         this.tenants = data; // Assign fetched data to the component property
         this.isLoading = false; // Stop loading
