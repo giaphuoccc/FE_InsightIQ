@@ -1,1 +1,55 @@
-<p>billing-history works!</p>
+<div class="billing-history-container">
+  <h2 class="billing-history-title">Payment History</h2>
+
+  <div *ngIf="isLoading" class="loading-indicator">Loading history...</div>
+  <div *ngIf="error && !isLoading" class="error-message">{{ error }}</div>
+
+  <div
+    *ngIf="!isLoading && !error && (billingHistory$ | async) as historyItems"
+  >
+    <table
+      *ngIf="historyItems.length > 0; else noHistory"
+      class="history-table"
+    >
+      <thead>
+        <tr>
+          <th>Invoice ID</th>
+          <th>Date</th>
+          <th>Plan</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of historyItems">
+          <td>{{ item.invoiceId }}</td>
+          <td>{{ item.invoiceDate | date : "yyyy-MM-dd" }}</td>
+          <td>{{ item.planName }}</td>
+          <td>{{ item.totalAmount | currency : item.currency }}</td>
+          <td>
+            <span
+              class="status-badge status-{{
+                item.status | lowercase | replace : ' ' : '-'
+              }}"
+            >
+              {{ item.status }}
+            </span>
+          </td>
+          <td>
+            <button
+              (click)="viewInvoiceDetail(item.invoiceId)"
+              class="view-button"
+            >
+              View Details
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noHistory>
+      <p class="no-history-message">No payment history found.</p>
+    </ng-template>
+  </div>
+</div>

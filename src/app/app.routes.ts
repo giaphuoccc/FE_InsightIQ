@@ -10,6 +10,8 @@ import { CommentDetailComponent } from './shared/reports/comment-detail/comment-
 import { PaymentComponent } from './components/tenant/component/payment/payment.component';
 import { ChangePlanComponent } from './components/tenant/component/plan/change-plan.component';
 import { SubscriptionManagementComponent } from './components/tenant/component/subscription/subscription-management/subscription-management.component';
+import { BillingHistoryComponent } from './components/tenant/component/billing/billing-history/billing-history.component';
+import { BillingHistoryDetailComponent } from './components/tenant/component/billing/billing-history-detail/billing-history-detail.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -49,6 +51,12 @@ export const routes: Routes = [
     path: 'billing/pay-invoice',
     component: PaymentComponent,
   },
+  { path: 'billing/history', component: BillingHistoryComponent },
+  {
+    path: 'billing/history/:invoiceId',
+    component: BillingHistoryDetailComponent,
+  },
+  // --- End of added routes ---
 
   // Optional: Add fallback route
   // { path: '**', redirectTo: '/login' }

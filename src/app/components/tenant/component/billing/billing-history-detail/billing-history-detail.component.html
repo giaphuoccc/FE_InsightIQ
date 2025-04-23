@@ -1,1 +1,66 @@
-<p>billing-history-detail works!</p>
+<div class="invoice-detail-container">
+  <a routerLink="/billing/history" class="back-link">&larr; Back to History</a>
+
+  <h2 class="invoice-detail-title">Invoice Details</h2>
+
+  <div *ngIf="isLoading" class="loading-indicator">Loading details...</div>
+  <div *ngIf="error && !isLoading" class="error-message">{{ error }}</div>
+
+  <div *ngIf="invoiceDetail$ | async as invoice; else noDetails">
+    <div class="invoice-card">
+      <div class="invoice-header">
+        <h3>Invoice #{{ invoice.invoiceId }}</h3>
+        <span
+          class="status-badge status-{{
+            invoice.status | lowercase | replace : ' ' : '-'
+          }}"
+        >
+          {{ invoice.status }}
+        </span>
+      </div>
+
+      <div class="invoice-meta">
+        <div>
+          <strong>Invoice Date:</strong>
+          {{ invoice.invoiceDate | date : "longDate" }}
+        </div>
+        <div *ngIf="invoice.paymentDate">
+          <strong>Payment Date:</strong>
+          {{ invoice.paymentDate | date : "longDate" }}
+        </div>
+        <div *ngIf="invoice.transactionId">
+          <strong>Transaction ID:</strong> {{ invoice.transactionId }}
+        </div>
+        <div *ngIf="invoice.paymentMethodUsed">
+          <strong>Payment Method:</strong> {{ invoice.paymentMethodUsed }}
+        </div>
+      </div>
+
+      <div class="invoice-billing-summary">
+        <h4 class="summary-title">Billing Summary</h4>
+        <p *ngIf="invoice.invoiceDescription" class="invoice-description">
+          {{ invoice.invoiceDescription }}
+        </p>
+
+        <div class="summary-item">
+          <span>{{ invoice.planName }} Plan ({{ invoice.billingCycle }})</span>
+          <span>{{ invoice.subtotal | currency : invoice.currency }}</span>
+        </div>
+        <div class="summary-item summary-item--subtle">
+          <span>Tax</span>
+          <span>{{ invoice.tax | currency : invoice.currency }}</span>
+        </div>
+        <div class="summary-total">
+          <span>Total Amount</span>
+          <span>{{ invoice.total | currency : invoice.currency }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noDetails>
+    <p *ngIf="!isLoading && !error" class="no-details-message">
+      Invoice details could not be loaded.
+    </p>
+  </ng-template>
+</div>

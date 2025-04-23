@@ -1,0 +1,105 @@
+:host {
+  display: block;
+  font-family: sans-serif;
+}
+
+.billing-history-container {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+.billing-history-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.loading-indicator,
+.no-history-message {
+  text-align: center;
+  padding: 16px 0;
+  color: #6b7280; /* gray-500 */
+}
+
+.error-message {
+  text-align: center;
+  padding: 16px 0;
+  color: #dc2626; /* red-600 */
+  background-color: #fef2f2; /* red-50 */
+  border: 1px solid #fecaca; /* red-300 */
+  border-radius: 0.25rem;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 0.375rem;
+  overflow: hidden; /* Ensures border-radius applies to table */
+}
+
+.history-table th,
+.history-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  font-size: 0.875rem;
+}
+
+.history-table th {
+  background-color: #f9fafb; /* gray-50 */
+  font-weight: 500;
+  color: #374151; /* gray-700 */
+}
+
+.history-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.history-table tbody tr:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+/* Status Badge Styling */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 0.75rem; /* rounded-full */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500;
+  display: inline-block;
+  color: white;
+  text-transform: capitalize; /* Nicer display */
+}
+
+/* Color mapping for statuses */
+.status-paid {
+  background-color: #10b981;
+} /* emerald-500 */
+.status-failed {
+  background-color: #ef4444;
+} /* red-500 */
+.status-pending {
+  background-color: #f59e0b;
+} /* amber-500 */
+.status-refunded {
+  background-color: #6b7280;
+} /* gray-500 */
+
+.view-button {
+  background-color: #3b82f6; /* blue-500 */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 0.25rem; /* rounded */
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.view-button:hover {
+  background-color: #2563eb; /* blue-600 */
+}
