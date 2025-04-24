@@ -1,8 +1,11 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/authentication/login/login.component';
 import { RegisterComponent } from './components/authentication/register/register.component';
-import { PendingTenantComponent } from './components/superadmin/component/pending-tenant/pending-tenant.component';
-import { PendingTenantDetailComponent } from './components/superadmin/component/pending-tenant-details/pending-tenant-details.component';
+
+import { EditProfileComponent } from './components/superadmin/component/editProfile/editProfile.component';
+
+import { PendingTenantComponent } from './components/superadmin/component/pendingTenant/pendingTenantcomponent';
+import { PendingTenantDetailsComponent } from './components/superadmin/component/pendingTenantDetails/pendingTenantDetails.component';
 import { WidgetUserComponent } from './components/widget-user/widget-user.component';
 import { TenantManagementComponent } from './components/tenant/component/profile/edit-profile/TenantManagementComponent/tenant-management.component';
 import { ReportManagementComponent } from './shared/reports/report-management/report-management.component';
@@ -15,9 +18,14 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 
+  //SA Profile Section
+  {
+    path: 'account-management', component: EditProfileComponent,
+  },
+
   // PENDING TENANT SECTION
   { path: 'pendingtenant', component: PendingTenantComponent },
-  { path: 'pendingtenant/:id', component: PendingTenantDetailComponent },
+  { path: 'pendingtenant/:id', component: PendingTenantDetailsComponent },
 
   // Default Route
   // { path: '', redirectTo: '/pendingtenant', pathMatch: 'full' },

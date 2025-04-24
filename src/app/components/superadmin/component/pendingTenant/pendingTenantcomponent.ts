@@ -14,8 +14,8 @@ import {
   selector: 'app-pending-tenant-list',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './pending-tenant.component.html',
-  styleUrls: ['./pending-tenant.component.css'],
+  templateUrl: './pendingTenant.component.html',
+  styleUrls: ['./pendingTenant.component.css'],
 })
 // Implement OnInit and OnDestroy
 export class PendingTenantComponent implements OnInit, OnDestroy {

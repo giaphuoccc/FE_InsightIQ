@@ -11,10 +11,10 @@ import { Subscription } from 'rxjs';
   selector: 'app-tenant-detail',
   standalone: true,
   imports: [CommonModule], // Import CommonModule for standalone
-  templateUrl: './pending-tenant-details.component.html',
-  styleUrls: ['./pending-tenant-details.component.css'],
+  templateUrl: './pendingTenantDetails.component.html',
+  styleUrls: ['./pendingTenantDetails.component.css'],
 })
-export class PendingTenantDetailComponent implements OnInit {
+export class PendingTenantDetailsComponent implements OnInit {
   tenant: TenantDetail | null = null;
   isLoading = true; // Start in loading state
   errorMessage: string | null = null;
