@@ -1,58 +1,118 @@
-/* Header Styles */
-.app-header {
-  background-color: #007bff; /* Primary blue color */
-  color: white;
-  padding: 10px 25px;
+.navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-family: sans-serif;
+  background-color: #007bff;
+  padding: 10px 20px;
+  color: white;
 }
 
-.logo {
-  font-size: 1.5rem;
+.navbar-logo {
+  font-size: 20px;
   font-weight: bold;
   display: flex;
   align-items: center;
 }
 
-.logo-icon {
-  /* Add styles for your logo icon here if using one */
-  margin-right: 8px;
-  /* Example: background-image: url(...); width: 24px; height: 24px; */
+.navbar-logo img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 }
 
-.header-nav {
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.navbar a:hover {
+cursor: pointer; /* Thêm dòng này */
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px 30px;
+  min-width: 360px;
+  max-width: 90%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  text-align: center;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
-.sign-out {
-  color: white;
-  text-decoration: none;
-  margin-right: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
+.modal-title {
+  font-weight: 600;
+  font-size: 18px;
+  color: #1daeff;
 }
 
-.sign-out:hover {
-  text-decoration: underline;
-}
-
-.menu-button {
+.modal-close {
   background: none;
   border: none;
-  color: white;
+  font-size: 20px;
   cursor: pointer;
-  padding: 5px;
+  line-height: 1;
+  color: #333;
 }
 
-.menu-button span {
-  display: block;
-  width: 22px;
-  height: 3px;
-  background-color: white;
-  margin: 4px 0;
-  border-radius: 1px;
+.modal-message {
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+.highlight-action {
+  color: red;
+  font-weight: bold;
+}
+
+.modal-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.cancel-btn,
+.confirm-btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #218838;
+}
+
+.confirm-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background-color: #c82333;
 }

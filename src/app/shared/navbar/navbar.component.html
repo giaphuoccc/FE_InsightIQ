@@ -1,6 +1,25 @@
-<header class="app-header">
-  <div class="logo"><span class="logo-icon"></span> Insight IQ</div>
-  <nav class="header-nav">
-    <a href="#" class="sign-out">SIGN OUT</a>
-  </nav>
-</header>
+<nav class="navbar">
+  <div class="navbar-logo">
+    <img src="assets/image/logo.png" alt="Logo" />
+    Insight IQ
+  </div>
+   <a (click)="onSignOutClick()">SIGN OUT</a>
+</nav>
+
+<notification [message]="errorMessage" *ngIf="showLogErorr" (click)="confirmErrorLogout()"></notification>
+<!-- Modal xác nhận đăng xuất -->
+<div class="modal-overlay" *ngIf="showLogoutConfirm">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Notification</span>
+      <button class="modal-close" (click)="cancelLogout()">×</button>
+    </div>
+    <p class="modal-message">
+      Confirm the action <span class="highlight-action">"Log out"</span>.
+    </p>
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="cancelLogout()">Cancel</button>
+      <button class="confirm-btn" (click)="confirmLogout()">Confirm</button>
+    </div>
+  </div>
+</div>

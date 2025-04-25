@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LoginViewModel } from '../viewmodels/login.viewmodel';
-import { LoginService } from '../../../service/login/login.service';
+import { AuthService } from '../../../core/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -21,7 +21,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     public vm: LoginViewModel,
-    private loginService: LoginService,
+    private authService: AuthService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
@@ -48,7 +48,7 @@ export class LoginComponent {
     );
   }
   onClickLogin(){
-    this.loginService.login();
+    this.authService.login();
   }
 
   onClickForgotPassword(){
