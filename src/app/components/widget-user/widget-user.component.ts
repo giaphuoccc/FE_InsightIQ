@@ -78,7 +78,19 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.messageSubscription = this.socketService.listenForMessages().subscribe({
       next: (botMessage: ChatMessage) => {
-        this.messages.push(botMessage);
+        const existingIndex = this.messages.findIndex(
+          msg => msg.id && msg.id === botMessage.id
+        );
+    
+        if (existingIndex > -1) {
+          // ✅ Nếu đã có tin nhắn với cùng ID → chỉ cập nhật nội dung
+          this.messages[existingIndex].content = botMessage.content;
+          this.messages[existingIndex].timestamp = botMessage.timestamp;
+        } else {
+          // ✅ Nếu là tin nhắn mới → thêm vào mảng
+          this.messages.push(botMessage);
+        }
+    
         this.isBotResponding = false;
         this.cdRef.detectChanges();
         this.scrollToBottomIfNeeded();
@@ -88,6 +100,7 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isBotResponding = false;
       }
     });
+    
   }
 
   ngAfterViewInit(): void {
