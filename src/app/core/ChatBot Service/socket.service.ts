@@ -77,7 +77,7 @@ export class SocketService {
     let rendered = '';
     const id = finalResponse.id ?? this.generateId();
     let idx = 0;
-    const speed = 30;
+    const speed = 80;
 
     this.messageSubject.next({ ...finalResponse, content: '...', id });
 
@@ -99,48 +99,67 @@ export class SocketService {
     }, 200);
   }
 
-  private streamProductComparisonResponse(finalResponse: ChatMessage): void {
-    const { intro, products, conclusion } = finalResponse.content as {
-      intro: string;
-      products: any[];
-      conclusion: string;
+/** Stream so sánh: typing rồi “lật” thành bảng — chỉ 1 tin nhắn */
+private streamProductComparisonResponse(finalResponse: ChatMessage): void {
+  /* --- unpack --- */
+  const { intro, products, conclusion } = finalResponse.content as {
+    intro: string;
+    products: any[];
+    conclusion: string;
+  };
+
+  /* --- xây chuỗi để gõ --- */
+  const toLines = (p: any) => {
+    const spec = p.specifications.map((s: any) => `- ${s.label}: ${s.value}`).join('\n');
+    return `\n\n${p.name.toUpperCase()}  (Giá: ${p.price.toLocaleString()}₫)\n${p.shortDescription}\n${spec}`;
+  };
+  const fullText = `${intro}\n${products.map(toLines).join('')}\n\n${conclusion}`;
+
+  /* --- ID duy nhất cho cả quá trình --- */
+  const id = finalResponse.id ?? this.generateId();
+
+  /* --- 1. gửi placeholder --- */
+  const typingMsg: ChatMessage = {
+    id,
+    sender: 'bot',
+    type: 'text',
+    content: '...',
+    timestamp: new Date()
+  };
+  this.messageSubject.next(typingMsg);
+
+  /* --- 2. gõ ký tự --- */
+  let rendered = '';
+  let idx = 0;
+  const speed = 10;
+  this.streamingIntervalId = setTimeout(() => {
+    this.streamingIntervalId = setInterval(() => {
+      this.ngZone.run(() => {
+        if (idx < fullText.length) {
+          rendered += fullText[idx++];
+          this.messageSubject.next({ ...typingMsg, content: rendered });
+        } else {
+          this.cancelStreaming();          // dừng gõ
+          sendFinalObject();               // lật sang bảng
+        }
+      });
+    }, speed);
+  }, 200);
+
+  /* --- 3. thay thế bằng bảng so sánh (cùng id) --- */
+  const sendFinalObject = () => {
+    const compMsg: ChatMessage = {
+      ...finalResponse,
+      id,                                // GIỮ CÙNG ID!
+      timestamp: new Date()
     };
+    this.messageSubject.next(compMsg);
+  };
+}
 
-    const id = finalResponse.id ?? this.generateId();
-    let currentIntro = '';
-    let idx = 0;
-    const speed = 30;
 
-    this.messageSubject.next({ ...finalResponse, content: '...', id });
 
-    const typeIntro = () => {
-      this.streamingIntervalId = setInterval(() => {
-        this.ngZone.run(() => {
-          if (idx < intro.length) {
-            currentIntro += intro.charAt(idx++);
-            this.messageSubject.next({
-              ...finalResponse,
-              content: currentIntro,
-              id
-            });
-          } else {
-            this.cancelStreaming();
-            setTimeout(() => {
-              this.ngZone.run(() => {
-                this.messageSubject.next({
-                  ...finalResponse,
-                  content: { intro, products, conclusion },
-                  id
-                });
-              });
-            }, 200);
-          }
-        });
-      }, speed);
-    };
 
-    setTimeout(typeIntro, 300);
-  }
 
   /* --------------------------- MOCK BOT LOGIC ------------------------------ */
   private generateMockBotResponse(userMessage: string): ChatMessage {
