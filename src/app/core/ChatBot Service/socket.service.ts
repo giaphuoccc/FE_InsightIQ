@@ -40,9 +40,11 @@ export class SocketService {
       case 'productComparison':
         this.streamProductComparisonResponse(finalBotResponse);
         break;
-      case 'productInfo':
+      case 'productInfo':                       // 👈 mới
+        this.streamProductInfoResponse(finalBotResponse);
+        break;
       case 'productPromotion':
-        this.showThinkingThenSend(finalBotResponse);
+        this.showThinkingThenSend(finalBotResponse); // hoặc tự làm luồng typing tương tự
         break;
       default:
         this.streamTextResponse(finalBotResponse);
@@ -146,6 +148,8 @@ private streamProductComparisonResponse(finalResponse: ChatMessage): void {
     }, speed);
   }, 200);
 
+  
+  
   /* --- 3. thay thế bằng bảng so sánh (cùng id) --- */
   const sendFinalObject = () => {
     const compMsg: ChatMessage = {
@@ -157,6 +161,57 @@ private streamProductComparisonResponse(finalResponse: ChatMessage): void {
   };
 }
 
+/* ---------------------- 1️⃣ STREAM 1-PRODUCT ---------------------- */
+private streamProductInfoResponse(finalResponse: ChatMessage): void {
+  /* --- chuẩn bị nội dung để gõ --- */
+  const p = finalResponse.content as ProductData;
+  const specLines =
+    p.specifications?.map(s => `- ${s.label}: ${s.value}`).join('\n') ?? '';
+  const fullText = `${p.name.toUpperCase()}  (Giá: ${p.price.toLocaleString()}₫)
+${p.shortDescription ?? ''}
+${specLines}`;
+
+  /* --- dùng chung 1 id suốt quá trình --- */
+  const id = finalResponse.id ?? this.generateId();
+
+  /* --- bước 1: placeholder '...' --- */
+  const typingMsg: ChatMessage = {
+    id,
+    sender: 'bot',
+    type: 'text',
+    content: '...',
+    timestamp: new Date()
+  };
+  this.messageSubject.next(typingMsg);
+
+  /* --- bước 2: gõ từng ký tự --- */
+  let rendered = '';
+  let idx = 0;
+  const speed = 15;                          // chậm hơn xíu vì chuỗi ngắn
+  this.streamingIntervalId = setTimeout(() => {
+    this.streamingIntervalId = setInterval(() => {
+      this.ngZone.run(() => {
+        if (idx < fullText.length) {
+          rendered += fullText[idx++];
+          this.messageSubject.next({ ...typingMsg, content: rendered });
+        } else {
+          this.cancelStreaming();            // ngừng gõ
+          sendFinalObject();                 // lật sang component
+        }
+      });
+    }, speed);
+  }, 200);
+
+  /* --- bước 3: thay bằng object productInfo --- */
+  const sendFinalObject = () => {
+    const infoMsg: ChatMessage = {
+      ...finalResponse,
+      id,                                    // GIỮ CÙNG ID!
+      timestamp: new Date()
+    };
+    this.messageSubject.next(infoMsg);
+  };
+}
 
 
 
