@@ -312,6 +312,7 @@ ${specLines}`;
           { label: 'Pin', value: '4 000 mAh, sạc nhanh 45 W' },
           { label: 'Camera', value: '50 MP + 12 MP + 10 MP' }
         ],
+        comment: 'Galaxy S24 là một sự nâng cấp vượt trội so với các mẫu trước đó, đặc biệt với cải tiến về hiệu năng và camera.',
         warranty: '12 tháng chính hãng',
         price: 22_990_000,
         promotion: 'Giảm 1 triệu + Samsung Care+ 1 năm',

@@ -1,11 +1,11 @@
 <!-- Chỉ hiển thị nếu có dữ liệu sản phẩm -->
 <div *ngIf="productData" class="product-info-layout message-content">
 
-  <!-- Ảnh sản phẩm (nếu có)
+  <!-- Ảnh sản phẩm (nếu có) -->
   <img *ngIf="productData.imageUrl"
        [src]="productData.imageUrl"
        [alt]="productData.name"
-       class="product-image"> -->
+       class="product-image">
 
   <!-- Tên sản phẩm -->
   <h4 class="product-name">
@@ -51,4 +51,10 @@
     <strong>Bảo hành:</strong>
     {{ productData.warranty }}
   </p>
+
+  <!-- Lời nhận xét từ bot (nếu có) -->
+  <p *ngIf="productData.comment" class="product-comment">
+    <strong>Lời nhận xét: </strong>{{ productData.comment }}
+  </p>
+
 </div>

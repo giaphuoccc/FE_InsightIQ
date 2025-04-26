@@ -19,6 +19,7 @@ export interface ProductData {
     shipping?: string;
     payment?: string;
   };
+  comment?: string;  // Thêm trường comment
 }
 
 @Component({
