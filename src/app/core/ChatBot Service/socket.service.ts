@@ -28,11 +28,9 @@ export class SocketService {
   sendMessage(data: any): void {
     const userMessageText: string = data.text;
     this.cancelStreaming();
-
-    const finalBotResponse: ChatMessage = this.generateMockBotResponse(
-      userMessageText
-    );
-
+  
+    const finalBotResponse: ChatMessage = this.generateMockBotResponse(userMessageText);
+  
     switch (finalBotResponse.type) {
       case 'text':
         this.streamTextResponse(finalBotResponse);
@@ -40,16 +38,16 @@ export class SocketService {
       case 'productComparison':
         this.streamProductComparisonResponse(finalBotResponse);
         break;
-      case 'productInfo':                       // 👈 mới
+      case 'productInfo':
         this.streamProductInfoResponse(finalBotResponse);
         break;
-      case 'productPromotion':
-        this.showThinkingThenSend(finalBotResponse); // hoặc tự làm luồng typing tương tự
+      case 'productPromotion':    // Gọi hàm stream khuyến mãi
+        this.streamProductPromotionResponse(finalBotResponse);
         break;
       default:
         this.streamTextResponse(finalBotResponse);
     }
-  }
+  }  
 
   /* --------------------------- STREAMING HELPERS --------------------------- */
   private showThinkingThenSend(msg: ChatMessage): void {
@@ -212,6 +210,63 @@ ${specLines}`;
     this.messageSubject.next(infoMsg);
   };
 }
+
+/** Stream khuyến mãi: typing rồi “lật” thành bảng — chỉ 1 tin nhắn */
+private streamProductPromotionResponse(finalResponse: ChatMessage): void {
+  /* --- unpack --- */
+  const { productName, promotionDescription, validUntil } = finalResponse.content as ProductPromotionData;
+
+  /* --- xây chuỗi để gõ --- */
+  const fullText = `
+🎁 Khuyến mãi cho sản phẩm: ${productName}
+
+Mô tả khuyến mãi: ${promotionDescription}
+
+Áp dụng đến: ${validUntil ? validUntil : 'Không có thông tin'}
+`;
+
+  /* --- ID duy nhất cho cả quá trình --- */
+  const id = finalResponse.id ?? this.generateId();
+
+  /* --- 1. gửi placeholder --- */
+  const typingMsg: ChatMessage = {
+    id,
+    sender: 'bot',
+    type: 'text',
+    content: '...',
+    timestamp: new Date()
+  };
+  this.messageSubject.next(typingMsg);
+
+  /* --- 2. gõ ký tự --- */
+  let rendered = '';
+  let idx = 0;
+  const speed = 10; // tốc độ gõ ký tự
+  this.streamingIntervalId = setTimeout(() => {
+    this.streamingIntervalId = setInterval(() => {
+      this.ngZone.run(() => {
+        if (idx < fullText.length) {
+          rendered += fullText[idx++];
+          this.messageSubject.next({ ...typingMsg, content: rendered });
+        } else {
+          this.cancelStreaming();          // dừng gõ
+          sendFinalObject();               // lật sang bảng
+        }
+      });
+    }, speed);
+  }, 200);
+
+  /* --- 3. thay thế bằng bảng khuyến mãi (cùng id) --- */
+  const sendFinalObject = () => {
+    const promoMsg: ChatMessage = {
+      ...finalResponse,
+      id,                                // GIỮ CÙNG ID!
+      timestamp: new Date()
+    };
+    this.messageSubject.next(promoMsg);
+  };
+}
+
 
 
 
