@@ -20,6 +20,7 @@ export interface ProductData {
     payment?: string;
   };
   comment?: string;  // Thêm trường comment
+  intro?: string;
 }
 
 @Component({

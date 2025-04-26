@@ -299,39 +299,40 @@ ${specLines}`;
     }
 
     /* --- THÔNG TIN TỪNG SẢN PHẨM --- */
-    if (lower.includes('s24') && !lower.includes('so sánh') && !lower.includes('khuyến mãi')) {
-      const productData: ProductData = {
-        name: 'Samsung Galaxy S24',
-        sku: 'SGS24-001',
-        category: 'Smartphone',
-        shortDescription:
-          'Flagship 2024 với Snapdragon 8 Gen 3, Galaxy AI, màn hình 6.2″ 120 Hz.',
-        specifications: [
-          { label: 'Màn hình', value: '6.2″ FHD+ Dynamic AMOLED 2X 120 Hz' },
-          { label: 'Chip', value: 'Snapdragon 8 Gen 3 for Galaxy' },
-          { label: 'Pin', value: '4 000 mAh, sạc nhanh 45 W' },
-          { label: 'Camera', value: '50 MP + 12 MP + 10 MP' }
-        ],
-        comment: 'Galaxy S24 là một sự nâng cấp vượt trội so với các mẫu trước đó, đặc biệt với cải tiến về hiệu năng và camera.',
-        warranty: '12 tháng chính hãng',
-        price: 22_990_000,
-        promotion: 'Giảm 1 triệu + Samsung Care+ 1 năm',
-        stockStatus: 'Còn hàng',
-        policies: {
-          return: 'Đổi trả trong 30 ngày',
-          shipping: 'Miễn phí giao hàng',
-          payment: 'Hỗ trợ trả góp 0 %'
-        }
-      };
-
-      return {
-        id,
-        sender: 'bot',
-        type: 'productInfo',
-        content: productData,
-        timestamp: now
-      };
+if (lower.includes('s24') && !lower.includes('so sánh') && !lower.includes('khuyến mãi')) {
+  const productData: ProductData = {
+    name: 'Samsung Galaxy S24',
+    sku: 'SGS24-001',
+    category: 'Smartphone',
+    shortDescription:
+      'Flagship 2024 với Snapdragon 8 Gen 3, Galaxy AI, màn hình 6.2″ 120 Hz.',
+    specifications: [
+      { label: 'Màn hình', value: '6.2″ FHD+ Dynamic AMOLED 2X 120 Hz' },
+      { label: 'Chip', value: 'Snapdragon 8 Gen 3 for Galaxy' },
+      { label: 'Pin', value: '4 000 mAh, sạc nhanh 45 W' },
+      { label: 'Camera', value: '50 MP + 12 MP + 10 MP' }
+    ],
+    comment: 'Galaxy S24 là một sự nâng cấp vượt trội so với các mẫu trước đó, đặc biệt với cải tiến về hiệu năng và camera.',
+    intro: 'Samsung Galaxy S24 là một thiết bị rất đẹp và lung linh, mang đến nhiều tính năng vượt trội cho người sử dụng.',
+    warranty: '12 tháng chính hãng',
+    price: 22_990_000,
+    promotion: 'Giảm 1 triệu + Samsung Care+ 1 năm',
+    stockStatus: 'Còn hàng',
+    policies: {
+      return: 'Đổi trả trong 30 ngày',
+      shipping: 'Miễn phí giao hàng',
+      payment: 'Hỗ trợ trả góp 0 %'
     }
+  };
+
+  return {
+    id,
+    sender: 'bot',
+    type: 'productInfo',
+    content: productData,
+    timestamp: now
+  };
+}
 
     if (lower.includes('s23') && !lower.includes('so sánh') && !lower.includes('khuyến mãi')) {
       const productData: ProductData = {
