@@ -367,42 +367,49 @@ if (lower.includes('s24') && !lower.includes('so sánh') && !lower.includes('khu
       };
     }
 
-    /* --- KHUYẾN MÃI --- */
-    if (lower.includes('khuyến mãi') && lower.includes('s23')) {
-      const promoData: ProductPromotionData = {
-        productName: 'Samsung Galaxy S23',
-        promotionDescription:
-          'Giảm trực tiếp 2 000 000 VNĐ + trả góp 0 % + tặng ốp lưng Samsung chính hãng.',
-        discountedPrice: 14_990_000,
-        validUntil: `30/${now.getMonth() + 1}/${now.getFullYear()}`
-      };
+    // /* --- KHUYẾN MÃI --- */
+    // if (lower.includes('khuyến mãi') && lower.includes('s23')) {
+    //   const promoData: ProductPromotionData = {
+    //     productName: 'Samsung Galaxy S23',
+    //     promotionDescription:
+    //       'Giảm trực tiếp 2 000 000 VNĐ + trả góp 0 % + tặng ốp lưng Samsung chính hãng.',
+    //     discountedPrice: 14_990_000,
+    //     validUntil: `30/${now.getMonth() + 1}/${now.getFullYear()}`
+    //   };
 
-      return {
-        id,
-        sender: 'bot',
-        type: 'productPromotion',
-        content: promoData,
-        timestamp: now
-      };
-    }
+    //   return {
+    //     id,
+    //     sender: 'bot',
+    //     type: 'productPromotion',
+    //     content: promoData,
+    //     timestamp: now
+    //   };
+    // }
 
-    if (lower.includes('khuyến mãi') && lower.includes('s24')) {
-      const promoData: ProductPromotionData = {
-        productName: 'Samsung Galaxy S24',
-        promotionDescription:
-          'Giảm trực tiếp 1 000 000 VNĐ qua VNPAY + thu cũ đổi mới + tặng Samsung Care+ 1 năm.',
-        discountedPrice: 21_990_000,
-        validUntil: `30/${now.getMonth() + 1}/${now.getFullYear()}`
-      };
+   /* --- KHUYẾN MÃI --- */
+if (lower.includes('khuyến mãi') && lower.includes('s24')) {
+  const promoData: ProductPromotionData = {
+    productName: 'Samsung Galaxy S24',
+    promotionDescription:
+      'Giảm trực tiếp 1 000 000 VNĐ qua VNPAY + thu cũ đổi mới + tặng Samsung Care+ 1 năm.',
+    originalPrice: 22_990_000,  // Giá gốc
+    discountedPrice: 21_990_000,  // Giá ưu đãi sau khuyến mãi
+    discountPercentage: 4.35,  // Phần trăm giảm giá
+    gift: 'Tặng Samsung Care+ 1 năm',  // Quà tặng
+    validUntil: `30/${now.getMonth() + 1}/${now.getFullYear()}`,  // Ngày hết hạn của khuyến mãi
+    conditions: 'Áp dụng cho tất cả khách hàng mua Samsung Galaxy S24 qua VNPAY.', // Điều kiện khuyến mãi
+    productImageUrl: 'path/to/image/s24-image.jpg',  // Ảnh sản phẩm (nếu có)
+  };
 
-      return {
-        id,
-        sender: 'bot',
-        type: 'productPromotion',
-        content: promoData,
-        timestamp: now
-      };
-    }
+  return {
+    id,
+    sender: 'bot',
+    type: 'productPromotion',
+    content: promoData,
+    timestamp: now
+  };
+}
+
 
     if (lower.includes('khuyến mãi')) {
       const promoData: ProductPromotionData = {
