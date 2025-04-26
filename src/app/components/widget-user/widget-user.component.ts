@@ -72,34 +72,35 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.socketService.connect();
 
-    if (this.messageSubscription) {
-      this.messageSubscription.unsubscribe();
-    }
+  if (this.messageSubscription) {
+    this.messageSubscription.unsubscribe();
+  }
 
-    this.messageSubscription = this.socketService.listenForMessages().subscribe({
-      next: (botMessage: ChatMessage) => {
-        const existingIndex = this.messages.findIndex(
-          msg => msg.id && msg.id === botMessage.id
-        );
-    
-        if (existingIndex > -1) {
-          // ✅ Nếu đã có tin nhắn với cùng ID → chỉ cập nhật nội dung
-          this.messages[existingIndex].content = botMessage.content;
-          this.messages[existingIndex].timestamp = botMessage.timestamp;
-        } else {
-          // ✅ Nếu là tin nhắn mới → thêm vào mảng
-          this.messages.push(botMessage);
-        }
-    
-        this.isBotResponding = false;
-        this.cdRef.detectChanges();
-        this.scrollToBottomIfNeeded();
-      },
-      error: (err) => {
-        console.error('Lỗi khi nhận tin nhắn từ bot:', err);
-        this.isBotResponding = false;
+  this.messageSubscription = this.socketService.listenForMessages().subscribe({
+    next: (botMessage: ChatMessage) => {
+      // Kiểm tra xem tin nhắn với ID này đã có trong mảng chưa
+      const existingMessageIndex = this.messages.findIndex(msg => msg.id && msg.id === botMessage.id);
+
+      if (existingMessageIndex > -1) {
+        // Cập nhật tin nhắn đã có
+        this.messages[existingMessageIndex] = {
+          ...this.messages[existingMessageIndex],
+          ...botMessage
+        };
+      } else {
+        // Thêm tin nhắn mới
+        this.messages.push(botMessage);
       }
-    });
+
+      this.isBotResponding = false;
+      this.cdRef.detectChanges();
+      this.scrollToBottomIfNeeded();
+    },
+    error: (err) => {
+      console.error('Lỗi khi nhận tin nhắn từ bot:', err);
+      this.isBotResponding = false;
+    }
+  });
     
   }
 
