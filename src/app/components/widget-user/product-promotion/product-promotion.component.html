@@ -1,38 +1,51 @@
 <div class="product-promotion-wrapper">
-    <p>🎁 Thông tin khuyến mãi cho sản phẩm: <strong>{{ promotionData.productName }}</strong></p>
-  
-    <div class="promotion-content">
-      <!-- <img *ngIf="promotionData.productImageUrl" [src]="promotionData.productImageUrl" [alt]="promotionData.productName" class="product-image"> -->
-  
-      <div class="promotion-details">
-        <p class="description">{{ promotionData.promotionDescription }}</p>
-  
-        <p *ngIf="promotionData.originalPrice" class="price original-price">
-          Giá gốc: {{ promotionData.originalPrice | currency:'VND':'symbol':'1.0-0':'vi' }}
-        </p>
-        <p *ngIf="promotionData.discountedPrice" class="price discounted-price">
-          Giá ưu đãi: <strong>{{ promotionData.discountedPrice | currency:'VND':'symbol':'1.0-0':'vi' }}</strong>
-           <span *ngIf="promotionData.discountPercentage"> (Giảm {{ promotionData.discountPercentage }}%)</span>
-        </p>
-         <p *ngIf="!promotionData.discountedPrice && promotionData.discountPercentage" class="price discount-percent">
-          Giảm giá: <strong>{{ promotionData.discountPercentage }}%</strong>
-        </p>
-  
-        <p *ngIf="promotionData.gift" class="gift">
-           Quà tặng kèm: {{ promotionData.gift }}
-        </p>
-  
-        <p *ngIf="promotionData.validUntil" class="validity">
-          Áp dụng đến:
-          <ng-container *ngIf="isValidDate(promotionData.validUntil); else dateString">
-            {{ promotionData.validUntil | date:'dd/MM/yyyy':'':'vi' }}
-          </ng-container>
-          <ng-template #dateString>{{ promotionData.validUntil }}</ng-template>
-        </p>
-  
-        <p *ngIf="promotionData.conditions" class="conditions">
-          Điều kiện: {{ promotionData.conditions }}
-        </p>
-      </div>
+  <p>🎁 Thông tin khuyến mãi cho sản phẩm: <strong>{{ promotionData?.productName }}</strong></p>
+
+  <div class="promotion-content">
+    <!-- Ảnh sản phẩm (nếu có) -->
+    <img *ngIf="promotionData?.productImageUrl"
+         [src]="promotionData.productImageUrl"
+         [alt]="promotionData.productName"
+         class="product-image">
+
+    <div class="promotion-details">
+      <!-- Mô tả khuyến mãi -->
+      <p class="description">{{ promotionData?.promotionDescription }}</p>
+
+      <!-- Giá gốc -->
+      <p *ngIf="promotionData?.originalPrice" class="price original-price">
+        Giá gốc: {{ promotionData.originalPrice | currency:'VND':'symbol':'1.0-0':'vi' }}
+      </p>
+
+      <!-- Giá ưu đãi -->
+      <p *ngIf="promotionData?.discountedPrice" class="price discounted-price">
+        Giá ưu đãi: <strong>{{ promotionData.discountedPrice | currency:'VND':'symbol':'1.0-0':'vi' }}</strong>
+        <span *ngIf="promotionData?.discountPercentage"> (Giảm {{ promotionData.discountPercentage }}%)</span>
+      </p>
+
+      <!-- Nếu chỉ có phần trăm giảm -->
+      <p *ngIf="!promotionData?.discountedPrice && promotionData?.discountPercentage" class="price discount-percent">
+        Giảm giá: <strong>{{ promotionData.discountPercentage }}%</strong>
+      </p>
+
+      <!-- Quà tặng -->
+      <p *ngIf="promotionData?.gift" class="gift">
+        Quà tặng kèm: {{ promotionData.gift }}
+      </p>
+
+      <!-- Ngày hết hạn -->
+      <p *ngIf="promotionData?.validUntil" class="validity">
+        Áp dụng đến:
+        <ng-container *ngIf="isValidDate(promotionData.validUntil); else dateString">
+          {{ promotionData.validUntil | date:'dd/MM/yyyy':'':'vi' }}
+        </ng-container>
+        <ng-template #dateString>{{ promotionData.validUntil || 'Không xác định' }}</ng-template>
+      </p>
+
+      <!-- Điều kiện -->
+      <p *ngIf="promotionData?.conditions" class="conditions">
+        Điều kiện: {{ promotionData.conditions }}
+      </p>
     </div>
   </div>
+</div>

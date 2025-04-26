@@ -19,7 +19,8 @@ export interface ProductPromotionData {
   standalone: true, // 👈 Đảm bảo có dòng này (nếu CLI chưa tự thêm)
   imports: [CommonModule], // 👈 Thêm CommonModule vào đây
   templateUrl: './product-promotion.component.html',
-  styleUrl: './product-promotion.component.css' // styleUrl là đúng với Angular mới
+  styleUrls: ['./product-promotion.component.css'] // <-- Phải là styleUrls
+
 })
 export class ProductPromotionComponent {
   // 👇 Input property để nhận dữ liệu từ component cha

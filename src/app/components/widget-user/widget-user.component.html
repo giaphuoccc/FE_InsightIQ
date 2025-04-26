@@ -10,7 +10,6 @@
     </button>
   </div>
 
-  <!-- Màn hình khởi động -->
   <ng-container *ngIf="!isChatting">
     <img src="assets/icon-chatbot.png" class="chat-icon" />
     <h3 class="title">AI Assistant</h3>
@@ -25,35 +24,30 @@
     </div>
   </ng-container>
 
-  <!-- Khung chat -->
   <div *ngIf="isChatting" class="chat-container">
     <div class="chat-box" #chatBox>
       <div *ngFor="let msg of messages" class="message-wrapper"
-           [ngClass]="{ 'user-message-wrapper': msg.sender === 'user', 'bot-message-wrapper': msg.sender === 'bot' }">
+           [ngClass]="{ 'user-message-wrapper': msg?.sender === 'user', 'bot-message-wrapper': msg?.sender === 'bot' }">
 
-        <div class="message" [ngClass]="{ 'user-message': msg.sender === 'user', 'bot-message': msg.sender === 'bot' }">
+        <div class="message" [ngClass]="{ 'user-message': msg?.sender === 'user', 'bot-message': msg?.sender === 'bot' }">
 
-          <!-- Nội dung -->
-          <ng-container [ngSwitch]="msg.type">
-            <app-product-info *ngSwitchCase="'productInfo'" [productData]="msg.content"></app-product-info>
-            <app-product-comparison *ngSwitchCase="'productComparison'" [data]="msg.content"></app-product-comparison>
-            <product-promotion *ngSwitchCase="'productPromotion'" [promotionData]="msg.content"></product-promotion>
-            <p *ngSwitchDefault>{{ msg.content }}</p>
+          <ng-container [ngSwitch]="msg?.type">
+            <app-product-info *ngSwitchCase="'productInfo'" [productData]="msg?.content"></app-product-info>
+            <app-product-comparison *ngSwitchCase="'productComparison'" [data]="msg?.content"></app-product-comparison>
+            <product-promotion *ngSwitchCase="'productPromotion'" [promotionData]="msg?.content"></product-promotion>
+            <p *ngSwitchDefault>{{ msg?.content }}</p>
           </ng-container>
-
-          <!-- Thời gian -->
-          <span class="timestamp" *ngIf="msg.timestamp">
+          <span class="timestamp" *ngIf="msg?.timestamp">
             {{ msg.timestamp | date:'shortTime':'':'vi' }}
           </span>
 
-          <!-- Nút Like/Dislike nằm dưới tin nhắn -->
-          <div *ngIf="msg.sender === 'bot'" class="feedback-buttons">
+          <div *ngIf="msg?.sender === 'bot'" class="feedback-buttons">
             <i class="fas fa-thumbs-up"
-               [ngClass]="{ 'active-like': msg.liked }"
+               [ngClass]="{ 'active-like': msg?.liked }"
                (click)="toggleLike(msg)">
             </i>
             <i class="fas fa-thumbs-down"
-               [ngClass]="{ 'active-dislike': msg.disliked }"
+               [ngClass]="{ 'active-dislike': msg?.disliked }"
                (click)="toggleDislike(msg)">
             </i>
           </div>
@@ -61,7 +55,6 @@
       </div>
     </div>
 
-    <!-- Nhập tin nhắn -->
     <div class="message-input">
       <div class="input-wrapper">
         <textarea class="chat-input auto-expand"
