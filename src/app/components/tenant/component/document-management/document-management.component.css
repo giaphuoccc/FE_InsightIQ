@@ -1,0 +1,130 @@
+.container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .sign-out {
+    background: none;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .nav {
+    margin-top: 10px;
+  }
+  
+  .nav a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .nav .active {
+    border-bottom: 2px solid #007bff;
+  }
+  
+  .main-content {
+    margin-top: 30px;
+  }
+  
+  .document-list table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .document-list th,
+  .document-list td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .document-list th {
+    background-color: #f9f9f9;
+  }
+  
+  .delete-btn {
+    background-color: #e53935; /* đỏ tươi hơn */
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c62828; /* hover đỏ đậm hơn */
+  }
+  
+  .upload-section {
+    margin-top: 30px;
+    text-align: center;
+  }
+  
+  .upload-box {
+    border: 2px dashed #bbb;
+    border-radius: 10px;
+    padding: 40px;
+    margin: 20px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .upload-box:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .upload-label img {
+    width: 50px;
+    margin-bottom: 10px;
+  }
+  
+  .upload-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .upload-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Nhấn mạnh dòng thông báo đỏ nếu cần */
+  .alert {
+    color: #d32f2f;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  

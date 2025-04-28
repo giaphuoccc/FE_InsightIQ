@@ -72,7 +72,8 @@
               "buildTarget": "FE_InsightIQ:build:production"
             },
             "development": {
-              "buildTarget": "FE_InsightIQ:build:development"
+              "buildTarget": "FE_InsightIQ:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

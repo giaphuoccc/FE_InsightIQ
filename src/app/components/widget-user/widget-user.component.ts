@@ -1,6 +1,7 @@
 // --- Định nghĩa interface cho tin nhắn ---
 import { Subscription } from 'rxjs';
-import { SocketService } from '../../core/chatBotService/socket.service'; // Đảm bảo import đúng
+//import { SocketService } from '../../core/chatBot/socket.service'; // Đảm bảo import đúng
+import { SocketService } from '../../core/chatBot/socket.service';
 
 export interface ChatMessage {
   sender: 'user' | 'bot';
