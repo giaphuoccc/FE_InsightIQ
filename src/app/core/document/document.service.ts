@@ -1,3 +1,5 @@
+// src/app/core/document/document.service.ts (hoặc đường dẫn tương ứng)
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,18 +10,17 @@ export interface BackendDocument {
   fileName: string;
   fileUrl: string;
   tenantId: number;
-  createdAt: string;
-  size?: number;
+  createdAt: string; // ISO String format expected
+  size?: number;     // Thêm size nếu backend trả về
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root' // Hoặc cung cấp trong component/module nếu cần
 })
 export class DocumentService {
 
-  // --- SỬA URL CHO KHỚP VỚI BACKEND MOUNT POINT VÀ ROUTE ---
-  private baseApiUrl = '/documents'; // Base path a backend đang dùng
-  private uploadApiUrl = `${this.baseApiUrl}/upload`; // URL đầy đủ: /documents/upload
+  // Đảm bảo baseApiUrl trỏ đúng vào mount point của DocumentController trong Express
+  private baseApiUrl = '/documents'; // Base path mà backend đang dùng cho document routes
 
   constructor(private http: HttpClient) { }
 
@@ -28,29 +29,37 @@ export class DocumentService {
    */
   uploadDocument(file: File, tenantId: number): Observable<BackendDocument> {
     const formData: FormData = new FormData();
-    // Tên field 'file' và 'tenantId' phải khớp với backend
-    formData.append('file', file, file.name);
-    formData.append('tenantId', tenantId.toString());
+    formData.append('file', file, file.name); // Field name 'file' khớp với multer
+    formData.append('tenantId', tenantId.toString()); // Field name 'tenantId' khớp với backend
 
-    console.log('[Angular DocumentService] Sending upload request (expecting body) to:', this.uploadApiUrl); // Log URL đúng
+    const uploadApiUrl = `${this.baseApiUrl}/upload`; // URL đầy đủ: /documents/upload
+
+    console.log('[Angular DocumentService] Sending upload request to:', uploadApiUrl);
     console.log('[Angular DocumentService] FormData contains file:', formData.has('file'));
     console.log('[Angular DocumentService] FormData contains tenantId:', formData.has('tenantId'));
 
-    // Dùng http.post với URL đã sửa
-    return this.http.post<BackendDocument>(this.uploadApiUrl, formData, {
-        // headers: new HttpHeaders({ ... }) // Thêm headers nếu cần
-    });
+    // Backend trả về BackendDocument trong body khi thành công (status 201)
+    return this.http.post<BackendDocument>(uploadApiUrl, formData);
   }
 
-  // --- Các hàm khác (sử dụng baseApiUrl) ---
+  /**
+   * Lấy danh sách tất cả documents.
+   */
   getDocuments(): Observable<BackendDocument[]> {
-     // URL: /documents
-     return this.http.get<BackendDocument[]>(this.baseApiUrl);
+    // GET /documents
+    return this.http.get<BackendDocument[]>(this.baseApiUrl);
   }
 
-  deleteDocument(id: number): Observable<any> {
-     // URL: /documents/:id
-     const deleteUrl = `${this.baseApiUrl}/${id}`;
-     return this.http.delete(deleteUrl);
+  /**
+   * Xóa một document dựa vào ID.
+   * @param id ID của document cần xóa.
+   * @returns Observable<any> - Thường không có body trả về khi xóa thành công (204 No Content).
+   */
+  deleteDocument(id: number): Observable<any> { // <-- THÊM HÀM NÀY
+    const deleteUrl = `${this.baseApiUrl}/${id}`; // URL: /documents/:id
+    console.log(`[Angular DocumentService] Sending DELETE request to: ${deleteUrl}`);
+    // Gửi request DELETE, không cần body.
+    // Backend sẽ trả về 204 (No Content) nếu thành công, 404 nếu không tìm thấy, 500 nếu lỗi.
+    return this.http.delete(deleteUrl);
   }
 }

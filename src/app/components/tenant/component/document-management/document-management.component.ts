@@ -1,14 +1,13 @@
+// src/app/features/document-management/document-management.component.ts (hoặc đường dẫn tương ứng)
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
-
-// Đảm bảo đường dẫn này ĐÚNG
-//import { DocumentService } from '../../services/document.service';
-import { DocumentService } from '../../../../core/document/document.service'; // Assuming this path is correct
+import { DocumentService, BackendDocument } from '../../../../core/document/document.service'; // Đảm bảo import đúng
 import { finalize } from 'rxjs/operators';
 
-// Định nghĩa interface cho đối tượng document để hiển thị
+// Interface để hiển thị trên UI
 interface DisplayDocument {
   id?: number;
   name: string;
@@ -17,221 +16,261 @@ interface DisplayDocument {
   fileUrl?: string;
 }
 
-// Định nghĩa interface cho dữ liệu trả về từ backend
-interface BackendDocument {
-    id: number;
-    fileName: string;
-    createdAt: string; // ISO String format expected from backend
-    fileUrl: string;
-    size?: number;
-    tenantId?: number;
-}
-
-
 @Component({
   standalone: true,
   selector: 'app-manage-document',
   templateUrl: './document-management.component.html',
   styleUrls: ['./document-management.component.css'],
   imports: [CommonModule, FormsModule, HttpClientModule],
-  providers: [DocumentService] // Cần cung cấp service
+  providers: [DocumentService] // Cung cấp service ở đây nếu component standalone
 })
 export class DocumentManagementComponent implements OnInit {
 
-  // Dữ liệu mẫu ban đầu
-  documents: DisplayDocument[] = [
-    { id: undefined, name: 'List_of_sale_products.pdf', modified: '20/11/2024 7:52PM', size: '41MB', fileUrl: undefined },
-    { id: undefined, name: 'Summer_new_product_list.pdf', modified: '1/5/2024 1:02PM', size: '25MB', fileUrl: undefined },
-    { id: undefined, name: '20%_off_product_list.pdf', modified: '20/3/2024 10:11AM', size: '18MB', fileUrl: undefined },
-  ];
-
+  documents: DisplayDocument[] = []; // Khởi tạo mảng rỗng, sẽ load từ service
   fileToUpload: File | null = null;
   tenantId: number | null = null;
   isUploading = false;
   uploadMessage: string | null = null;
   uploadError: boolean = false;
+  isLoadingDocuments = false; // Thêm cờ để biết đang load danh sách
+  deleteMessage: string | null = null; // Thêm message cho việc xóa
+  deleteError: boolean = false;
 
   constructor(private documentService: DocumentService) {}
 
   ngOnInit(): void {
-    // this.loadDocuments();
+    this.loadDocuments(); // Gọi hàm load documents khi component khởi tạo
     console.log('DocumentManagementComponent initialized');
   }
 
-  // Hàm helper để chuyển đổi dữ liệu backend sang định dạng hiển thị
+  // --- Hàm load documents từ backend ---
+  loadDocuments(): void {
+    console.log('Loading documents...');
+    this.isLoadingDocuments = true;
+    this.documentService.getDocuments()
+      .pipe(finalize(() => this.isLoadingDocuments = false))
+      .subscribe({
+        next: (backendDocs: BackendDocument[]) => {
+          console.log('Received documents from backend:', backendDocs);
+          // Map dữ liệu backend sang định dạng hiển thị
+          this.documents = backendDocs.map(doc => this.mapBackendToDisplay(doc));
+          console.log('Mapped documents for display:', this.documents);
+          if (this.documents.length === 0) {
+            console.log('No documents found.');
+          }
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Error loading documents:', err);
+          // Hiển thị lỗi cho người dùng (ví dụ)
+          this.uploadMessage = `Lỗi tải danh sách tài liệu: ${err.statusText}`;
+          this.uploadError = true;
+          this.documents = []; // Xóa danh sách cũ nếu có lỗi
+        }
+      });
+  }
+
+  // Hàm helper để chuyển đổi dữ liệu backend sang định dạng hiển thị (giữ nguyên)
   private mapBackendToDisplay(doc: BackendDocument): DisplayDocument {
+      // ... (code mapBackendToDisplay giữ nguyên)
       if (!doc) {
-          console.warn("mapBackendToDisplay called with null or undefined document");
-          return { id: undefined, name: 'Lỗi dữ liệu', modified: 'N/A', size: 'N/A', fileUrl: undefined };
+        console.warn("mapBackendToDisplay called with null or undefined document");
+        return { id: undefined, name: 'Lỗi dữ liệu', modified: 'N/A', size: 'N/A', fileUrl: undefined };
       }
       return {
           id: doc.id,
           name: doc.fileName,
-          // Sử dụng toLocaleString để hiển thị ngày giờ theo định dạng địa phương
           modified: doc.createdAt ? new Date(doc.createdAt).toLocaleString() : 'N/A',
-          // Ưu tiên size từ backend, nếu không có thì dùng size từ file gốc (nếu còn)
-          size: doc.size ? this.formatBytes(doc.size) : (this.fileToUpload ? this.formatBytes(this.fileToUpload.size) : 'N/A'),
+          // Backend nên trả về size nếu có thể, nếu không thì để N/A
+          size: doc.size ? this.formatBytes(doc.size) : 'N/A',
           fileUrl: doc.fileUrl
       };
   }
 
-
+  // Hàm onFileSelected (giữ nguyên)
   onFileSelected(event: Event): void {
+      // ... (code onFileSelected giữ nguyên)
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.fileToUpload = input.files[0];
-      const tempSize = this.formatBytes(this.fileToUpload.size);
-      this.uploadMessage = `Đã chọn file: ${this.fileToUpload.name} (${tempSize})`;
-      this.uploadError = false;
-      console.log(`File selected: ${this.fileToUpload.name}, Size: ${this.fileToUpload.size}`);
+        this.fileToUpload = input.files[0];
+        const tempSize = this.formatBytes(this.fileToUpload.size);
+        this.uploadMessage = `Đã chọn file: ${this.fileToUpload.name} (${tempSize})`;
+        this.uploadError = false;
+        console.log(`File selected: ${this.fileToUpload.name}, Size: ${this.fileToUpload.size}`);
     } else {
-      this.fileToUpload = null;
-      this.uploadMessage = null;
+        this.fileToUpload = null;
+        this.uploadMessage = null;
     }
-    input.value = '';
+    // Reset input để có thể chọn lại cùng file
+    if (input) {
+        input.value = '';
+    }
   }
 
+  // Hàm onUpload (giữ nguyên, chỉ cần sửa lại push document)
   onUpload(): void {
-    console.log('--- onUpload started ---');
+      // ... (code kiểm tra đầu vào giữ nguyên)
+      console.log('--- onUpload started ---');
 
-    // --- Kiểm tra đầu vào ---
-    if (!this.fileToUpload) {
-      this.uploadMessage = 'Vui lòng chọn một file để tải lên.';
-      this.uploadError = true;
-      console.log('Error: No file selected.');
-      return;
-    }
-    if (this.tenantId === null || this.tenantId === undefined) {
-      this.uploadMessage = 'Vui lòng nhập Tenant ID.';
-      this.uploadError = true;
-      console.log('Error: Tenant ID missing.');
-      return;
-    }
-     if (isNaN(this.tenantId) || this.tenantId <= 0) {
-       this.uploadMessage = 'Tenant ID không hợp lệ.';
-       this.uploadError = true;
-       console.log('Error: Invalid Tenant ID.');
-       return;
-     }
-    if (this.isUploading) {
-       console.log('Upload already in progress.');
-       return;
-    }
-    // --- Kết thúc kiểm tra đầu vào ---
-
-    console.log('--- Input checks passed ---');
-
-    // --- Bắt đầu quá trình Upload ---
-    this.isUploading = true;
-    this.uploadMessage = 'Đang tải lên...';
-    this.uploadError = false;
-    const fileToUploadNow = this.fileToUpload; // Lưu lại file để tránh thay đổi bất ngờ
-    const tenantIdNow = this.tenantId; // Lưu lại tenantId
-
-    console.log(`Attempting to upload: ${fileToUploadNow.name}, Tenant: ${tenantIdNow}`);
-    console.log('Calling documentService.uploadDocument...');
-
-    // --- Gỡ comment phần pipe và subscribe ---
-    this.documentService.uploadDocument(fileToUploadNow, tenantIdNow)
-      .pipe(
-          finalize(() => {
-              // Khối này sẽ chạy sau khi subscribe hoàn thành (next hoặc error)
-              this.isUploading = false;
-              console.log('Upload finalize called.');
-          })
-      )
-      .subscribe({
-        // Xử lý khi nhận được phản hồi thành công từ service
-        next: (newDocument: BackendDocument) => { // Đảm bảo service trả về đúng kiểu BackendDocument
-          console.log('--- Subscribe next handler ---');
-          console.log('Received response body:', newDocument);
-
-          // Kiểm tra lại kiểu dữ liệu nhận được (đề phòng trường hợp service trả về không đúng)
-          if (!newDocument || typeof newDocument !== 'object' || !newDocument.id || !newDocument.fileName) {
-              console.error('Received invalid response body structure:', newDocument);
-              this.uploadMessage = 'Lỗi: Phản hồi từ server không đúng định dạng.';
-              this.uploadError = true;
-              return;
-          }
-
-          // Xử lý thành công
-          this.uploadMessage = `Tải lên thành công: ${newDocument.fileName}`;
-          this.uploadError = false;
-
-          // Cập nhật danh sách documents trên UI
-          const displayDoc = this.mapBackendToDisplay(newDocument);
-          this.documents.push(displayDoc); // Thêm vào cuối danh sách
-
-          // Reset trạng thái upload
-          this.fileToUpload = null; // Xóa file đã chọn khỏi trạng thái
-          // this.tenantId = null; // Reset tenantId nếu muốn
-
-          console.log('UI updated with new document.');
-        },
-        // Xử lý khi có lỗi xảy ra trong quá trình gọi service hoặc từ backend
-        error: (err: any | HttpErrorResponse) => {
-          console.log('--- Subscribe error handler ---');
-          console.error('Upload failed in subscribe:', err); // Log lỗi đầy đủ
-
-          // Xử lý lỗi
+      if (!this.fileToUpload) {
+          this.uploadMessage = 'Vui lòng chọn một file để tải lên.';
           this.uploadError = true;
-          // Cố gắng hiển thị lỗi cụ thể hơn cho người dùng
-          if (err instanceof HttpErrorResponse) {
-            let detail = err.error?.message || err.error?.error_description || err.error?.error || err.message || '';
-             if (err.error && err.error.details) {
-                detail += ` (${err.error.details})`;
-             }
-             if (err.status === 0) {
-                 this.uploadMessage = 'Lỗi mạng: Không thể kết nối đến máy chủ.';
-             } else {
-                 this.uploadMessage = `Lỗi ${err.status}: ${err.statusText}. ${detail}`;
-             }
-            console.error(`HTTP Error ${err.status}:`, err.error);
-          } else if (err instanceof Error) {
-            this.uploadMessage = `Lỗi: ${err.message}`;
-          } else {
-            // Trường hợp lỗi không xác định khác
-            this.uploadMessage = 'Đã xảy ra lỗi không xác định khi tải lên.';
-            console.error('Unknown error object:', err);
-          }
-        }
-      });
+          console.log('Error: No file selected.');
+          return;
+      }
+      if (this.tenantId === null || this.tenantId === undefined) {
+          this.uploadMessage = 'Vui lòng nhập Tenant ID.';
+          this.uploadError = true;
+          console.log('Error: Tenant ID missing.');
+          return;
+      }
+      if (isNaN(this.tenantId) || this.tenantId <= 0) {
+          this.uploadMessage = 'Tenant ID không hợp lệ.';
+          this.uploadError = true;
+          console.log('Error: Invalid Tenant ID.');
+          return;
+      }
+      if (this.isUploading) {
+          console.log('Upload already in progress.');
+          return;
+      }
+      console.log('--- Input checks passed ---');
 
-      console.log('--- subscribe called, waiting for response ---');
-      // --- Kết thúc quá trình Upload ---
+      this.isUploading = true;
+      this.uploadMessage = 'Đang tải lên...';
+      this.uploadError = false;
+      this.deleteMessage = null; // Xóa thông báo xóa cũ nếu có
+      const fileToUploadNow = this.fileToUpload;
+      const tenantIdNow = this.tenantId;
+
+      console.log(`Attempting to upload: ${fileToUploadNow.name}, Tenant: ${tenantIdNow}`);
+      console.log('Calling documentService.uploadDocument...');
+
+      this.documentService.uploadDocument(fileToUploadNow, tenantIdNow)
+        .pipe(
+            finalize(() => {
+                this.isUploading = false;
+                console.log('Upload finalize called.');
+            })
+        )
+        .subscribe({
+            next: (newDocument: BackendDocument) => {
+                console.log('--- Subscribe next handler (Upload) ---');
+                console.log('Received response body:', newDocument);
+
+                if (!newDocument || typeof newDocument !== 'object' || !newDocument.id || !newDocument.fileName) {
+                   console.error('Received invalid response body structure:', newDocument);
+                   this.uploadMessage = 'Lỗi: Phản hồi từ server không đúng định dạng.';
+                   this.uploadError = true;
+                   return;
+                }
+
+                this.uploadMessage = `Tải lên thành công: ${newDocument.fileName}`;
+                this.uploadError = false;
+
+                // Map và thêm vào đầu danh sách (hoặc cuối tùy ý)
+                const displayDoc = this.mapBackendToDisplay(newDocument);
+                this.documents.unshift(displayDoc); // Thêm vào đầu danh sách
+
+                this.fileToUpload = null;
+                // this.tenantId = null; // Reset tenantId nếu muốn
+                console.log('UI updated with new document.');
+            },
+            error: (err: any | HttpErrorResponse) => {
+                console.log('--- Subscribe error handler (Upload) ---');
+                console.error('Upload failed in subscribe:', err);
+
+                this.uploadError = true;
+                if (err instanceof HttpErrorResponse) {
+                    let detail = err.error?.message || err.error?.error_description || err.error?.error || err.message || JSON.stringify(err.error) || '';
+                    if (err.status === 0) {
+                        this.uploadMessage = 'Lỗi mạng: Không thể kết nối đến máy chủ.';
+                    } else {
+                        this.uploadMessage = `Lỗi ${err.status}: ${err.statusText}. ${detail}`;
+                    }
+                    console.error(`HTTP Error ${err.status}:`, err.error);
+                } else if (err instanceof Error) {
+                    this.uploadMessage = `Lỗi: ${err.message}`;
+                } else {
+                    this.uploadMessage = 'Đã xảy ra lỗi không xác định khi tải lên.';
+                    console.error('Unknown error object:', err);
+                }
+            }
+        });
+      console.log('--- subscribe called (Upload), waiting for response ---');
   }
 
+  // --- Hàm onDelete (Cập nhật để gọi service) ---
   onDelete(index: number): void {
+    this.deleteMessage = null; // Reset message trước khi xóa
+    this.deleteError = false;
+
     const docToDelete = this.documents[index];
-    if (!docToDelete) return;
+    if (!docToDelete) {
+        console.error('Document not found at index:', index);
+        return; // Không tìm thấy doc trong mảng hiện tại
+    }
 
-    if (confirm(`Bạn có chắc muốn xóa file "${docToDelete.name}" không?`)) {
-      if (docToDelete.id === undefined) {
-        console.warn('Deleting document without ID (likely sample data). Removing from list only.');
-        this.documents.splice(index, 1);
+    // Quan trọng: Chỉ gọi service nếu document có ID (không phải dữ liệu mẫu)
+    if (docToDelete.id === undefined || docToDelete.id === null) {
+        console.warn('Attempting to delete document without ID (likely sample data). Removing from list only.');
+        if (confirm(`Dữ liệu mẫu "${docToDelete.name}" này chỉ tồn tại ở phía trình duyệt. Bạn có muốn xóa khỏi danh sách không?`)) {
+             this.documents.splice(index, 1);
+             this.deleteMessage = `Đã xóa "${docToDelete.name}" khỏi danh sách tạm thời.`;
+        }
         return;
-      }
+    }
 
-      console.log(`Attempting to delete document with ID: ${docToDelete.id}`);
-      // TODO: Gọi service deleteDocument(docToDelete.id).subscribe(...)
-      // Xóa khỏi UI sau khi backend xác nhận thành công trong subscribe 'next'
-      // this.documentService.deleteDocument(docToDelete.id).subscribe({ ... });
+    // Xác nhận trước khi xóa
+    if (confirm(`Bạn có chắc muốn xóa vĩnh viễn file "${docToDelete.name}" không? Hành động này không thể hoàn tác.`)) {
+        console.log(`Attempting to delete document with ID: ${docToDelete.id}`);
+        // Hiển thị trạng thái đang xóa (tùy chọn)
+        // this.documents[index].name += ' (Đang xóa...)'; // Ví dụ
 
-       // Tạm thời chỉ xóa ở frontend
-       this.documents.splice(index, 1);
-       alert(`Đã xóa "${docToDelete.name}" (tạm thời ở frontend).`);
+        this.documentService.deleteDocument(docToDelete.id)
+          .subscribe({
+            next: () => { // Backend trả về 204 No Content, nên không có body ở đây
+                console.log(`Successfully deleted document with ID: ${docToDelete.id} from backend.`);
+                this.deleteMessage = `Đã xóa thành công file "${docToDelete.name}".`;
+                this.deleteError = false;
+                // Xóa khỏi mảng documents trên UI
+                this.documents.splice(index, 1);
+            },
+            error: (err: any | HttpErrorResponse) => {
+                console.error(`Error deleting document with ID: ${docToDelete.id}`, err);
+                this.deleteError = true;
+                 // Cập nhật lại tên nếu đã thay đổi trạng thái (tùy chọn)
+                // this.documents[index].name = docToDelete.name; // Bỏ '(Đang xóa...)'
+
+                // Hiển thị lỗi cụ thể hơn
+                if (err instanceof HttpErrorResponse) {
+                    if (err.status === 404) {
+                        this.deleteMessage = `Lỗi: Không tìm thấy tài liệu "${docToDelete.name}" trên server (có thể đã bị xóa?).`;
+                        // Cân nhắc xóa khỏi danh sách UI luôn nếu server báo 404
+                        this.documents.splice(index, 1);
+                    } else {
+                        let detail = err.error?.message || err.statusText || JSON.stringify(err.error);
+                        this.deleteMessage = `Lỗi khi xóa "${docToDelete.name}" (Mã ${err.status}): ${detail}`;
+                    }
+                } else {
+                     this.deleteMessage = `Lỗi không xác định khi xóa "${docToDelete.name}".`;
+                }
+            }
+          });
+    } else {
+        console.log('User cancelled deletion.');
     }
   }
 
-  // Hàm tiện ích để định dạng kích thước file
+  // Hàm formatBytes (giữ nguyên)
   private formatBytes(bytes: number, decimals = 2): string {
+      // ... (code formatBytes giữ nguyên)
       if (!bytes || bytes === 0) return '0 Bytes';
       const k = 1024;
       const dm = decimals < 0 ? 0 : decimals;
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
       const i = Math.floor(Math.log(bytes) / Math.log(k));
       const sizeIndex = Math.min(i, sizes.length - 1);
-      if (sizeIndex < 0) return '0 Bytes';
+      if (sizeIndex < 0) return '0 Bytes'; // Should not happen if bytes > 0
       return parseFloat((bytes / Math.pow(k, sizeIndex)).toFixed(dm)) + ' ' + sizes[sizeIndex];
   }
 }

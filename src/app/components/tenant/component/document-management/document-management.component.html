@@ -1,14 +1,23 @@
 <div class="container">
   <nav class="nav">
     <a class="active" href="#">Manage Document</a>
-    </nav>
+  </nav>
 
   <main class="main-content">
     <h2>List of documents</h2>
 
+    <div *ngIf="deleteMessage"
+         [ngClass]="{'alert-success': !deleteError, 'alert-danger': deleteError}"
+         style="margin-top: 10px; margin-bottom: 10px; padding: 10px; border-radius: 4px; font-weight: bold; text-align: center;">
+      {{ deleteMessage }}
+    </div>
+
     <section class="document-list">
       <h4>Uploaded documents</h4>
-      <table>
+      <div *ngIf="isLoadingDocuments" style="text-align: center; padding: 20px;">
+        Đang tải danh sách tài liệu...
+      </div>
+      <table *ngIf="!isLoadingDocuments">
         <thead>
           <tr>
             <th>Document name</th>
@@ -18,8 +27,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngIf="documents.length === 0">
-            <td colspan="4" style="text-align: center; padding: 20px;">Chưa có tài liệu nào.</td>
+          <tr *ngIf="!isLoadingDocuments && documents.length === 0">
+            <td colspan="4" style="text-align: center; padding: 20px;">Chưa có tài liệu nào được tải lên.</td>
           </tr>
           <tr *ngFor="let doc of documents; let i = index">
             <td>
@@ -29,7 +38,7 @@
             <td>{{ doc.modified }}</td>
             <td>{{ doc.size }}</td>
             <td>
-              <button class="delete-btn" (click)="onDelete(i)">Delete</button>
+              <button class="delete-btn" (click)="onDelete(i)" title="Xóa file này">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -74,7 +83,7 @@
 
       <button class="upload-button"
               (click)="onUpload()"
-              [disabled]="isUploading || !fileToUpload || tenantId === null || tenantId === undefined">
+              [disabled]="isUploading || !fileToUpload || tenantId === null || tenantId === undefined || tenantId <= 0">
         {{ isUploading ? 'Đang tải lên...' : 'Upload' }}
       </button>
     </section>
@@ -92,4 +101,5 @@
     background-color: #f8d7da;
     border-color: #f5c6cb;
   }
+ 
 </style>
