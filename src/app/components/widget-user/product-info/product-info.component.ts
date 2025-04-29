@@ -1,38 +1,27 @@
-// Import Angular core và CommonModule để hỗ trợ *ngIf, *ngFor, pipe,...
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Bắt buộc khi dùng Angular standalone component
-
-// --- Interface định nghĩa cấu trúc dữ liệu sản phẩm ---
-// Bạn nên dùng interface này ở nơi khác nữa để thống nhất định dạng dữ liệu
-export interface ProductData {
-  name: string; // Tên sản phẩm
-  sku?: string; // Mã sản phẩm (tuỳ chọn)
-  category?: string; // Danh mục sản phẩm
-  shortDescription?: string; // Mô tả ngắn
-  specifications?: { label: string; value: string }[]; // Danh sách thông số kỹ thuật
-  warranty?: string; // Thời gian bảo hành
-  price: number; // Giá sản phẩm
-  promotion?: string; // Thông tin khuyến mãi (nếu có)
-  stockStatus?: string; // Tình trạng hàng còn hay hết
-  policies?: { // Chính sách liên quan
-    return?: string;
-    shipping?: string;
-    payment?: string;
-  };
-  comment?: string;  // Thêm trường comment
-  intro?: string;
-}
+import { CommonModule } from '@angular/common'; // Chỉ cần CommonModule
+import { ProductData } from '../widget-user.component';
 
 @Component({
-  selector: 'app-product-info', // Tag dùng trong HTML: <app-product-info>
-  standalone: true, // Đây là component độc lập, không cần khai báo trong module
-  imports: [CommonModule], // Import để dùng *ngIf, *ngFor và pipe
+  selector: 'app-product-info',
+  standalone: true,
+  imports: [
+      CommonModule // Đảm bảo CommonModule đã được import
+    ],
+  // KHÔNG CẦN providers: [CurrencyPipe] ở đây nếu chỉ dùng trong template
   templateUrl: './product-info.component.html',
   styleUrls: ['./product-info.component.css']
 })
 export class ProductInfoComponent {
-  // Nhận dữ liệu từ component cha truyền xuống
-  @Input() productData: ProductData | any;
+  @Input() productData: Partial<ProductData> | null = null;
 
+  // XÓA constructor hoặc để trống nếu không inject gì khác
   constructor() {}
+
+  // Getter displayPrice không còn cần thiết nếu chỉ dùng pipe trong template
+  // Bạn có thể xóa getter này đi
+
+  get hasSpecifications(): boolean {
+    return !!this.productData?.specifications && this.productData.specifications.length > 0;
+  }
 }
