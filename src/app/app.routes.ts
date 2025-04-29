@@ -2,7 +2,8 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './components/authentication/login/login.component';
 import { RegisterComponent } from './components/authentication/register/register.component';
 
-import { EditProfileComponent } from './components/superadmin/component/editProfile/editProfile.component';
+import { ProfileComponent } from './components/superadmin/component/profile/profile.component';
+import { EditProfileComponent } from './components/superadmin/component/editProfile/editProfile.component'
 
 import { PendingTenantComponent } from './components/superadmin/component/pendingTenant/pendingTenantcomponent';
 import { PendingTenantDetailsComponent } from './components/superadmin/component/pendingTenantDetails/pendingTenantDetails.component';
@@ -21,9 +22,8 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
 
   //SA Profile Section
-  {
-    path: 'account-management', component: EditProfileComponent,
-  },
+  { path: 'profile', component: ProfileComponent, },
+  { path: 'edit-profile', component: EditProfileComponent, },
 
   // PENDING TENANT SECTION
   { path: 'pendingtenant', component: PendingTenantComponent },
