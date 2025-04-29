@@ -1,34 +1,50 @@
 <div class="comparison-wrapper">
-  <p class="intro">{{ data.intro }}</p>
+  <p class="intro" [innerHTML]="renderMarkdown(data.intro)"></p>
 
   <div class="comparison-grid">
     <div class="product-card" *ngFor="let product of data.products">
-      <h4>{{ product.name }}</h4>
-      <p><strong>Mã sản phẩm:</strong> {{ product.sku }}</p>
+      <h4 [innerHTML]="renderMarkdown(product.name)"></h4>
+
+      <p *ngIf="product.sku !== 'Đang cập nhật'"><strong>Mã sản phẩm:</strong> {{ product.sku }}</p>
       <p><strong>Danh mục:</strong> {{ product.category }}</p>
-      <p><strong>Giá:</strong> {{ product.price | currency:'VND':'symbol':'1.0-0':'vi' }}</p>
 
-      <p><strong>{{ product.shortDescription }}</strong></p>
+      <p><strong>Giá:</strong>
+         <ng-container *ngIf="product.priceString && product.priceString !== 'Đang cập nhật'">
+            {{ product.priceString }}
+         </ng-container>
+         <ng-container *ngIf="!product.priceString && product.price > 0">
+            {{ product.price | currency:'VND':'symbol':'1.0-0':'vi' }}
+         </ng-container>
+         <ng-container *ngIf="(!product.priceString || product.priceString === 'Đang cập nhật') && product.price <= 0">
+             {{ 'Đang cập nhật' }}
+         </ng-container>
+      </p>
 
-      <h5>Thông số kỹ thuật:</h5>
-      <ul>
-        <li *ngFor="let spec of product.specifications">
-          <strong>{{ spec.label }}:</strong> {{ spec.value }}
-        </li>
-      </ul>
+      <p [innerHTML]="renderMarkdown(product.shortDescription)"></p>
+
+      <ng-container *ngIf="product.specifications && product.specifications.length > 0">
+        <h5>Thông số kỹ thuật:</h5>
+        <ul>
+          <li *ngFor="let spec of product.specifications">
+            <strong *ngIf="spec.label">{{ spec.label }}:</strong> {{ spec.value }}
+          </li>
+        </ul>
+      </ng-container>
 
       <p><strong>Khuyến mãi:</strong> {{ product.promotion }}</p>
       <p><strong>Tình trạng hàng:</strong> {{ product.stockStatus }}</p>
       <p><strong>Bảo hành:</strong> {{ product.warranty }}</p>
 
-      <h5>Chính sách:</h5>
-      <ul>
-        <li><strong>Đổi trả:</strong> {{ product.policies.return }}</li>
-        <li><strong>Giao hàng:</strong> {{ product.policies.shipping }}</li>
-        <li><strong>Thanh toán:</strong> {{ product.policies.payment }}</li>
-      </ul>
+      <ng-container *ngIf="product.policies && (product.policies.return !== 'Đang cập nhật' || product.policies.shipping !== 'Đang cập nhật' || product.policies.payment !== 'Đang cập nhật')">
+          <h5>Chính sách:</h5>
+          <ul>
+            <li *ngIf="product.policies.return !== 'Đang cập nhật'"><strong>Đổi trả:</strong> {{ product.policies.return }}</li>
+            <li *ngIf="product.policies.shipping !== 'Đang cập nhật'"><strong>Giao hàng:</strong> {{ product.policies.shipping }}</li>
+            <li *ngIf="product.policies.payment !== 'Đang cập nhật'"><strong>Thanh toán:</strong> {{ product.policies.payment }}</li>
+          </ul>
+       </ng-container>
     </div>
   </div>
 
-  <p class="conclusion">{{ data.conclusion }}</p>
+  <p class="conclusion" [innerHTML]="renderMarkdown(data.conclusion)"></p>
 </div>
