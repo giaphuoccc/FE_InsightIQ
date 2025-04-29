@@ -35,8 +35,9 @@
             <app-product-info *ngSwitchCase="'productInfo'" [productData]="msg?.content"></app-product-info>
             <app-product-comparison *ngSwitchCase="'productComparison'" [data]="msg?.content"></app-product-comparison>
             <product-promotion *ngSwitchCase="'productPromotion'" [promotionData]="msg?.content"></product-promotion>
-            <p *ngSwitchDefault>{{ msg?.content }}</p>
-          </ng-container>
+
+            <p *ngSwitchDefault [innerHTML]="renderMarkdownBold(msg?.content)"></p>
+            </ng-container>
           <span class="timestamp" *ngIf="msg?.timestamp">
             {{ msg.timestamp | date:'shortTime':'':'vi' }}
           </span>

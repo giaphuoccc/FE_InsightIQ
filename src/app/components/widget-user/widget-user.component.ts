@@ -531,4 +531,21 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
     return productData;
   }
 
+  // --- HÀM MỚI ĐỂ CHUYỂN ĐỔI MARKDOWN BOLD ---
+  /**
+   * Chuyển đổi cú pháp **bold** thành thẻ <strong> HTML.
+   * @param text Nội dung tin nhắn gốc (phải là string)
+   * @returns Chuỗi HTML với thẻ <strong> hoặc chuỗi gốc nếu không phải string hoặc không có gì để chuyển đổi
+   */
+  renderMarkdownBold(text: any): string {
+    // Kiểm tra xem text có phải là string không trước khi xử lý
+    if (typeof text !== 'string') {
+      // Nếu không phải string (ví dụ là object ProductData), trả về một chuỗi trống hoặc thông báo lỗi
+      // Hoặc bạn có thể chuyển đổi object thành string theo cách nào đó nếu muốn
+      return ''; // Hoặc JSON.stringify(text) nếu muốn xem object dưới dạng string
+    }
+    // Nếu là string, thực hiện thay thế
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  }
+
 } // Kết thúc class WidgetUserComponent
