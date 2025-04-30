@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 
 // User Data interface
@@ -19,7 +20,7 @@ interface ApiResponse<T> {
 }
 
 @Component({
-  selector: 'app-edit-profile',
+  selector: 'app-editProfile',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
   templateUrl: './editProfile.component.html',
@@ -27,7 +28,11 @@ interface ApiResponse<T> {
 })
 export class EditProfileComponent implements OnInit {
   // --- PROFILE SECTION ---
-  userData: UserData = { name: 'Phuoc', email: 'Phuoc@gmail.com', phone: '0123456789' };
+  userData: UserData = {
+    name: 'Phuoc',
+    email: 'Phuoc@gmail.com',
+    phone: '0123456789'
+  };
   userForm!: FormGroup;
   isEditMode = false;
   isLoading = false;
@@ -37,19 +42,37 @@ export class EditProfileComponent implements OnInit {
   // --- NOTIFICATION MODAL ---
   notificationVisible = false;
   notificationMessage = '';
+  private lastAction: 'edit' | 'password' | null = null;
 
   // --- PASSWORD CHANGE SECTION ---
   isChangePasswordMode = false;
   passwordForm!: FormGroup;
 
-  // Mock “current” password in your “database”
+  // Mock current password
   private mockCurrentPassword = 'Phuo@1234';
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {}
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private router: Router   
+  ) {}
 
   ngOnInit(): void {
+    // Load initial data & forms
     this.loadUserData();
     this.initPasswordForm();
+
+    // Check mode from URL
+    this.route.queryParams.subscribe(params => {
+      if (params['mode'] === 'edit') {
+        this.lastAction = 'edit';
+        this.editInformation();
+      } else if (params['mode'] === 'password') {
+        this.lastAction = 'password';
+        this.changePassword();
+      }
+    });
   }
 
   /*** PROFILE FORM ***/
@@ -57,11 +80,13 @@ export class EditProfileComponent implements OnInit {
     this.userForm = this.fb.group({
       name:    [this.userData.name, Validators.required],
       email:   [this.userData.email, [Validators.required, Validators.email]],
-      phone:   [this.userData.phone, [
-        Validators.required,
-        // +84XXXXXXXXX or 0XXXXXXXXX where X is a valid VN mobile number
-        Validators.pattern(/^(?:\+84|0)(?:3[2-9]|5[689]|7[06789]|8[1-9]|9[0-46-9])\d{7}$/)
-      ]]
+      phone:   [
+        this.userData.phone,
+        [
+          Validators.required,
+          Validators.pattern(/^(?:\+84|0)(?:3[2-9]|5[689]|7[06789]|8[1-9]|9[0-46-9])\d{7}$/)
+        ]
+      ]
     });
   }
 
@@ -90,7 +115,7 @@ export class EditProfileComponent implements OnInit {
   }
 
   getUserData(): Observable<ApiResponse<UserData>> {
-    // replace with real HTTP call when ready
+    // Mock HTTP GET  
     return of({ success: true, data: this.userData });
   }
 
@@ -101,29 +126,41 @@ export class EditProfileComponent implements OnInit {
     }
     this.isSubmitting = true;
     this.error = null;
-    // simulate HTTP update
+
+    // Mock HTTP POST/PUT
     of({ success: true, data: this.userForm.value, message: 'Profile updated successfully' })
-      .subscribe(resp => {
-        this.isSubmitting = false;
-        if (resp.success) {
-          this.userData = resp.data!;
-          this.isEditMode = false;
-          this.notificationMessage = resp.message!;
-        } else {
-          this.notificationMessage = resp.message || 'Failed to update profile';
-          this.isEditMode = true;
+      .subscribe({
+        next: resp => {
+          this.isSubmitting = false;
+          if (resp.success) {
+            this.userData = resp.data!;
+            this.isEditMode = false;
+            this.notificationMessage = resp.message!;
+            this.notificationVisible = true;
+            this.lastAction = 'edit';
+          } else {
+            this.notificationMessage = resp.message || 'Failed to update profile';
+            this.notificationVisible = true;
+          }
+        },
+        error: () => {
+          this.isSubmitting = false;
+          this.notificationMessage = 'Unable to update account information. Please try again later.';
+          this.notificationVisible = true;
         }
-        this.notificationVisible = true;
-      }, err => {
-        this.isSubmitting = false;
-        this.notificationMessage = 'Unable to update account information. Please try again later.';
-        this.notificationVisible = true;
       });
   }
 
-  editInformation() { this.isEditMode = true; this.initForm(); }
-  cancelEdit()     { this.isEditMode = false; this.loadUserData(); }
+  /*** EDIT MODE ***/
+  editInformation(): void {
+    this.isEditMode = true;
+    this.isChangePasswordMode = false;
+    this.initForm();
+  }
 
+  cancelEdit(): void {
+    this.router.navigate(['/profile']);
+  }
 
   /*** PASSWORD CHANGE ***/
   initPasswordForm(): void {
@@ -144,39 +181,56 @@ export class EditProfileComponent implements OnInit {
     return np === cp ? null : { mismatch: true };
   }
 
-  changePassword()   { this.isChangePasswordMode = true; }
-  backToProfile()    { this.isChangePasswordMode = false; }
-  closeNotification(){ this.notificationVisible = false; }
+  changePassword(): void {
+    this.isChangePasswordMode = true;
+    this.isEditMode = false;
+  }
+
+  backToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
 
   submitPasswordChange(): void {
     const cur = this.passwordForm.get('currentPassword')!;
     const np  = this.passwordForm.get('newPassword')!;
     const m   = this.passwordForm.errors?.['mismatch'];
 
-    // 1) wrong current password?
     if (cur.value !== this.mockCurrentPassword) {
       this.notificationMessage = 'Your current password is incorrect.';
       this.notificationVisible = true;
+      this.lastAction = 'password';
       return;
     }
-    // 2) new password meets requirements?
     if (np.invalid) {
-      this.notificationMessage =
-        'Password must be ≥8 chars, include at least one digit and one special character.';
+      this.notificationMessage = 'Password must be ≥8 chars, include at least one digit and one special character.';
       this.notificationVisible = true;
+      this.lastAction = 'password';
       return;
     }
-    // 3) mismatch?
     if (m) {
       this.notificationMessage = 'Passwords do not match.';
       this.notificationVisible = true;
+      this.lastAction = 'password';
       return;
     }
 
-    // success!
+    // Success
     this.notificationMessage = 'Password changed successfully!';
     this.notificationVisible = true;
     this.isChangePasswordMode = false;
-    // TODO: call your real change-password API here...
+    this.lastAction = 'password';
+  }
+
+  /*** MODAL DONE/✕ ***/
+  onDone(): void {
+    this.notificationVisible = false;
+
+    if (this.lastAction === 'edit') {
+      // TODO: call actual save API, e.g. this.http.post(...)
+      this.router.navigate(['/profile']);
+    } else if (this.lastAction === 'password') {
+      // TODO: call actual change-password API
+      this.router.navigate(['/profile']);
+    }
   }
 }

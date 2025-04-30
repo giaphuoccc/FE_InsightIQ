@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TenantAccountListComponent } from './tenant-account-list.component';
+import { TenantAccountListComponent } from './tenantAccountList.component';
 
 describe('TenantAccountListComponent', () => {
   let component: TenantAccountListComponent;

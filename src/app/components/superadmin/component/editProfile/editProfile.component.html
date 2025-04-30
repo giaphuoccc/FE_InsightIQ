@@ -1,46 +1,22 @@
-<!-- PROFILE EDIT / VIEW -->
-<div *ngIf="!isChangePasswordMode" class="account-management-container">
+<!-- EDIT MODE -->
+<div *ngIf="!isLoading && !error && isEditMode" class="account-management-container">
   <div class="content">
+    <!-- Section Title ngoài border -->
     <div class="section-title">
       <h2>Account Management</h2>
       <div class="underline"></div>
     </div>
 
+    <!-- Admin Title ngoài border -->
     <h3 class="admin-title">Super Admin Information</h3>
 
-    <div *ngIf="isLoading" class="loading-indicator">
-      Loading user data...
-    </div>
-    <div *ngIf="error" class="error-message-container">
-      {{ error }}
-    </div>
-
-    <!-- VIEW MODE -->
-    <div *ngIf="!isLoading && !error && !isEditMode" class="admin-card view-mode">
-      <div class="admin-info">
-        <div class="personal-info-header">
-          <span class="personal-info-label">Personal information</span>
-        </div>
-        <div class="info-grid">
-          <div class="info-group">
-            <label>Name:</label><span>{{ userData.name }}</span>
-          </div>
-          <div class="info-group">
-            <label>Phone:</label><span>{{ userData.phone || '+84XXXXXXXXX or 0XXXXXXXXX' }}</span>
-          </div>
-          <div class="info-group">
-            <label>Email:</label><span>{{ userData.email }}</span>
-          </div>
-        </div>
-        <div class="action-buttons">
-          <button class="edit-btn"    (click)="editInformation()">Edit Information</button>
-          <button class="password-btn" (click)="changePassword()">Change password</button>
-        </div>
+    <!-- Card chỉ chứa form -->
+    <div class="admin-card">
+      <!-- Personal Info Header bên trong border nếu bạn muốn -->
+      <div class="personal-info-header">
+        <span class="personal-info-label">Edit Personal Information</span>
       </div>
-    </div>
 
-    <!-- EDIT MODE -->
-    <div *ngIf="!isLoading && !error && isEditMode" class="admin-card">
       <form [formGroup]="userForm" (ngSubmit)="updateProfile()">
         <div *ngIf="error" class="form-error-message">{{ error }}</div>
 
@@ -70,17 +46,17 @@
         </div>
 
         <div class="action-buttons">
-          <button type="submit" class="update-btn"  [disabled]="isSubmitting">Update</button>
-          <button type="button" class="cancel-btn"  (click)="cancelEdit()" [disabled]="isSubmitting">Cancel</button>
+          <button type="submit" class="update-btn" [disabled]="isSubmitting">Update</button>
+          <button type="button" class="cancel-btn" (click)="cancelEdit()" [disabled]="isSubmitting">Cancel</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
+
 <!-- PASSWORD CHANGE UI -->
 <div *ngIf="isChangePasswordMode" class="password-change-container">
-  <!-- Change Password Title as blue centered link -->
   <h2 class="password-title">Change Password</h2>
   <p>You are changing your account password. To secure your account, please follow these steps:</p>
 
@@ -107,7 +83,7 @@
         <span *ngIf="passwordForm.get('newPassword')?.errors?.['minlength'] && passwordForm.get('newPassword')?.touched"
               class="error-message">*Minimum length is 8 characters.</span>
         <span *ngIf="passwordForm.get('newPassword')?.errors?.['pattern'] && passwordForm.get('newPassword')?.touched"
-              class="error-message">*Must include one digit and special character (e.g, &#64;, #, $, ...).</span>
+              class="error-message">*Must include one digit and special character.</span>
       </div>
 
       <div class="info-group">
@@ -124,23 +100,25 @@
 
     <div class="action-buttons">
       <button type="submit" class="update-btn">UPDATE</button>
+      <!-- Nút Cancel dành cho Change Password -->
+      <button type="button" class="cancel-btn" (click)="backToProfile()">Cancel</button>
     </div>
   </form>
 </div>
+
 
 <!-- NOTIFICATION MODAL -->
 <div *ngIf="notificationVisible" class="notification-overlay">
   <div class="notification-modal">
     <div class="notification-header">
       <h3>Notification</h3>
-      <button class="close-btn" (click)="closeNotification()">✕</button>
+      <button class="close-btn" (click)="onDone()">✕</button>
     </div>
     <div class="notification-body">
       <p>{{ notificationMessage }}</p>
     </div>
     <div class="notification-footer">
-      <button class="done-btn" (click)="closeNotification()">Done</button>
+      <button class="done-btn" (click)="onDone()">Done</button>
     </div>
   </div>
 </div>
-

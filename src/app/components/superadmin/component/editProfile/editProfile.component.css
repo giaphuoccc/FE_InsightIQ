@@ -1,271 +1,150 @@
 :host {
-    font-family: Arial, sans-serif;
-  }
-  
-  .account-management-container {
-    max-width: 100%;
-  }
-  
-  /* Content styles */
-  .content {
-    padding: 20px;
-  }
-  
-  .section-title {
-    margin-bottom: 20px;
-  }
-  
-  .section-title h2 {
-    color: #0078ff;
-    font-size: 24px;
-    margin-bottom: 8px;
-  }
-  
-  .underline {
-    background-color: #0078ff;
-    height: 3px;
-    width: 130px;
-  }
-  
-  /* Super Admin title */
-  .admin-title {
-    font-size: 32px;
-    margin: 25px 0 15px;
-    font-weight: bold;
-    text-align: center;
-  }
-  
-  /* Admin card styles */
-  .admin-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    overflow: hidden;
-    margin: 10px 100px;
-    padding: 20px;
-  }
-  
-  .admin-info {
-    padding: 0;
-  }
-  
-  .personal-info-header {
-    padding: 10px 0;
-    margin-bottom: 10px;
-  }
-  
-  .personal-info-label {
-    color: #0078ff;
-    font-size: 14px;
-  }
-  
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
-  }
-  
-  .info-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  
-  .info-group label {
-    font-weight: bold;
-  }
-  
-  /* Form inputs */
-  .form-input {
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-    margin: 8px 0px;
-  }
-  
-  .form-input.error {
-    border-color: #ff3a30;
-  }
-  
-  .error-message {
-    color: #ff3a30;
-    font-size: 12px;
-    margin: 4px 0 12px;
-  }
-  
-  .form-error-message {
-    color: #ff3a30;
-    padding: 10px;
-    margin: 8px 0;  
-    background-color: #ffeeee;
-    border-radius: 4px;
-    text-align: center;
-  }
-  
-  /* Loading indicator */
-  .loading-indicator {
-    text-align: center;
-    padding: 20px;
-    color: #0078ff;
-  }
-  
-  .error-message-container {
-    color: #ff3a30;
-    padding: 15px;
-    margin: 15px 0;
-    background-color: #ffeeee;
-    border-radius: 4px;
-    text-align: center;
-  }
-  
-  /* Action buttons */
-  .action-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    padding-top: 20px;
-  }
-  
-  .edit-btn, .password-btn, .update-btn, .cancel-btn {
-    border: none;
-    border-radius: 5px;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-    color: white;
-  }
-  
-  .edit-btn, .password-btn {
-    background-color: #0078ff;
-  }
-  
-  .update-btn {
-    background-color: #4caf50;
-  }
-  
-  .cancel-btn {
-    background-color: #f44336;
-  }
-  
-  .edit-btn:hover, .password-btn:hover {
-    background-color: #0065d9;
-  }
-  
-  .update-btn:hover {
-    background-color: #388e3c;
-  }
-  
-  .cancel-btn:hover {
-    background-color: #d32f2f;
-  }
-  
-  button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .info-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .action-buttons {
-      flex-direction: column;
-      align-items: flex-end;
-    }
-  }
-
-  /* Overlay backdrop */
-.notification-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  /* Modal box */
-  .notification-modal {
-    background: #fff;
-    border-radius: 8px;
-    width: 400px;
-    max-width: 90%;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    overflow: hidden;
-  }
-  
-  /* Header */
-  .notification-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background: #0078ff;
-    color: #fff;
-  }
-  .notification-header h3 {
-    margin: 0;
-    font-size: 16px;
-  }
-  .close-btn {
-    background: transparent;
-    border: none;
-    font-size: 18px;
-    color: #fff;
-    cursor: pointer;
-  }
-  
-  /* Body */
-  .notification-body {
-    padding: 24px 16px;
-    text-align: center;
-    font-size: 14px;
-    color: #333;
-  }
-  
-  /* Footer */
-  .notification-footer {
-    padding: 12px 16px;
-    border-top: 1px solid #eee;
-    text-align: center;
-  }
-  .done-btn {
-    background: #0078ff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 20px;
-    cursor: pointer;
-  }
-  .done-btn:hover {
-    background: #0065d9;
-  }
-
-  .password-change-container .info-grid {
-    grid-template-columns: 1fr !important;
+  font-family: Arial, sans-serif;
 }
 
-/* PASSWORD-CHANGE CONTAINER STYLE FIXES */
-.password-change-container {
-  /* remove border */
+.account-management-container {
+  max-width: 100%;
+}
+
+.content {
+  padding: 20px;
+}
+
+.section-title {
+  margin-bottom: 20px;
+}
+.section-title h2 {
+  color: #0078ff;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.underline {
+  background-color: #0078ff;
+  height: 3px;
+  width: 130px;
+}
+
+.admin-title {
+  font-size: 32px;
+  margin: 25px 0 15px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.admin-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 10px 100px;
+  padding: 20px;
+}
+
+.personal-info-header {
+  padding: 10px 0;
+  margin-bottom: 10px;
+}
+
+.personal-info-label {
+  color: #0078ff;
+  font-size: 14px;
+}
+
+.form-error-message {
+  color: #ff3a30;
+  padding: 10px;
+  margin: 8px 0;
+  background-color: #ffeeee;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.info-group label {
+  font-weight: bold;
+}
+
+.form-input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 8px 0px;
+}
+.form-input.error {
+  border-color: #ff3a30;
+}
+
+.error-message {
+  color: #ff3a30;
+  font-size: 12px;
+  margin: 4px 0 12px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding-top: 20px;
+}
+
+.update-btn, .cancel-btn {
   border: none;
-  /* shrink padding */
+  border-radius: 5px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  color: white;
+}
+.update-btn {
+  background-color: #4caf50;
+}
+.cancel-btn {
+  background-color: #f44336;
+}
+.update-btn:hover {
+  background-color: #388e3c;
+}
+.cancel-btn:hover {
+  background-color: #d32f2f;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .info-grid {
+      grid-template-columns: 1fr;
+  }
+  .action-buttons {
+      flex-direction: column;
+      align-items: flex-end;
+  }
+}
+
+/* PASSWORD CHANGE UI */
+.password-change-container {
+  border: none;
   padding: 10px 20px;
   margin: 10px 100px;
   background: none;
 }
-
-/* Change Password Title Styles */
 .password-change-container .password-title {
   color: #0078ff;
   text-decoration: underline;
@@ -273,13 +152,69 @@
   font-size: 24px;
   margin-bottom: 16px;
 }
-
-/* single-column layout remains */
 .password-change-container .info-grid {
   grid-template-columns: 1fr !important;
 }
 
-.admin-card.view-mode .info-group {
-  flex-direction: row;
-  gap: 10px;  
+/* NOTIFICATION MODAL */
+.notification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.notification-modal {
+  background: #fff;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #0078ff;
+  color: #fff;
+}
+.notification-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+}
+.notification-body {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+}
+.notification-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+.done-btn {
+  background: #0078ff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 20px;
+  cursor: pointer;
+}
+.done-btn:hover {
+  background: #0065d9;
 }
