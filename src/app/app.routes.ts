@@ -8,8 +8,12 @@ import { EditProfileComponent } from './components/superadmin/component/editProf
 import { PendingTenantComponent } from './components/superadmin/component/pendingTenant/pendingTenantcomponent';
 import { PendingTenantDetailsComponent } from './components/superadmin/component/pendingTenantDetails/pendingTenantDetails.component';
 import { WidgetUserComponent } from './components/widget-user/widget-user.component';
+
+import { TenantAccountListComponent } from './components/superadmin/component/tenantAccountList/tenantAccountList.component';
+
 import { TenantManagementComponent } from './components/tenant/component/profile/edit-profile/TenantManagementComponent/tenant-management.component';
 import { ReportManagementComponent } from './shared/reports/report-management/report-management.component';
+
 import { CommentDetailComponent } from './shared/reports/comment-detail/comment-detail.component';
 import { PaymentComponent } from './components/tenant/component/payment/payment.component';
 import { ChangePlanComponent } from './components/tenant/component/plan/change-plan.component';
@@ -38,6 +42,7 @@ export const routes: Routes = [
 
   // TENANT MANAGEMENT
   { path: 'tenant-management', component: TenantManagementComponent },
+  { path: 'management', component: TenantAccountListComponent},
 
   // REPORTING SECTION
   { path: 'viewreport', component: ReportManagementComponent },

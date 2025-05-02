@@ -1,1 +1,129 @@
-<p>tenant-account-list works!</p>
+<div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="user-section">
+        <p class="greeting">Hi, KisKa</p>
+        <a href="#" class="customize">Customize</a>
+      </div>
+      <nav class="menu">
+        <ul>
+          <li class="menu-item active">
+            <span class="icon">🏠</span>
+            <span class="label">Tenants</span>
+          </li>
+          <li class="menu-item">
+            <span class="icon">🖥️</span>
+            <span class="label">Monitor</span>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+  
+    <!-- Main content -->
+    <main class="content">
+      <h2 class="main-title">Tenant Management</h2>
+      <h3 class="sub-title">List of Tenant Accounts</h3>
+  
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th><th>Email</th><th>Phone</th><th>Business Name</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of tenants">
+              <td>{{ t.name }}</td>
+              <td>{{ t.email }}</td>
+              <td>{{ t.phone }}</td>
+              <td>{{ t.businessName }}</td>
+              <td class="actions">
+                <button
+                  *ngIf="!t.isBlocked"
+                  class="btn block"
+                  (click)="openConfirm(t,'block')"
+                >
+                  Block
+                </button>
+                <button
+                  *ngIf="t.isBlocked"
+                  class="btn blocked"
+                  (click)="openConfirm(t,'unblock')"
+                >
+                  Blocked
+                </button>
+                <button
+                  class="btn delete"
+                  (click)="openConfirm(t,'delete')"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Confirm Modal -->
+  <div class="modal-overlay" *ngIf="showConfirmModal">
+    <div class="modal-box">
+      <!-- Header -->
+      <div class="modal-header">
+        <button class="close-btn" (click)="closeConfirm()">×</button>
+        <h3 class="modal-title">Notification</h3>
+      </div>
+  
+      <!-- Body -->
+      <div class="modal-body">
+        <p>
+          Confirm the action
+          <span
+            [ngClass]="{
+              'text-block': actionType==='block' || actionType==='delete',
+              'text-unblock': actionType==='unblock'
+            }"
+          >
+            "{{
+              actionType==='block'
+                ? 'Block account'
+                : actionType==='unblock'
+                  ? 'Enable account'
+                  : 'Delete account'
+            }}"
+          </span>.
+        </p>
+      </div>
+  
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn cancel" (click)="closeConfirm()">Cancel</button>
+        <button class="btn confirm" (click)="confirmAction()">
+          {{ actionType==='delete' ? 'Delete' : 'Confirm' }}
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Result Modal -->
+  <div class="modal-overlay" *ngIf="showResultModal">
+    <div class="modal-box">
+      <!-- Header -->
+      <div class="modal-header">
+        <button class="close-btn" (click)="closeResult()">×</button>
+        <h3 class="modal-title">Notification</h3>
+      </div>
+  
+      <!-- Body -->
+      <div class="modal-body">
+        <p>{{ resultMessage }}</p>
+      </div>
+  
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn confirm" (click)="closeResult()">Done</button>
+      </div>
+    </div>
+  </div>
+  
