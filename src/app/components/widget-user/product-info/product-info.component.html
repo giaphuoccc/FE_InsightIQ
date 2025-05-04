@@ -1,5 +1,4 @@
 <div *ngIf="productData" class="product-info-layout message-content">
-
   <p *ngIf="productData.intro" class="product-intro">
     {{ productData.intro }}
   </p>
@@ -18,27 +17,36 @@
 
   <p class="product-price">
     <strong>Giá:</strong>
-    <span *ngIf="productData.price !== undefined && productData.price !== null; else priceStringBlock">
-        {{ productData.price | currency:'VND':'symbol':'1.0-0' }}
+    <span
+      *ngIf="
+        productData.price !== undefined && productData.price !== null;
+        else priceStringBlock
+      "
+    >
+      {{ productData.price | currency : "VND" : "symbol" : "1.0-0" }}
     </span>
     <ng-template #priceStringBlock>
-        {{ productData.priceString || 'Đang cập nhật' }}
+      {{ productData.priceString || "Đang cập nhật" }}
     </ng-template>
-    </p>
-
-  <p *ngIf="productData.shortDescription" class="product-description">
-     {{ productData.shortDescription }}
   </p>
 
-  <div *ngIf="productData.specifications && productData.specifications.length > 0" class="product-specs">
-    <strong>Tính năng chính:</strong> <ul>
+  <p *ngIf="productData.shortDescription" class="product-description">
+    {{ productData.shortDescription }}
+  </p>
+
+  <div
+    *ngIf="productData.specifications && productData.specifications.length > 0"
+    class="product-specs"
+  >
+    <strong>Tính năng chính:</strong>
+    <ul>
       <li *ngFor="let spec of productData.specifications">
         {{ spec.value }}
-        </li>
+      </li>
     </ul>
   </div>
 
-  <p *ngIf="productData.promotion" class="product-promotion">
+  <!-- <p *ngIf="productData.promotion" class="product-promotion">
     <strong>Khuyến mãi:</strong> {{ productData.promotion }}
   </p>
 
@@ -48,14 +56,13 @@
 
   <p *ngIf="productData.warranty" class="product-warranty">
     <strong>Bảo hành:</strong> {{ productData.warranty }}
-  </p>
+  </p> -->
 
   <p *ngIf="productData.comment" class="product-comment bot-comment">
     {{ productData.comment }}
   </p>
-
 </div>
 
 <div *ngIf="!productData" class="message-content">
-   <p>Không thể hiển thị thông tin chi tiết sản phẩm.</p>
-   </div>
+  <p>Không thể hiển thị thông tin chi tiết sản phẩm.</p>
+</div>
