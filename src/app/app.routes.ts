@@ -22,6 +22,7 @@ import { BillingHistoryComponent } from './components/tenant/component/billing/b
 import { BillingHistoryDetailComponent } from './components/tenant/component/billing/billing-history-detail/billing-history-detail.component';
 import { DocumentManagementComponent } from './components/tenant/component/document-management/document-management.component';
 import { DashboardComponent } from './components/tenant/component/dashboard-tenant/dashboard-tenant.component';
+import { DashboardSuperadminComponent } from './components/superadmin/component/dashboard-superadmin/dashboard-superadmin.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -81,4 +82,5 @@ export const routes: Routes = [
 
     // DASHBOARD TENANT
     { path: 'dashboard-tenant', component: DashboardComponent },
+    {path: 'dashboard-superadmin', component: DashboardSuperadminComponent}
 ];
