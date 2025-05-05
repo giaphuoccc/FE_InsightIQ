@@ -18,7 +18,7 @@ export interface BackendDocument {
   providedIn: 'root',
 })
 export class DocumentService {
-  private baseApiUrl = '/documents'; // Adjust if your API prefix is different
+  private baseApiUrl = '/documents';
 
   constructor(private http: HttpClient) {}
 
@@ -28,29 +28,27 @@ export class DocumentService {
   // --- Method signature updated ---
   uploadDocument(
     file: File,
-    tenantId: number,
     validFrom: string,
     validUntil: string
   ): Observable<BackendDocument> {
     const formData: FormData = new FormData();
-    formData.append('file', file, file.name); // Field name 'file'
-    formData.append('tenantId', tenantId.toString()); // Field name 'tenantId'
-    // --- Append date strings ---
-    formData.append('validFrom', validFrom); // Field name 'validFrom'
-    formData.append('validUntil', validUntil); // Field name 'validUntil'
+    formData.append('file', file, file.name);
+    formData.append('validFrom', validFrom);
+    formData.append('validUntil', validUntil);
+    // REMOVED: formData.append('tenantId', tenantId.toString());
 
     const uploadApiUrl = `${this.baseApiUrl}/upload`;
-
     console.log(
       `[Angular DocumentService] Sending upload request to: ${uploadApiUrl}`
     );
+    // Log removed tenantId info
     console.log('[Angular DocumentService] FormData details:', {
       hasFile: formData.has('file'),
-      hasTenantId: formData.has('tenantId'),
+      // REMOVED: hasTenantId
       hasValidFrom: formData.has('validFrom'),
-      validFromValue: formData.get('validFrom'), // Log value
+      validFromValue: formData.get('validFrom'),
       hasValidUntil: formData.has('validUntil'),
-      validUntilValue: formData.get('validUntil'), // Log value
+      validUntilValue: formData.get('validUntil'),
     });
 
     return this.http.post<BackendDocument>(uploadApiUrl, formData);

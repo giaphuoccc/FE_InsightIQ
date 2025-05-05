@@ -4,101 +4,109 @@
   </nav>
 
   <main class="main-content">
-    <h2>List of documents</h2>
+    <h2 class="page-title">Document Management</h2>
 
     <div
-      *ngIf="deleteMessage"
-      [ngClass]="{ 'alert-success': !deleteError, 'alert-danger': deleteError }"
+      *ngIf="uploadMessage || deleteMessage"
       class="alert-message"
+      [ngClass]="{
+        'alert-success':
+          (uploadMessage && !uploadError) || (deleteMessage && !deleteError),
+        'alert-danger':
+          (uploadMessage && uploadError) || (deleteMessage && deleteError)
+      }"
     >
-      {{ deleteMessage }}
+      {{ uploadMessage || deleteMessage }}
     </div>
 
-    <section class="document-list">
-      <h4>Uploaded documents</h4>
+    <section class="document-list card">
+      <h3 class="section-title">Uploaded Documents</h3>
       <div *ngIf="isLoadingDocuments" class="loading-message">
         Đang tải danh sách tài liệu...
       </div>
-      <table *ngIf="!isLoadingDocuments">
-        <thead>
-          <tr>
-            <th>Document name</th>
-            <th>Date modified</th>
-            <th>Size</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="!isLoadingDocuments && documents.length === 0">
-            <td colspan="4" class="empty-message">
-              Chưa có tài liệu nào được tải lên.
-            </td>
-          </tr>
-          <tr *ngFor="let doc of documents; let i = index">
-            <td>
-              <a
-                *ngIf="doc?.fileUrl"
-                [href]="doc.fileUrl"
-                target="_blank"
-                title="Xem file"
-                >{{ doc.name }}</a
-              >
-              <span *ngIf="!doc?.fileUrl">{{ doc.name }}</span>
-            </td>
-            <td>{{ doc.modified }}</td>
-            <td>{{ doc.size }}</td>
-            <td>
-              <button
-                class="delete-btn"
-                (click)="onDelete(i)"
-                title="Xóa file này"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table *ngIf="!isLoadingDocuments">
+          <thead>
+            <tr>
+              <th>Document Name</th>
+              <th>Date Modified</th>
+              <th>Size</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!isLoadingDocuments && documents.length === 0">
+              <td colspan="4" class="empty-message">
+                Chưa có tài liệu nào được tải lên.
+              </td>
+            </tr>
+            <tr *ngFor="let doc of documents; let i = index">
+              <td>
+                <a
+                  *ngIf="doc?.fileUrl"
+                  [href]="doc.fileUrl"
+                  target="_blank"
+                  title="View {{ doc.name }}"
+                  >{{ doc.name }}</a
+                >
+                <span *ngIf="!doc?.fileUrl">{{ doc.name }}</span>
+              </td>
+              <td>{{ doc.modified | date : "yyyy-MM-dd HH:mm" }}</td>
+              <td>{{ doc.size }}</td>
+              <td>
+                <button
+                  class="action-button btn-danger"
+                  (click)="onDelete(i)"
+                  title="Delete {{ doc.name }}"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
-    <section class="upload-section">
-      <h4>Add documents</h4>
+    <section class="upload-section card">
+      <h3 class="section-title">Add New Document</h3>
 
-      <div class="form-group">
-        <label for="tenantIdInput">Tenant ID:</label>
-        <input
-          type="number"
-          id="tenantIdInput"
-          [(ngModel)]="tenantId"
-          placeholder="Nhập ID của tenant"
-          required
-        />
+      <div class="form-row">
+        <div class="form-group date-group">
+          <label for="validFromInput">Valid From:</label>
+          <input
+            type="date"
+            id="validFromInput"
+            class="form-input"
+            [(ngModel)]="validFrom"
+            required
+          />
+        </div>
+
+        <div class="form-group date-group">
+          <label for="validUntilInput">Valid Until:</label>
+          <input
+            type="date"
+            id="validUntilInput"
+            class="form-input"
+            [(ngModel)]="validUntil"
+            required
+          />
+        </div>
       </div>
 
-      <div class="form-group date-group">
-        <label for="validFromInput">Valid From:</label>
-        <input
-          type="date"
-          id="validFromInput"
-          [(ngModel)]="validFrom"
-          required
-        />
-      </div>
-
-      <div class="form-group date-group">
-        <label for="validUntilInput">Valid Until:</label>
-        <input
-          type="date"
-          id="validUntilInput"
-          [(ngModel)]="validUntil"
-          required
-        />
-      </div>
       <div class="upload-box">
         <label for="fileInput" class="upload-label">
-          <img src="assets/upload-icon.png" alt="Upload Icon" />
-          <p>
-            {{ fileToUpload ? fileToUpload.name : "Chọn file PDF để tải lên" }}
+          <img
+            src="../../../../../assets/icon/tenant/upload.png"
+            alt="Upload Icon"
+            class="upload-icon"
+          />
+          <p *ngIf="!fileToUpload">
+            Click to browse or drag & drop PDF/TXT files here
+          </p>
+          <p *ngIf="fileToUpload" class="file-name-display">
+            Selected: {{ fileToUpload.name }}
           </p>
         </label>
         <input
@@ -111,32 +119,16 @@
         />
       </div>
 
-      <div
-        *ngIf="uploadMessage"
-        [ngClass]="{
-          'alert-success': !uploadError,
-          'alert-danger': uploadError
-        }"
-        class="alert-message"
-      >
-        {{ uploadMessage }}
+      <div class="form-actions">
+        <button
+          class="action-button btn-primary"
+          (click)="onUpload()"
+          [disabled]="isUploading || !fileToUpload || !validFrom || !validUntil"
+        >
+          <span *ngIf="!isUploading">Upload Document</span>
+          <span *ngIf="isUploading">Uploading...</span>
+        </button>
       </div>
-
-      <button
-        class="upload-button"
-        (click)="onUpload()"
-        [disabled]="
-          isUploading ||
-          !fileToUpload ||
-          tenantId === null ||
-          tenantId === undefined ||
-          tenantId <= 0 ||
-          !validFrom ||
-          !validUntil
-        "
-      >
-        {{ isUploading ? "Đang tải lên..." : "Upload Document" }}
-      </button>
     </section>
   </main>
 </div>

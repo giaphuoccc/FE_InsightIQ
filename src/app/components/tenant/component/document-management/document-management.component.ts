@@ -29,7 +29,7 @@ interface DisplayDocument {
 export class DocumentManagementComponent implements OnInit {
   documents: DisplayDocument[] = [];
   fileToUpload: File | null = null;
-  tenantId: number | null = null;
+  // tenantId: number | null = null;
   isUploading = false;
   uploadMessage: string | null = null;
   uploadError: boolean = false;
@@ -133,17 +133,17 @@ export class DocumentManagementComponent implements OnInit {
       console.log('Error: No file selected.');
       return;
     }
-    if (
-      this.tenantId === null ||
-      this.tenantId === undefined ||
-      isNaN(this.tenantId) ||
-      this.tenantId <= 0
-    ) {
-      this.uploadMessage = 'Tenant ID không hợp lệ.';
-      this.uploadError = true;
-      console.log('Error: Invalid Tenant ID.');
-      return;
-    }
+    // if (
+    //   this.tenantId === null ||
+    //   this.tenantId === undefined ||
+    //   isNaN(this.tenantId) ||
+    //   this.tenantId <= 0
+    // ) {
+    //   this.uploadMessage = 'Tenant ID không hợp lệ.';
+    //   this.uploadError = true;
+    //   console.log('Error: Invalid Tenant ID.');
+    //   return;
+    // }
     // --- Add Date Validation ---
     if (!this.validFrom) {
       this.uploadMessage = 'Vui lòng chọn ngày bắt đầu hiệu lực (Valid From).';
@@ -180,18 +180,18 @@ export class DocumentManagementComponent implements OnInit {
 
     // Store current values to avoid issues if user changes them during async operation
     const fileToUploadNow = this.fileToUpload;
-    const tenantIdNow = this.tenantId;
+    // const tenantIdNow = this.tenantId;
     const validFromNow = this.validFrom;
     const validUntilNow = this.validUntil;
 
     console.log(
-      `Attempting upload: ${fileToUploadNow.name}, Tenant: ${tenantIdNow}, ValidFrom: ${validFromNow}, ValidUntil: ${validUntilNow}`
+      `Attempting upload: ${fileToUploadNow.name} , ValidFrom: ${validFromNow}, ValidUntil: ${validUntilNow}`
     );
     console.log('Calling documentService.uploadDocument...');
 
     // --- Call service with date info ---
     this.documentService
-      .uploadDocument(fileToUploadNow, tenantIdNow, validFromNow, validUntilNow)
+      .uploadDocument(fileToUploadNow, validFromNow, validUntilNow)
       .pipe(
         finalize(() => {
           this.isUploading = false;
