@@ -1,26 +1,26 @@
 <div class="login-container">
   <div class="login-content">
-    <!-- Left Section -->
     <section class="left-section" aria-label="Welcome section">
-      <div class="logo">
-        <div class="logo-icon" aria-hidden="true"></div>
-      </div>
-      <div class="welcome-text">
-        <h1 class="highlight">
-          Welcome to <br />
-          <span class="highlight">Insight IQ</span>
-        </h1>
-        <p>If you don't have an account you can</p>
-        <a routerLink="/register" class="register-link">Register here!</a>
-      </div>
+        <div class="logo">
+          <div class="logo-icon" aria-hidden="true"></div>
+        </div>
+        <div class="welcome-text">
+          <h1 class="highlight">
+            Welcome to <br />
+            <span class="highlight">Insight IQ</span>
+          </h1>
+          <p>If you don't have an account you can</p>
+          <a routerLink="/register" class="register-link">Register here!</a>
+        </div>
     </section>
 
-    <!-- Right Section -->
     <section class="right-section" aria-label="Sign in form">
       <h2>SIGN IN NOW</h2>
 
+      <div *ngIf="vm.loginError$ | async as errorMessage" class="error-message api-error">
+          {{ errorMessage }}
+      </div>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-        <!-- Email Field -->
         <div class="form-group">
           <label for="email" class="sr-only">Email</label>
           <input
@@ -39,7 +39,6 @@
           </div>
         </div>
 
-        <!-- Password Field -->
         <div class="form-group">
           <label for="password" class="sr-only">Password</label>
           <input
@@ -52,7 +51,7 @@
             required
             autocomplete="current-password"
           />
-          <div *ngIf="submitted && f['password'].errors" id="passwordError" class="error-message">
+           <div *ngIf="submitted && f['password'].errors" id="passwordError" class="error-message">
             <span *ngIf="f['password'].errors['required']">Password is required</span>
             <span *ngIf="f['password'].errors['minlength']">
               Password must be at least 8 characters
@@ -64,10 +63,29 @@
           <a routerLink="/forgot-password" (click)="onClickForgotPassword()">Forgot Password?</a>
         </div>
 
-        <button type="submit" class="sign-in-button" [disabled]="loginForm.invalid && submitted">
-          SIGN IN
-        </button>
+        <button
+          type="submit"
+          class="sign-in-button"
+          [disabled]="(vm.isLoading$ | async) || (submitted && loginForm.invalid)"
+          >
+          <span *ngIf="!(vm.isLoading$ | async)">SIGN IN</span>
+          <span *ngIf="vm.isLoading$ | async">SIGNING IN...</span>
+          </button>
       </form>
     </section>
   </div>
 </div>
+
+<style>
+  .error-message.api-error {
+    background-color: #f8d7da; /* Màu nền đỏ nhạt */
+    color: #721c24; /* Màu chữ đỏ đậm */
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    border: 1px solid #f5c6cb;
+    text-align: center;
+  }
+  /* Thêm CSS cho spinner nếu dùng */
+  /* .spinner { ... } */
+</style>
