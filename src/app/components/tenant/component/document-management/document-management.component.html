@@ -30,7 +30,7 @@
             <tr>
               <th>Document Name</th>
               <th>Date Modified</th>
-              <th>Size</th>
+              <!-- <th>Size</th> -->
               <th>Action</th>
             </tr>
           </thead>
@@ -52,7 +52,7 @@
                 <span *ngIf="!doc?.fileUrl">{{ doc.name }}</span>
               </td>
               <td>{{ doc.modified | date : "yyyy-MM-dd HH:mm" }}</td>
-              <td>{{ doc.size }}</td>
+              <!-- <td>{{ doc.size }}</td> -->
               <td>
                 <button
                   class="action-button btn-danger"

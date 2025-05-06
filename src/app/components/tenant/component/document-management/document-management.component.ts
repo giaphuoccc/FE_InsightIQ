@@ -1,6 +1,7 @@
 // src/app/features/document-management/document-management.component.ts
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
@@ -44,10 +45,20 @@ export class DocumentManagementComponent implements OnInit {
   validUntilDate: string | null = null; // Bound to date input (YYYY-MM-DD)
   // --- End NEW ---
 
-  constructor(private documentService: DocumentService) {}
+  constructor(
+    private documentService: DocumentService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
-    this.loadDocuments();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadDocuments();
+    } else {
+      console.log('Skipping loadDocuments on server during SSR.');
+      // Optionally initialize documents to an empty array or handle server state differently
+      this.documents = [];
+      this.isLoadingDocuments = false;
+    }
     console.log('DocumentManagementComponent initialized');
   }
 
