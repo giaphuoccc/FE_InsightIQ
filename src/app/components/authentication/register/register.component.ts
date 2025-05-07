@@ -157,7 +157,7 @@ onSubmit(): void {
            this.isSubmitting = false; // Để trạng thái đang gửi là false lại
           // this.router.navigate(['/login']);
 
-          this.notificationMessage = 'Đăng ký tài khoản Tenant thành công! Vui lòng xác nhận để đăng nhập';
+          this.notificationMessage = 'Tenant account registration successful! Please verify to log in';
           this.showNotificationModal = true;
         },
         error: (tenantErr) => {

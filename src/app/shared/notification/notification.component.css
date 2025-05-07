@@ -1,79 +1,101 @@
-/* Lớp phủ toàn màn hình */
 .modal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  padding: 24px 32px;
+  max-width: 450px;
+  width: 90%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: dodgerblue;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+.modal-message {
+  font-size: 16px;
+  color: #111;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.modal-message span {
+  font-weight: bold;
+  color: red;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.confirm-btn,
+.cancel-btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  color: white;
+}
+
+.confirm-btn {
+  background-color: #dc3545; /* đỏ */
+}
+
+.confirm-btn:hover {
+  background-color: #b02a37;
+}
+
+.cancel-btn {
+  background-color: #28a745; /* xanh lá */
+}
+
+.cancel-btn:hover {
+  background-color: #218838;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
   }
-  
-  /* Hộp modal */
-  .modal-box {
-    background-color: #fff;
-    padding: 25px 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    min-width: 300px;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
-  
-  /* Header */
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .modal-title {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #007bff;
-  }
-  
-  .modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #999;
-    cursor: pointer;
-  }
-  .modal-close:hover {
-    color: #333;
-  }
-  
-  /* Nội dung */
-  .modal-message {
-    font-size: 1rem;
-    color: #444;
-    margin-bottom: 25px;
-    line-height: 1.4;
-  }
-  
-  /* Nút xác nhận */
-  .modal-actions {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .confirm-btn {
-    background-color: #007bff;
-    border: none;
-    color: white;
-    padding: 8px 25px;
-    border-radius: 20px;
-    font-weight: 500;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .confirm-btn:hover {
-    background-color: #0056b3;
-  }
-  
+}

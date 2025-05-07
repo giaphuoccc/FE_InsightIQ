@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core'; // ĐÃ THÊM Output, EventEmitter
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,21 +9,25 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./notification.component.css']
 })
 export class NotificationComponent {
+  @Input() message: string = 'Default';
+  @Input() showConfirmButton: boolean = true; // Mặc định hiển thị nút Confirm
+  @Input() confirmButtonText: string = 'Confirm'; // Cho phép tùy chỉnh text nút Confirm
+  @Input() showCancelButton: boolean = false; // <<< THÊM: Mặc định không hiển thị nút Cancel
+  @Input() cancelButtonText: string = 'Cancel'; // <<< THÊM: Cho phép tùy chỉnh text nút Cancel
 
-  // Thêm input để truyền từ bên ngoài vào
-  @Input() message: string = 'Default'; // Đặt giá trị mặc định
+  @Output() confirmAction = new EventEmitter<void>();
+  @Output() closeAction = new EventEmitter<void>(); // Sự kiện khi đóng bằng nút '×' hoặc overlay
+  @Output() cancelAction = new EventEmitter<void>(); // <<< THÊM: Sự kiện khi nhấn nút Cancel
 
-  // Khai báo các Output emitters
-  @Output() confirmAction = new EventEmitter<void>(); // <<< THÊM DÒNG NÀY
-  @Output() closeAction = new EventEmitter<void>();   // <<< THÊM DÒNG NÀY
-
-  // Hàm được gọi khi nút "Confirm" trên modal được click
-  onConfirm(): void { // <<< THÊM HÀM NÀY
-    this.confirmAction.emit(); // Phát ra sự kiện confirmAction
+  onConfirm(): void {
+    this.confirmAction.emit();
   }
 
-  // Hàm được gọi khi nút "Close" (hoặc overlay) trên modal được click
-  onClose(): void { // <<< THÊM HÀM NÀY
-    this.closeAction.emit(); // Phát ra sự kiện closeAction
+  onClose(): void { // Dùng cho nút '×' và click overlay
+    this.closeAction.emit();
+  }
+
+  onCancel(): void { // <<< THÊM HÀM NÀY
+    this.cancelAction.emit();
   }
 }

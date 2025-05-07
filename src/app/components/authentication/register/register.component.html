@@ -140,9 +140,9 @@
 <!-- Thêm Component Notification vào -->
 
 <notification
-*ngIf="showNotificationModal"
-[message]="notificationMessage"
-(confirmAction) = "handleNotificationConfirm()"
-(closeAction) = "showNotificationModal"
->
+  *ngIf="showNotificationModal"
+  [message]="notificationMessage"
+  [confirmButtonText]="'Go to login page'" (confirmAction)="handleNotificationConfirm()"
+  (closeAction)="showNotificationModal = false"
+  >
 </notification>
