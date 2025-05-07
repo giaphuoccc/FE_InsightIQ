@@ -10,13 +10,14 @@ import {
 } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { NotificationComponent } from '../../../shared/notification/notification.component';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule, NotificationComponent]
 })
 export class RegisterComponent implements OnInit {
   /** Reactive registration form */
@@ -27,6 +28,12 @@ export class RegisterComponent implements OnInit {
 
   /** Optional error banner for API failures */
   registrationError: string | null = null;
+
+
+  // Các thuộc tính để quản lý việc hiển thị Modal box thông báo
+  showNotificationModal = false;
+  notificationMessage: string ='';
+
 
   constructor(
     private fb: FormBuilder,
@@ -146,9 +153,12 @@ onSubmit(): void {
       // Bước 8: Gửi yêu cầu đến API để tạo Tenant
       this.http.post<any>('/tenant/create', tenantData).subscribe({
         next: () => {
-          // Bước 9: Tạo Tenant thành công -> chuyển hướng đến trang đăng nhập
-          this.isSubmitting = false;
-          this.router.navigate(['/auth/login']);
+          // Bước 9: Tạo Tenant thành công
+           this.isSubmitting = false; // Để trạng thái đang gửi là false lại
+          // this.router.navigate(['/login']);
+
+          this.notificationMessage = 'Đăng ký tài khoản Tenant thành công! Vui lòng xác nhận để đăng nhập';
+          this.showNotificationModal = true;
         },
         error: (tenantErr) => {
           // Bước 10: Có lỗi khi tạo Tenant
@@ -165,5 +175,12 @@ onSubmit(): void {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
+}
+
+// Hàm mới để đóng model và chuyển trang khi nhấn xác nhận
+handleNotificationConfirm(): void{
+  this.showNotificationModal = false; // Ẩn model
+ // this.router.navigate(['/login']);
+  this.router.navigate(['/login']);
 }
 }

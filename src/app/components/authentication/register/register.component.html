@@ -136,3 +136,13 @@
     </div>
   </div>
 </div>
+
+<!-- Thêm Component Notification vào -->
+
+<notification
+*ngIf="showNotificationModal"
+[message]="notificationMessage"
+(confirmAction) = "handleNotificationConfirm()"
+(closeAction) = "showNotificationModal"
+>
+</notification>
