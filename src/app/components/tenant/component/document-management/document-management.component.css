@@ -1,130 +1,308 @@
+/* General Container and Layout */
 .container {
-    font-family: Arial, sans-serif;
-    padding: 20px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  padding: 20px;
+  max-width: 1100px; /* Consistent max-width */
+  margin: 20px auto;
+}
+
+/* Navigation - Keeping existing simple style */
+.nav {
+  margin-bottom: 20px; /* Increased spacing */
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 500; /* Slightly less bold */
+  margin-right: 15px;
+  padding-bottom: 10px; /* Align active border */
+  font-size: 1rem;
+}
+
+.nav a.active {
+  border-bottom: 3px solid #007bff;
+  font-weight: 600;
+  color: #0056b3;
+}
+
+/* Main Content Area */
+.main-content {
+  margin-top: 20px; /* Reduced top margin as nav has bottom margin */
+}
+
+/* Page Title Style (borrowed from editProfile) */
+.page-title {
+  color: #0078ff;
+  font-size: 24px;
+  margin-bottom: 25px; /* Increased spacing */
+  padding-bottom: 8px;
+  border-bottom: 3px solid #0078ff;
+  display: inline-block; /* Fit underline to text */
+}
+
+/* Card Styling (adapted from report-management.css) */
+.card {
+  background-color: #fff;
+  border: 1px solid #e2e8f0; /* Light grey border */
+  border-radius: 8px;
+  padding: 25px; /* More padding */
+  margin-bottom: 30px; /* Spacing between cards */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Softer shadow */
+}
+
+.section-title {
+  font-size: 1.2rem; /* Slightly larger */
+  font-weight: 600;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Alert Message Styling (adapted from register.component.html style) */
+.alert-message {
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.alert-success {
+  color: #155724; /* Darker green text */
+  background-color: #d4edda; /* Light green background */
+  border-color: #c3e6cb; /* Green border */
+}
+
+.alert-danger {
+  color: #721c24; /* Darker red text */
+  background-color: #f8d7da; /* Light red background */
+  border-color: #f5c6cb; /* Red border */
+}
+
+/* Table Styling (adapted from billing-history.component.css) */
+.table-container {
+  overflow-x: auto; /* Allows horizontal scroll on small screens */
+}
+
+.document-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background-color: #fff;
+}
+
+.document-list th,
+.document-list td {
+  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  padding: 12px 15px; /* Good padding */
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.9rem; /* Consistent font size */
+}
+
+.document-list th {
+  background-color: #f9fafb; /* Very light grey header */
+  font-weight: 600; /* Header bold */
+  color: #374151; /* Darker grey text */
+  white-space: nowrap; /* Prevent header text wrap */
+}
+
+.document-list tbody tr:hover {
+  background-color: #f3f4f6; /* gray-100 hover */
+}
+
+.document-list td:last-child {
+  text-align: center; /* Center align action buttons */
+}
+
+.document-list .empty-message {
+  text-align: center;
+  color: #6b7280; /* gray-500 */
+  padding: 20px;
+  font-style: italic;
+}
+
+/* Link styling within table */
+.document-list td a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.document-list td a:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+/* Form Input Styling (adapted from login/register) */
+.form-row {
+  display: flex;
+  gap: 20px; /* Spacing between date inputs */
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Wrap on smaller screens */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Space between label and input */
+  flex: 1; /* Allow groups to share space */
+  min-width: 200px; /* Prevent excessive shrinking */
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 6px;
+  background-color: #fff;
+  font-size: 0.9rem;
+  color: #333;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box; /* Include padding in width */
+}
+
+.form-input:focus {
+  border-color: #007bff; /* Primary blue focus */
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Upload Section Specifics */
+.upload-section .form-actions {
+  margin-top: 20px;
+  text-align: right; /* Align button to the right */
+}
+
+.upload-box {
+  border: 2px dashed #adb5bd; /* gray-400 dashed */
+  border-radius: 8px;
+  padding: 30px; /* Reduced padding slightly */
+  margin: 20px 0;
+  text-align: center;
+  background-color: #f8f9fa; /* Light background */
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.upload-box:hover {
+  background-color: #e9ecef; /* gray-200 hover */
+  border-color: #007bff; /* Blue border hover */
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d; /* gray-600 text */
+  font-size: 0.95rem;
+}
+
+.upload-icon {
+  width: 40px; /* Adjusted size */
+  height: 40px;
+  margin-bottom: 15px;
+  opacity: 0.7;
+}
+
+.upload-label p {
+  margin: 5px 0 0 0;
+}
+
+.file-name-display {
+  font-weight: 500;
+  color: #333;
+  margin-top: 10px !important;
+  word-break: break-all; /* Break long file names */
+}
+
+/* Action Button Styling (Generic - use specific classes below) */
+.action-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.action-button:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+.action-button:disabled {
+  background-color: #cccccc;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Specific Button Colors (adapted from other components) */
+.btn-primary {
+  background-color: #007bff; /* Blue */
+  color: white;
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: #0056b3; /* Darker Blue */
+}
+
+.btn-danger {
+  background-color: #dc3545; /* Red */
+  color: white;
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: #c82333; /* Darker Red */
+}
+
+/* Loading message */
+.loading-message {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
   }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-  }
-  
-  .logo {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .sign-out {
-    background: none;
-    border: none;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .nav {
-    margin-top: 10px;
-  }
-  
-  .nav a {
-    text-decoration: none;
-    color: #007bff;
-    font-weight: bold;
-    margin-right: 10px;
-  }
-  
-  .nav .active {
-    border-bottom: 2px solid #007bff;
-  }
-  
-  .main-content {
-    margin-top: 30px;
-  }
-  
-  .document-list table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-  
   .document-list th,
   .document-list td {
-    border: 1px solid #ddd;
-    padding: 10px;
+    font-size: 0.85rem;
+    padding: 10px 8px;
+  }
+  .card {
+    padding: 20px;
+  }
+  .page-title {
+    font-size: 20px;
+  }
+  .upload-section .form-actions {
     text-align: center;
   }
-  
-  .document-list th {
-    background-color: #f9f9f9;
+  .action-button {
+    width: 100%;
+    max-width: 300px; /* Limit button width on mobile */
   }
-  
-  .delete-btn {
-    background-color: #e53935; /* đỏ tươi hơn */
-    color: white;
-    border: none;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  .document-list td:last-child {
+    width: 80px; /* Give action column fixed width */
   }
-  
-  .delete-btn:hover {
-    background-color: #c62828; /* hover đỏ đậm hơn */
-  }
-  
-  .upload-section {
-    margin-top: 30px;
-    text-align: center;
-  }
-  
-  .upload-box {
-    border: 2px dashed #bbb;
-    border-radius: 10px;
-    padding: 40px;
-    margin: 20px 0;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .upload-box:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .upload-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .upload-label img {
-    width: 50px;
-    margin-bottom: 10px;
-  }
-  
-  .upload-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-  }
-  
-  .upload-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Nhấn mạnh dòng thông báo đỏ nếu cần */
-  .alert {
-    color: #d32f2f;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
+}

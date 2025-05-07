@@ -27,47 +27,72 @@
   position: fixed;
   bottom: 20px;
   right: 30px;
-
-  /* Thay vì min-height, dùng height cố định */
   width: 350px;
   height: 500px;
-
   background: linear-gradient(135deg, #ffffff, #e3f2fd);
   border-radius: 15px;
   padding: 30px 40px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
-
   display: flex;
   flex-direction: column;
-  align-items: stretch; /* Co giãn full chiều ngang */
+  align-items: stretch;
   gap: 15px;
-
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, height 0.3s ease; /* Added height transition */
 }
 
-/* Khi mở rộng chatbox (ví dụ bấm nút Start Chat) */
+/* Khi mở rộng chatbox */
 .chatbot-box.expanded {
-  width: 50vw;
-  height: 90vh; /* Có thể đổi thành 80vh, 70vh... tuỳ ý */
+  width: 50vw; /* Adjust as needed */
+  height: 80vh; /* Adjust height as needed */
+  max-width: 800px; /* Optional: Max width */
+  max-height: 700px; /* Optional: Max height */
 }
 
-/* Nút đóng chat */
+/* Header Buttons Container */
+.header-buttons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+/* Individual Header Buttons (Clear, Close) */
+.clear-btn,
 .close-btn {
   background: none;
   border: none;
   color: #888;
-  font-size: 24px;
+  font-size: 24px; /* Adjust if needed */
   cursor: pointer;
-  transition: 0.3s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; /* Increased clickable area */
+  height: 30px; /* Increased clickable area */
+  transition: color 0.3s, opacity 0.3s;
+  line-height: 1;
 }
 
+.clear-btn:hover,
 .close-btn:hover {
   color: #000;
+  opacity: 0.8; /* Slight hover effect */
 }
 
+.header-buttons .header-icon {
+  width: 18px; /* Adjust icon size */
+  height: 18px;
+  object-fit: contain;
+}
+
+/* Initial State (Before Chatting) */
 .chat-icon {
   width: 100px;
   height: 100px;
@@ -94,10 +119,10 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   resize: none;
-  overflow: hidden;
+  overflow: hidden; /* Prevent scrollbar unless needed */
   line-height: 1.4;
-  min-height: 40px;
-  max-height: 200px;
+  min-height: 40px; /* Ensure minimum height */
+  max-height: 120px; /* Limit max height */
   text-align: left;
   font-family: inherit;
   box-sizing: border-box;
@@ -131,67 +156,75 @@
   transform: translateY(2px);
 }
 
-/* Vùng chat */
+/* Vùng chat (Khi đang chat) */
 .chat-container {
   display: flex;
   flex-direction: column;
-
-  /* Cho phép con chiếm trọn khoảng trống, để .chat-box cuộn */
-  flex: 1;
-  min-height: 0; /* tránh trường hợp con "đội" chiều cao */
+  flex: 1; /* Take remaining space */
+  min-height: 0; /* Prevent overflow issues */
 }
 
 /* Danh sách tin nhắn */
 .chat-box {
-  /* Con cuộn */
-  flex: 1;
-  overflow-y: auto;
-  margin-top: 4%;
+  flex: 1; /* Allow this to grow and scroll */
+  overflow-y: auto; /* Enable vertical scroll */
   padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 10px; /* Space between message wrappers */
 }
 
 /* Tin nhắn căn trái/phải */
-.user-message-wrapper {
+.message-wrapper {
   display: flex;
+}
+
+.user-message-wrapper {
   justify-content: flex-end;
 }
 
 .bot-message-wrapper {
-  display: flex;
   justify-content: flex-start;
 }
 
+/* Base Message Style */
 .message {
-  background-color: #e1f5fe;
   padding: 10px 15px;
   border-radius: 10px;
-  max-width: 75%;
+  max-width: 80%; /* Max width of message bubble */
   font-size: 0.95rem;
   line-height: 1.4;
+  position: relative; /* For timestamp positioning */
+  word-wrap: break-word; /* Break long words */
 }
 
-/* Tin nhắn của user */
+/* User Message Style */
 .message.user-message {
   background-color: #42a5f5;
   color: white;
-  align-self: flex-end;
-  border-radius: 10px;
-  padding: 10px 15px;
-  max-width: 75%;
-  font-size: 0.95rem;
-  line-height: 1.4;
+  border-bottom-right-radius: 4px; /* Bubble tail */
   animation: fadeIn 0.3s ease;
 }
 
-/* Tin nhắn bot */
+/* Bot Message Style */
 .message.bot-message {
   background-color: #e1f5fe;
   color: #333;
-  align-self: flex-start;
-  border-radius: 10px;
+  border-bottom-left-radius: 4px; /* Bubble tail */
+  animation: fadeIn 0.3s ease;
+}
+
+/* Timestamp Style */
+.timestamp {
+  display: block; /* Place on new line */
+  font-size: 0.7rem; /* Smaller font */
+  color: #888; /* Lighter color */
+  margin-top: 5px;
+  text-align: right; /* Align to the right within the bubble */
+}
+.message.bot-message .timestamp {
+  color: #666; /* Slightly darker for bot messages */
+  text-align: left;
 }
 
 /* Animation cho tin nhắn */
@@ -209,174 +242,163 @@
 /* Ô nhập tin nhắn (footer) */
 .message-input {
   display: flex;
-  align-items: center;
+  align-items: flex-end; /* Align items to bottom (good for multi-line text) */
   padding-top: 10px;
   border-top: 1px solid #ddd;
-  background: #e3f2fd;
+  background: #e3f2fd; /* Match chatbot box background */
+  margin-top: auto; /* Push to bottom */
 }
 
 .input-wrapper {
   flex-grow: 1;
   position: relative;
+  margin-right: 10px; /* Space before buttons */
 }
 
-/* Làm gọn textarea trong footer */
+/* Textarea in footer */
 .message-input .chat-input {
-  flex-grow: 1;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 10px; /* Adjust padding */
+  border-radius: 18px; /* More rounded */
   border: 1px solid #ccc;
-  resize: none;
-  overflow: hidden;
+  min-height: 38px; /* Slightly smaller min-height */
+  max-height: 100px;
+  box-sizing: border-box; /* Ensure padding is included */
   line-height: 1.4;
-  min-height: 40px;
-  max-height: 200px;
-  font-family: inherit;
+  overflow-y: auto; /* Allow scroll if max-height is reached */
 }
 
-/* Nút gửi tin nhắn */
-.send-btn {
-  width: 44px;
-  height: 44px;
-  margin-left: 10px;
+/* Buttons in footer */
+.send-btn,
+.stop-btn {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background-color: transparent;
+  background-color: #1e88e5; /* Blue background */
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: transform 0.2s ease;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.send-btn:hover {
+.send-btn:hover,
+.stop-btn:hover {
+  background-color: #1565c0; /* Darker blue on hover */
   transform: scale(1.05);
 }
 
+.send-btn:disabled {
+  background-color: #bdbdbd; /* Grey when disabled */
+  cursor: not-allowed;
+  transform: none;
+}
+
 .send-icon {
-  width: 130%;
-  height: 130%;
+  width: 20px; /* Adjust icon size */
+  height: 20px;
   object-fit: contain;
 }
 
-/* So sánh sản phẩm (component con) hiển thị trong khung chat */
-.message app-product-comparison {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-/* Nút Ngưng (Stop) - Kiểu dáng cơ bản */
 .stop-btn {
-  width: 44px;
-  height: 44px;
-  margin-left: 10px;
-  /* border-radius: 50%; */ /* Bỏ hoặc giữ tùy ý */
-  background-color: transparent; /* Nền trong suốt */
-  border: none;                 /* Không có viền */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 0.2s ease; /* Chỉ transition hiệu ứng phóng to */
+  background-color: #f1f1f1; /* Light grey background */
+  border: 1px solid #ddd;
 }
-
 .stop-btn:hover {
-  /* background-color: transparent; */ /* Không cần đổi nền khi hover */
-  transform: scale(1.05); /* Giữ lại hiệu ứng phóng to nếu muốn */
+  background-color: #e0e0e0;
 }
 
-/* Định dạng cho thẻ IMG/SVG bên trong nút stop giữ nguyên */
 .stop-btn img {
-  /* Điều chỉnh kích thước cho icon tạm thời nếu cần */
- width: 130%; /* Kích thước ví dụ - bạn có thể thay đổi */
- height: 130%; /* Kích thước ví dụ - bạn có thể thay đổi */
- object-fit: contain; /* Đảm bảo icon không bị méo khi thay đổi kích thước */
-}
-/* Hoặc CSS cho SVG nếu bạn dùng */
-/*
-.stop-btn .stop-icon-svg {
   width: 18px;
   height: 18px;
-  fill: #d84315;
-}
-*/
-
-/* --- BẮT ĐẦU KHỐI CSS MỚI --- */
-
-/* Container cho các nút ở header */
-.header-buttons {
-  position: absolute; /* Đặt vị trí tuyệt đối so với .chatbot-box */
-  top: 10px;        /* Cách lề trên 10px */
-  right: 10px;       /* Cách lề phải 10px */
-  display: flex;     /* Dùng flexbox để xếp nút ngang nhau */
-  align-items: center; /* Căn các nút theo chiều dọc */
-  gap: 8px;          /* Khoảng cách giữa nút cây chổi và nút X */
-  z-index: 10;       /* Đảm bảo nút nằm trên các nội dung khác trong header */
+  object-fit: contain;
 }
 
-/* Nút Xóa Chat (Cây chổi) */
-.clear-btn {
-  background: none; /* Nền trong suốt */
-  border: none;     /* Không có viền */
-  color: #888;     /* Màu icon (nếu là font icon) hoặc không ảnh hưởng nếu là img */
-  cursor: pointer;
-  padding: 0;       /* Bỏ padding mặc định */
-  display: flex;    /* Để căn giữa icon bên trong */
-  align-items: center;
-  justify-content: center;
-  /* Đặt kích thước cho nút bấm nếu muốn */
-  width: 24px;
-  height: 24px;
-  transition: color 0.3s; /* Hiệu ứng khi hover (cho màu icon nếu dùng font) */
+/* Child component styles within messages */
+.message app-product-comparison,
+.message app-product-info,
+.message product-promotion {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto; /* Scroll if content is too wide */
 }
 
-.clear-btn:hover {
-  color: #000; /* Đổi màu khi hover (cho màu icon nếu dùng font) */
-  /* Bạn có thể thêm hiệu ứng khác như opacity nếu muốn */
-  /* opacity: 0.7; */
-}
-
-/* Icon bên trong nút header (áp dụng cho <img> trong .clear-btn) */
-.header-buttons .header-icon {
-  width: 58px; /* Chỉnh kích thước icon cây chổi ở đây */
-  height: 58px; /* Chỉnh kích thước icon cây chổi ở đây */
-  object-fit: contain; /* Đảm bảo icon không bị méo */
-}
-
-/* Đảm bảo .close-btn cũng có padding và line-height (nên có từ bước trước) */
-.close-btn {
-    padding: 0;
-    line-height: 1;
-}
-
-
-/* Container cho nút like/dislike */
+/* Feedback Buttons */
 .feedback-buttons {
   display: flex;
   gap: 10px;
   margin-top: 8px;
-  font-size: 18px;
+  padding-left: 5px; /* Indent slightly */
+  justify-content: flex-start; /* Align left */
 }
 
-/* Icon mặc định */
 .feedback-buttons i {
   cursor: pointer;
-  color: #888;
+  color: #aaa; /* Default gray color */
+  font-size: 16px; /* Adjust size */
   transition: color 0.3s, transform 0.2s;
 }
 
 .feedback-buttons i:hover {
-  transform: scale(1.1);
+  transform: scale(1.15); /* Slightly larger hover effect */
+  color: #777;
 }
 
-/* Khi like */
 .feedback-buttons .active-like {
-  color: #42a5f5; /* Màu xanh dương */
+  color: #42a5f5; /* Blue for liked */
 }
 
-/* Khi dislike */
 .feedback-buttons .active-dislike {
-  color: #ef5350; /* Màu đỏ nhạt */
+  color: #ef5350; /* Red for disliked */
 }
+
+/* --- Loading Animation Styles --- */
+.loading-indicator {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 10px; /* Match gap */
+}
+
+.typing-indicator {
+  background-color: #e1f5fe; /* Match bot message background */
+  padding: 12px 15px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-bottom-left-radius: 4px; /* Match bot bubble tail */
+}
+
+.typing-indicator span {
+  height: 8px;
+  width: 8px;
+  background-color: #90caf9;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: bounce 1.3s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-of-type(1) {
+  animation-delay: -0.32s;
+}
+.typing-indicator span:nth-of-type(2) {
+  animation-delay: -0.16s;
+}
+.typing-indicator span:nth-of-type(3) {
+  animation-delay: 0s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+/* --- END Loading Animation Styles --- */

@@ -30,7 +30,7 @@
   </div>
 
   <ng-container *ngIf="!isChatting">
-    <img src="assets/icon-chatbot.png" class="chat-icon" />
+    <img src="assets/icon-chatbot.png" class="chat-icon" alt="Chatbot Icon" />
     <h3 class="title">AI Assistant</h3>
     <div>
       <div class="input-group">
@@ -87,6 +87,7 @@
               [innerHTML]="renderMarkdownBold(msg?.content)"
             ></p>
           </ng-container>
+
           <span class="timestamp" *ngIf="msg?.timestamp">
             {{ msg.timestamp | date : "shortTime" }}
           </span>
@@ -96,15 +97,28 @@
               class="fas fa-thumbs-up"
               [ngClass]="{ 'active-like': msg?.liked }"
               (click)="toggleLike(msg)"
+              title="Like response"
             >
             </i>
             <i
               class="fas fa-thumbs-down"
               [ngClass]="{ 'active-dislike': msg?.disliked }"
               (click)="toggleDislike(msg)"
+              title="Dislike response"
             >
             </i>
           </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="isBotResponding"
+        class="bot-message-wrapper loading-indicator"
+      >
+        <div class="message bot-message typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
     </div>
@@ -118,6 +132,7 @@
           [(ngModel)]="messageText"
           (input)="autoExpand($event)"
           (keydown)="handleKeyDown($event)"
+          aria-label="Chat message input"
         >
         </textarea>
       </div>
@@ -126,15 +141,19 @@
         class="send-btn"
         (click)="onSendMessage()"
         [disabled]="!messageText.trim()"
+        aria-label="Send message"
+        title="Send message"
       >
-        <img src="assets/send-icon.png" class="send-icon" />
+        <img src="assets/send-icon.png" class="send-icon" alt="Send" />
       </button>
       <button
         *ngIf="isBotResponding"
         class="stop-btn"
         (click)="stopBotResponse()"
+        aria-label="Stop generating response"
+        title="Stop generating response"
       >
-        <img src="assets/icon/user/stop-icon.png" />
+        <img src="assets/icon/user/stop-icon.png" alt="Stop generating" />
       </button>
     </div>
   </div>

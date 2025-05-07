@@ -1,6 +1,7 @@
 // src/app/features/document-management/document-management.component.ts
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
@@ -29,7 +30,7 @@ interface DisplayDocument {
 export class DocumentManagementComponent implements OnInit {
   documents: DisplayDocument[] = [];
   fileToUpload: File | null = null;
-  tenantId: number | null = null;
+  // tenantId: number | null = null;
   isUploading = false;
   uploadMessage: string | null = null;
   uploadError: boolean = false;
@@ -44,10 +45,20 @@ export class DocumentManagementComponent implements OnInit {
   validUntilDate: string | null = null; // Bound to date input (YYYY-MM-DD)
   // --- End NEW ---
 
-  constructor(private documentService: DocumentService) {}
+  constructor(
+    private documentService: DocumentService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
-    this.loadDocuments();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadDocuments();
+    } else {
+      console.log('Skipping loadDocuments on server during SSR.');
+      // Optionally initialize documents to an empty array or handle server state differently
+      this.documents = [];
+      this.isLoadingDocuments = false;
+    }
     console.log('DocumentManagementComponent initialized');
   }
 
@@ -133,17 +144,17 @@ export class DocumentManagementComponent implements OnInit {
       console.log('Error: No file selected.');
       return;
     }
-    if (
-      this.tenantId === null ||
-      this.tenantId === undefined ||
-      isNaN(this.tenantId) ||
-      this.tenantId <= 0
-    ) {
-      this.uploadMessage = 'Tenant ID không hợp lệ.';
-      this.uploadError = true;
-      console.log('Error: Invalid Tenant ID.');
-      return;
-    }
+    // if (
+    //   this.tenantId === null ||
+    //   this.tenantId === undefined ||
+    //   isNaN(this.tenantId) ||
+    //   this.tenantId <= 0
+    // ) {
+    //   this.uploadMessage = 'Tenant ID không hợp lệ.';
+    //   this.uploadError = true;
+    //   console.log('Error: Invalid Tenant ID.');
+    //   return;
+    // }
     // --- Add Date Validation ---
     if (!this.validFrom) {
       this.uploadMessage = 'Vui lòng chọn ngày bắt đầu hiệu lực (Valid From).';
@@ -180,18 +191,18 @@ export class DocumentManagementComponent implements OnInit {
 
     // Store current values to avoid issues if user changes them during async operation
     const fileToUploadNow = this.fileToUpload;
-    const tenantIdNow = this.tenantId;
+    // const tenantIdNow = this.tenantId;
     const validFromNow = this.validFrom;
     const validUntilNow = this.validUntil;
 
     console.log(
-      `Attempting upload: ${fileToUploadNow.name}, Tenant: ${tenantIdNow}, ValidFrom: ${validFromNow}, ValidUntil: ${validUntilNow}`
+      `Attempting upload: ${fileToUploadNow.name} , ValidFrom: ${validFromNow}, ValidUntil: ${validUntilNow}`
     );
     console.log('Calling documentService.uploadDocument...');
 
     // --- Call service with date info ---
     this.documentService
-      .uploadDocument(fileToUploadNow, tenantIdNow, validFromNow, validUntilNow)
+      .uploadDocument(fileToUploadNow, validFromNow, validUntilNow)
       .pipe(
         finalize(() => {
           this.isUploading = false;
