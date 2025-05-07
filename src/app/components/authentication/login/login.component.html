@@ -71,3 +71,12 @@
     </section>
   </div>
 </div>
+
+<!-- Notification thông báo -->
+<notification
+  *ngIf="showNotificationModal"
+  [message]="notificationMessage"
+  [confirmButtonText]= "notificationConfirmText" (confirmAction)="handleNotificationConfirm()"
+  (closeAction)="showNotificationModal = false"
+  >
+</notification>

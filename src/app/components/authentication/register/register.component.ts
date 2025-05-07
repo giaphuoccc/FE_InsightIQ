@@ -167,7 +167,7 @@ onSubmit(): void {
           // this.router.navigate(['/login']);
           this.notificationIsError = false;
           this.notificationMessage = 'Tenant account registration successful! Please verify to log in';
-          this.notificationConfirmText = 'Confirm';
+          this.notificationConfirmText = 'Go to login';
           this.showNotificationModal = true;
         },
         error: (tenantErr) => {
@@ -188,6 +188,7 @@ onSubmit(): void {
       this.notificationIsError = true;
       this.notificationMessage = 'Failed to create user account. Please check your information or try again later.';
       this.notificationConfirmText = 'Confirm';
+      console.log(this.notificationConfirmText);
       this.showNotificationModal = true;
       //this.registrationError = userErr.error?.message || 'Tạo tài khoản người dùng thất bại. Vui lòng thử lại.';
       //window.scrollTo({ top: 0, behavior: 'smooth' });

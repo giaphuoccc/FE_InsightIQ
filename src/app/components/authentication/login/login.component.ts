@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { NotificationComponent } from '../../../shared/notification/notification.component';
+import { AuthService } from '../../../core/auth.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule, NotificationComponent]
 })
 export class LoginComponent implements OnInit {
   /** Reactive form for login */
@@ -21,13 +23,15 @@ export class LoginComponent implements OnInit {
   /** Disable the form & show spinner while waiting for API */
   isSubmitting = false;
 
-  /** API‑returned error message */
-  loginError: string | null = null;
+  // Các thuộc tính để quản lý việc hiển thị box thông báo
+  showNotificationModal = false;
+  notificationMessage: string = '';
+  notificationIsErorr: boolean = false;
+  notificationConfirmText: string = 'Confirm';
 
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient,
-    private router: Router
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -37,39 +41,47 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  /** Shorthand getter used in the template: f['email'] */
   get f() {
     return this.loginForm.controls;
   }
 
-  /** Handle the submit action */
   onSubmit(): void {
     this.submitted = true;
 
-    // stop here if form is invalid or already submitting
-    if (this.loginForm.invalid || this.isSubmitting) {
-      return;
-    }
+    if (this.loginForm.invalid || this.isSubmitting) return;
 
     this.isSubmitting = true;
-    this.loginError = null;
-
     const credentials = this.loginForm.value;
 
-    // 🔐 Call your authentication endpoint (adjust URL as needed)
-    this.http.post('/api/login', credentials).subscribe({
+    this.authService.login(credentials).subscribe({
       next: () => {
         this.isSubmitting = false;
-        // ✅ Navigate to dashboard or desired route after successful login
-        this.router.navigate(['/']);
+        // Không cần làm gì thêm vì AuthService đã điều hướng
       },
-      error: (error) => {
+      error: (errorResponse) => {
         this.isSubmitting = false;
-        // ❌ Display error from backend or generic message
-        this.loginError = error.error?.message || 'Login failed. Please try again.';
-        // Smooth scroll to top so the user sees the error banner (if you add one)
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.notificationIsErorr = true;
+        this.notificationConfirmText = 'Confirm';
+
+        if (errorResponse.message === 'Role undefined!') {
+          this.notificationMessage = 'Role undefined!';
+        } else if (errorResponse.status === 400) {
+          this.notificationMessage = "Fail to login";
+        } else if (errorResponse.status === 500) {
+          this.notificationMessage = "Something's wrong with user's email or password or your account!";
+        } else {
+          this.notificationMessage = (errorResponse.error && errorResponse.error.message)
+            ? errorResponse.error.message
+            : "An unexpected error occurred. Please try again!";
+        }
+
+        this.showNotificationModal = true;
       }
     });
+  }
+
+  handleNotificationConfirm(): void {
+    this.showNotificationModal = false;
+    // Không chuyển trang nếu là lỗi
   }
 }

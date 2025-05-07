@@ -22,6 +22,7 @@ import { BillingHistoryComponent } from './components/tenant/component/billing/b
 import { BillingHistoryDetailComponent } from './components/tenant/component/billing/billing-history-detail/billing-history-detail.component';
 import { DocumentManagementComponent } from './components/tenant/component/document-management/document-management.component';
 import { DashboardComponent } from './components/tenant/component/dashboard-tenant/dashboard-tenant.component';
+import { DashboardSuperadminComponent } from './components/superadmin/component/dashboard-superadmin/dashboard-superadmin.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -71,11 +72,14 @@ export const routes: Routes = [
     path: 'billing/history/:invoiceId',
     component: BillingHistoryDetailComponent,
   },
+  { path: 'document', component: DocumentManagementComponent },
+  {path: 'dashboard_tenant', component: DashboardComponent}, // Dashboard cho Tenant
+  {path: 'dashboard_superadmin', component: DashboardSuperadminComponent},
   // --- End of added routes ---
 
   // Optional: Add fallback route
   // { path: '**', redirectTo: '/login' }
 
     // DOCUMENT
-    { path: 'document', component: DocumentManagementComponent },
+
 ];

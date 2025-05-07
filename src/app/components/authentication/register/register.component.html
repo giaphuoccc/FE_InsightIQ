@@ -142,7 +142,7 @@
 <notification
   *ngIf="showNotificationModal"
   [message]="notificationMessage"
-  [confirmButtonText]="'Go to login page'" (confirmAction)="handleNotificationConfirm()"
+  [confirmButtonText]="notificationConfirmText" (confirmAction)="handleNotificationConfirm()"
   (closeAction)="showNotificationModal = false"
   >
 </notification>
