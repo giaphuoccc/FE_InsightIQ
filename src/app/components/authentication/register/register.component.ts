@@ -1,103 +1,133 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RegisterViewModel, RegisterRequest } from '../viewmodels/register.viewmodel';
-import { Subject, takeUntil } from 'rxjs';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors
+} from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule]
 })
-export class RegisterComponent implements OnInit, OnDestroy {
+export class RegisterComponent implements OnInit {
+  /** Reactive registration form */
   registerForm!: FormGroup;
+
+  /** Loading state for the confirm button */
   isSubmitting = false;
+
+  /** Optional error banner for API failures */
   registrationError: string | null = null;
-  industries: string[] = [];
-  
-  private destroy$ = new Subject<void>();
-  
+
   constructor(
-    private registerViewModel: RegisterViewModel,
+    private fb: FormBuilder,
+    private http: HttpClient,
     private router: Router
-  ) {
-    this.industries = this.registerViewModel.industries;
-  }
-  
+  ) {}
+
   ngOnInit(): void {
-    this.registerForm = this.registerViewModel.createForm();
-    
-    this.registerViewModel.isSubmitting$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(isSubmitting => {
-        this.isSubmitting = isSubmitting;
-      });
-      
-    this.registerViewModel.registrationError$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(error => {
-        this.registrationError = error;
-        if (error) {
-          // Scroll to top to show error message
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      });
+    this.registerForm = this.fb.group(
+      {
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(8)]],
+        confirmPassword: ['', Validators.required],
+        fullName: ['', Validators.required],
+        phone: ['', [Validators.required, Validators.pattern('^\\+?[0-9]{7,15}$')]],
+        companyName: ['', Validators.required],
+        taxCode: ['', Validators.required]
+      },
+      { validators: this.passwordMatchValidator }
+    );
   }
-  
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+
+  /** Custom validator to ensure password === confirmPassword */
+  private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const pwd = control.get('password')?.value;
+    const confirm = control.get('confirmPassword')?.value;
+    return pwd === confirm ? null : { passwordMismatch: true };
   }
-  
+
+  /** Field invalid helper used in template */
   isFieldInvalid(fieldName: string): boolean {
     const control = this.registerForm.get(fieldName);
-    return !!control && control.invalid && (control.dirty || control.touched);
+    return !!(control && control.invalid && (control.dirty || control.touched));
   }
-  
+
+  /** Simple error message generator */
   getErrorMessage(fieldName: string): string {
-    return this.registerViewModel.getErrorMessage(fieldName, this.registerForm);
+    const control = this.registerForm.get(fieldName);
+    if (!control) return '';
+
+    if (fieldName === 'confirmPassword' && this.registerForm.hasError('passwordMismatch')) {
+      return 'Passwords do not match';
+    }
+    if (control.hasError('required')) {
+      return 'This field is required';
+    }
+    if (control.hasError('email')) {
+      return 'Please enter a valid email address';
+    }
+    if (control.hasError('minlength')) {
+      const len = control.getError('minlength').requiredLength;
+      return `Minimum length is ${len} characters`;
+    }
+    if (control.hasError('pattern')) {
+      if (fieldName === 'phone') {
+        return 'Please enter a valid phone number';
+      }
+      return 'Invalid format';
+    }
+    return '';
   }
-  
+
+  /** Submit handler */
   onSubmit(): void {
     if (this.registerForm.invalid || this.isSubmitting) {
-      // Mark all fields as touched to show validation errors
-      Object.keys(this.registerForm.controls).forEach(key => {
-        const control = this.registerForm.get(key);
-        if (control) {
-          control.markAsTouched();
-        }
-      });
+      this.registerForm.markAllAsTouched();
       return;
     }
-    
-    const formValue = this.registerForm.value;
-    
-    const registerData: RegisterRequest = {
-      email: formValue.email,
-      password: formValue.password,
-      fullName: formValue.fullName,
-      phone: formValue.phone,
-      alternateContact: formValue.alternateContact || undefined,
-      companyName: formValue.companyName,
-      taxCode: formValue.taxCode,
-      businessIndustry: formValue.businessIndustry,
-      companyWebsite: formValue.companyWebsite || undefined,
-      businessAddress: formValue.businessAddress,
-      employeeCount: formValue.employeeCount
+
+    this.isSubmitting = true;
+    this.registrationError = null;
+
+    const {
+      email,
+      password,
+      fullName,
+      phone,
+      companyName,
+      taxCode
+    } = this.registerForm.value;
+
+    const registerData = {
+      email,
+      password,
+      fullName,
+      phone,
+      companyName,
+      taxCode
     };
-    
-    this.registerViewModel.register(registerData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          this.registerViewModel.handleSuccessfulRegistration(response);
-        },
-        error: () => {
-          // Error is already handled in the view model
-        }
-      });
+
+    this.http.post('/api/register', registerData).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.router.navigate(['/auth/login']);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.registrationError =
+          err.error?.message || 'Registration failed. Please try again.';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
   }
 }
