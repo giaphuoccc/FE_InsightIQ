@@ -89,45 +89,81 @@ export class RegisterComponent implements OnInit {
     return '';
   }
 
-  /** Submit handler */
-  onSubmit(): void {
-    if (this.registerForm.invalid || this.isSubmitting) {
-      this.registerForm.markAllAsTouched();
-      return;
-    }
+ /** Hàm xử lý khi người dùng bấm nút Đăng ký */
+onSubmit(): void {
 
-    this.isSubmitting = true;
-    this.registrationError = null;
-
-    const {
-      email,
-      password,
-      fullName,
-      phone,
-      companyName,
-      taxCode
-    } = this.registerForm.value;
-
-    const registerData = {
-      email,
-      password,
-      fullName,
-      phone,
-      companyName,
-      taxCode
-    };
-
-    this.http.post('/api/register', registerData).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.router.navigate(['/auth/login']);
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        this.registrationError =
-          err.error?.message || 'Registration failed. Please try again.';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    });
+  // Bước 1: Kiểm tra form có hợp lệ không, hoặc đang trong quá trình gửi dữ liệu
+  if (this.registerForm.invalid || this.isSubmitting) {
+    // Đánh dấu toàn bộ các ô nhập liệu là đã chạm vào để hiện lỗi nếu có
+    this.registerForm.markAllAsTouched();
+    return; // Không làm gì thêm nếu form lỗi hoặc đang gửi
   }
+
+  // Bước 2: Bắt đầu gửi -> bật trạng thái "đang gửi" và xoá lỗi cũ nếu có
+  this.isSubmitting = true;
+  this.registrationError = null;
+
+  // Bước 3: Lấy dữ liệu người dùng đã nhập từ form
+  const {
+    email,
+    password,
+    fullName,
+    phone,
+    companyName,
+    taxCode
+  } = this.registerForm.value;
+
+  // Bước 4: Chuẩn bị dữ liệu để gửi tạo User (chỉ cần email, password và số điện thoại)
+  const userData = {
+    email: email,
+    password: password,
+    phoneNumber: phone
+  };
+
+  // Bước 5: Gửi yêu cầu đến API để tạo tài khoản người dùng
+  this.http.post<any>('/user/create', userData).subscribe({
+    next: (userCreationResponse) => {
+      // Bước 6: API trả về thông tin người dùng, lấy ra userId để dùng tiếp
+      const userId = userCreationResponse.id;
+
+      // Kiểm tra nếu không có userId trả về -> hiển thị lỗi và dừng
+      if (!userId) {
+        this.isSubmitting = false;
+        this.registrationError = 'Không lấy được ID người dùng sau khi tạo. Vui lòng thử lại.';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // Bước 7: Chuẩn bị dữ liệu để tạo Tenant (công ty)
+      const tenantData = {
+        companyName: companyName,
+        fullName: fullName,
+        taxId: taxCode,      // Chú ý: API cần trường tên "taxId"
+        status: 'PENDING',   // Trạng thái mặc định khi vừa đăng ký
+        userId: userId       // Liên kết với người dùng vừa tạo
+      };
+
+      // Bước 8: Gửi yêu cầu đến API để tạo Tenant
+      this.http.post<any>('/tenant/create', tenantData).subscribe({
+        next: () => {
+          // Bước 9: Tạo Tenant thành công -> chuyển hướng đến trang đăng nhập
+          this.isSubmitting = false;
+          this.router.navigate(['/auth/login']);
+        },
+        error: (tenantErr) => {
+          // Bước 10: Có lỗi khi tạo Tenant
+          this.isSubmitting = false;
+          this.registrationError = tenantErr.error?.message || 'Tạo công ty thất bại. Vui lòng thử lại.';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    },
+    error: (userErr) => {
+      // Bước 11: Có lỗi khi tạo User
+      this.isSubmitting = false;
+      this.registrationError = userErr.error?.message || 'Tạo tài khoản người dùng thất bại. Vui lòng thử lại.';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+}
 }
