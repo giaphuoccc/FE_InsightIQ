@@ -21,7 +21,6 @@ import { SubscriptionManagementComponent } from './components/tenant/component/s
 import { BillingHistoryComponent } from './components/tenant/component/billing/billing-history/billing-history.component';
 import { BillingHistoryDetailComponent } from './components/tenant/component/billing/billing-history-detail/billing-history-detail.component';
 import { DocumentManagementComponent } from './components/tenant/component/document-management/document-management.component';
-import { DashboardComponent } from './components/tenant/component/dashboard-tenant/dashboard-tenant.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -78,7 +77,4 @@ export const routes: Routes = [
 
     // DOCUMENT
     { path: 'document', component: DocumentManagementComponent },
-
-    // DASHBOARD TENANT
-    { path: 'dashboard-tenant', component: DashboardComponent },
 ];
