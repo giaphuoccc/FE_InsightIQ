@@ -1,176 +1,208 @@
 <div class="register-container">
-  <div class="register-panel">
-    <div class="register-left">
-      <div class="logo">
-        <img src="assets/image/logo.png" alt="Insight IQ Logo" />
+    <div class="register-panel">
+      <div class="register-left">
+        <div class="logo">
+          <img src="logo.jpg" alt="Insight IQ Logo" />
+        </div>
+        <h1>Welcome to<br/>Insight IQ</h1>
+        <div class="illustration">
+          <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/898d2df0629157273af2a73cba401d05261bb3de" alt="Registration Illustration" />
+        </div>
       </div>
-      <h1>Welcome to<br/>Insight IQ</h1>
-      <div class="illustration">
-        <img src="https://cdn.builder.io/api/v1/image/assets/TEMP/898d2df0629157273af2a73cba401d05261bb3de" alt="Registration Illustration" />
-      </div>
-    </div>
-
-    <div class="register-right">
-      <h2>Register Account</h2>
-
-      <div *ngIf="registrationSuccessMessage" class="alert alert-success">
-        {{ registrationSuccessMessage }}
-      </div>
-      <div *ngIf="registrationError" class="alert alert-danger">
-        {{ registrationError }}
-      </div>
-      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-        <section>
-          <h3>Basic authentication information</h3>
-
-          <div class="form-group">
-            <input
-              type="email"
-              formControlName="email"
-              placeholder="Enter your email address"
-              [ngClass]="{'invalid': isFieldInvalid('email')}"
-            />
-            <div *ngIf="isFieldInvalid('email')" class="error-message">
-              {{ getErrorMessage('email') }}
+      
+      <div class="register-right">
+        <h2>Register Account</h2>
+        
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <section>
+            <h3>Basic authentication information</h3>
+            
+            <div class="form-group">
+              <input 
+                type="email" 
+                formControlName="email" 
+                placeholder="Enter your email address"
+                [ngClass]="{'invalid': isFieldInvalid('email')}" 
+              />
+              <div *ngIf="isFieldInvalid('email')" class="error-message">
+                {{ getErrorMessage('email') }}
+              </div>
             </div>
-          </div>
-
-          <div class="form-group">
-            <input
-              type="password"
-              formControlName="password"
-              placeholder="Password"
-              [ngClass]="{'invalid': isFieldInvalid('password')}"
-            />
-            <div *ngIf="isFieldInvalid('password')" class="error-message">
-              {{ getErrorMessage('password') }}
+            
+            <div class="form-group">
+              <input 
+                type="password" 
+                formControlName="password" 
+                placeholder="Password"
+                [ngClass]="{'invalid': isFieldInvalid('password')}" 
+              />
+              <div *ngIf="isFieldInvalid('password')" class="error-message">
+                {{ getErrorMessage('password') }}
+              </div>
             </div>
-          </div>
-
-          <div class="form-group">
-            <input
-              type="password"
-              formControlName="confirmPassword"
-              placeholder="Confirm password"
-              [ngClass]="{'invalid': isFieldInvalid('confirmPassword')}"
-            />
-            <div *ngIf="isFieldInvalid('confirmPassword')" class="error-message">
-              {{ getErrorMessage('confirmPassword') }}
+            
+            <div class="form-group">
+              <input 
+                type="password" 
+                formControlName="confirmPassword" 
+                placeholder="Confirm password"
+                [ngClass]="{'invalid': isFieldInvalid('confirmPassword')}" 
+              />
+              <div *ngIf="isFieldInvalid('confirmPassword')" class="error-message">
+                {{ getErrorMessage('confirmPassword') }}
+              </div>
             </div>
-          </div>
-        </section>
-
-        <section>
-          <h3>Contact information</h3>
-
-          <div class="form-group">
-            <input
-              type="text"
-              formControlName="fullName"
-              placeholder="Full name"
-              [ngClass]="{'invalid': isFieldInvalid('fullName')}"
-            />
-            <div *ngIf="isFieldInvalid('fullName')" class="error-message">
-              {{ getErrorMessage('fullName') }}
-            </div>
-          </div>
-
-          <div class="form-group">
-            <input
-              type="tel"
-              formControlName="phone"
-              placeholder="Phone"
-              [ngClass]="{'invalid': isFieldInvalid('phone')}"
-            />
-            <div *ngIf="isFieldInvalid('phone')" class="error-message">
-              {{ getErrorMessage('phone') }}
-            </div>
-          </div>
-
           </section>
-
-        <section>
-          <h3>Business information</h3>
-
-          <div class="form-group">
-            <input
-              type="text"
-              formControlName="companyName"
-              placeholder="Company name"
-              [ngClass]="{'invalid': isFieldInvalid('companyName')}"
-            />
-            <div *ngIf="isFieldInvalid('companyName')" class="error-message">
-              {{ getErrorMessage('companyName') }}
+          
+          <section>
+            <h3>Contact information</h3>
+            
+            <div class="form-group">
+              <input 
+                type="text" 
+                formControlName="fullName" 
+                placeholder="Full name"
+                [ngClass]="{'invalid': isFieldInvalid('fullName')}" 
+              />
+              <div *ngIf="isFieldInvalid('fullName')" class="error-message">
+                {{ getErrorMessage('fullName') }}
+              </div>
             </div>
-          </div>
-
-          <div class="form-group">
-            <input
-              type="text"
-              formControlName="taxCode"
-              placeholder="Tax code"
-              [ngClass]="{'invalid': isFieldInvalid('taxCode')}"
-            />
-            <div *ngIf="isFieldInvalid('taxCode')" class="error-message">
-              {{ getErrorMessage('taxCode') }}
+            
+            <div class="form-group">
+              <input 
+                type="tel" 
+                formControlName="phone" 
+                placeholder="Phone"
+                [ngClass]="{'invalid': isFieldInvalid('phone')}" 
+              />
+              <div *ngIf="isFieldInvalid('phone')" class="error-message">
+                {{ getErrorMessage('phone') }}
+              </div>
             </div>
-          </div>
-
-           </section>
-
-        <section>
-          <h3>Additional information</h3>
-
-           <div class="form-check">
-            <input
-              type="checkbox"
-              id="terms"
-              formControlName="termsAccepted"
-              [ngClass]="{'invalid': isFieldInvalid('termsAccepted')}"
-            />
-            <label for="terms">I agree to the <a href="#">Terms & Conditions</a></label>
-            <div *ngIf="isFieldInvalid('termsAccepted')" class="error-message">
-              {{ getErrorMessage('termsAccepted') }}
+            
+            <div class="form-group">
+              <input 
+                type="text" 
+                formControlName="alternateContact" 
+                placeholder="Alternative contact (email)"
+                [ngClass]="{'invalid': isFieldInvalid('alternateContact')}" 
+              />
+              <div *ngIf="isFieldInvalid('alternateContact')" class="error-message">
+                {{ getErrorMessage('alternateContact') }}
+              </div>
             </div>
+          </section>
+          
+          <section>
+            <h3>Business information</h3>
+            
+            <div class="form-group">
+              <input 
+                type="text" 
+                formControlName="companyName" 
+                placeholder="Company name"
+                [ngClass]="{'invalid': isFieldInvalid('companyName')}" 
+              />
+              <div *ngIf="isFieldInvalid('companyName')" class="error-message">
+                {{ getErrorMessage('companyName') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <input 
+                type="text" 
+                formControlName="taxCode" 
+                placeholder="Tax code"
+                [ngClass]="{'invalid': isFieldInvalid('taxCode')}" 
+              />
+              <div *ngIf="isFieldInvalid('taxCode')" class="error-message">
+                {{ getErrorMessage('taxCode') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <select 
+                formControlName="businessIndustry"
+                [ngClass]="{'invalid': isFieldInvalid('businessIndustry')}"
+              >
+                <option value="" disabled selected>Business industry</option>
+                <option *ngFor="let industry of industries" [value]="industry">{{ industry }}</option>
+              </select>
+              <div *ngIf="isFieldInvalid('businessIndustry')" class="error-message">
+                {{ getErrorMessage('businessIndustry') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <input 
+                type="url" 
+                formControlName="companyWebsite" 
+                placeholder="Company website"
+                [ngClass]="{'invalid': isFieldInvalid('companyWebsite')}" 
+              />
+              <div *ngIf="isFieldInvalid('companyWebsite')" class="error-message">
+                {{ getErrorMessage('companyWebsite') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <input 
+                type="text" 
+                formControlName="businessAddress" 
+                placeholder="Business address"
+                [ngClass]="{'invalid': isFieldInvalid('businessAddress')}" 
+              />
+              <div *ngIf="isFieldInvalid('businessAddress')" class="error-message">
+                {{ getErrorMessage('businessAddress') }}
+              </div>
+            </div>
+          </section>
+          
+          <section>
+            <h3>Additional information</h3>
+            
+            <div class="form-group">
+              <input 
+                type="number" 
+                formControlName="employeeCount" 
+                placeholder="Expected number of users"
+                [ngClass]="{'invalid': isFieldInvalid('employeeCount')}" 
+              />
+              <div *ngIf="isFieldInvalid('employeeCount')" class="error-message">
+                {{ getErrorMessage('employeeCount') }}
+              </div>
+            </div>
+            
+            <div class="form-check">
+              <input 
+                type="checkbox" 
+                id="terms" 
+                formControlName="termsAccepted"
+                [ngClass]="{'invalid': isFieldInvalid('termsAccepted')}" 
+              />
+              <label for="terms">I agree to the <a href="#">Terms & Conditions</a></label>
+              <div *ngIf="isFieldInvalid('termsAccepted')" class="error-message">
+                {{ getErrorMessage('termsAccepted') }}
+              </div>
+            </div>
+          </section>
+          
+          <div class="form-actions">
+            <button 
+              type="submit" 
+              class="btn-confirm"
+              [disabled]="registerForm.invalid || isSubmitting"
+            >
+              <span *ngIf="!isSubmitting">Confirm</span>
+              <span *ngIf="isSubmitting" class="spinner"></span>
+            </button>
           </div>
-        </section>
-
-        <div class="form-actions">
-          <button
-            type="submit"
-            class="btn-confirm"
-            [disabled]="registerForm.invalid || isSubmitting"
-          >
-            <span *ngIf="!isSubmitting">Confirm</span>
-            <span *ngIf="isSubmitting" class="spinner"></span>
-          </button>
-        </div>
-
-        <div class="form-footer">
-          <p>Already have an account? <a routerLink="/auth/login">Log in</a></p>
-        </div>
-      </form>
+          
+          <div class="form-footer">
+            <p>Already have an account? <a routerLink="/auth/login">Log in</a></p>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-
-<style>
-  .alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 14px;
-  }
-  .alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-  }
-  .alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-  }
-</style>
