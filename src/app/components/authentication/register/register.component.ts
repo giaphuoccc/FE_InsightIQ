@@ -34,6 +34,10 @@ export class RegisterComponent implements OnInit {
   showNotificationModal = false;
   notificationMessage: string ='';
 
+  // Thuộc tính để quản lý thông báo thành công hay là lỗi
+  notificationIsError: boolean = false;
+  notificationConfirmText: string = 'Confirm'; // Text cho nút confirm
+
 
   constructor(
     private fb: FormBuilder,
@@ -136,8 +140,13 @@ onSubmit(): void {
       // Kiểm tra nếu không có userId trả về -> hiển thị lỗi và dừng
       if (!userId) {
         this.isSubmitting = false;
-        this.registrationError = 'Không lấy được ID người dùng sau khi tạo. Vui lòng thử lại.';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Bắt đầu hiển thị thông báo lỗi
+        this.notificationIsError = true; // Đánh dấu là lỗi
+        this.notificationMessage = 'Unexpected error: Did not receive a valid user ID after creation. Please try again.';
+        this.notificationConfirmText = 'Confirm';
+        this.showNotificationModal = true;
+       // this.registrationError = 'Không lấy được ID người dùng sau khi tạo. Vui lòng thử lại.';
+        // window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
 
@@ -156,31 +165,46 @@ onSubmit(): void {
           // Bước 9: Tạo Tenant thành công
            this.isSubmitting = false; // Để trạng thái đang gửi là false lại
           // this.router.navigate(['/login']);
-
+          this.notificationIsError = false;
           this.notificationMessage = 'Tenant account registration successful! Please verify to log in';
+          this.notificationConfirmText = 'Confirm';
           this.showNotificationModal = true;
         },
         error: (tenantErr) => {
           // Bước 10: Có lỗi khi tạo Tenant
           this.isSubmitting = false;
-          this.registrationError = tenantErr.error?.message || 'Tạo công ty thất bại. Vui lòng thử lại.';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          this.notificationIsError = true;
+          this.notificationMessage = 'Failed to create company information. The user account may have been created. Please try again or contact support.';
+          this.notificationConfirmText = 'Confirm';
+          this.showNotificationModal = true;
+         // this.registrationError = tenantErr.error?.message || 'Tạo công ty thất bại. Vui lòng thử lại.';
+         // window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
     },
     error: (userErr) => {
       // Bước 11: Có lỗi khi tạo User
       this.isSubmitting = false;
-      this.registrationError = userErr.error?.message || 'Tạo tài khoản người dùng thất bại. Vui lòng thử lại.';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.notificationIsError = true;
+      this.notificationMessage = 'Failed to create user account. Please check your information or try again later.';
+      this.notificationConfirmText = 'Confirm';
+      this.showNotificationModal = true;
+      //this.registrationError = userErr.error?.message || 'Tạo tài khoản người dùng thất bại. Vui lòng thử lại.';
+      //window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
 }
 
 // Hàm mới để đóng model và chuyển trang khi nhấn xác nhận
 handleNotificationConfirm(): void{
-  this.showNotificationModal = false; // Ẩn model
- // this.router.navigate(['/login']);
-  this.router.navigate(['/login']);
+
+  const wasErorr = this.notificationIsError; // Biến kiểm tra trạng thái lỗi trước khi ẩn model
+  this.showNotificationModal = false;
+
+  // Nếu không lỗi thì mới tiến hành chuyển trang
+  if (!wasErorr) {
+    this.showNotificationModal = false; // Ẩn model
+    this.router.navigate(['/login']);
+  }
 }
 }
