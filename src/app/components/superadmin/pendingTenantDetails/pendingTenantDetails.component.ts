@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common'; // Needed for *ngIf, *ngFor, etc
 import {
   SuperAdminService,
   TenantDetail,
-} from '../../../../core/superadmin.service';
+} from '../../../core/superadmin.service';
 import { Subscription } from 'rxjs';
 
 @Component({

@@ -1,4 +1,4 @@
-<button class="action-button">
+<button class="action-button" (click)="pressed.emit()">
   <img [src]="icon" alt="icon" class="action-icon" />
   <div class="action-title">{{ title }}</div>
 </button>

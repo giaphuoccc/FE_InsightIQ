@@ -1,15 +1,20 @@
 import { Routes } from '@angular/router';
+
+
 import { LoginComponent } from './components/authentication/login/login.component';
 import { RegisterComponent } from './components/authentication/register/register.component';
 
-import { ProfileComponent } from './components/superadmin/component/profile/profile.component';
-import { EditProfileComponent } from './components/superadmin/component/editProfile/editProfile.component'
+import { MainSuperadminDashboardComponent } from './components/superadmin/dashboard-superadmin/main-superadmin-dashboard.component';
+import { ProfileComponent } from './components/superadmin/profile/profile.component';
+import { EditProfileComponent } from './components/superadmin/editProfile/editProfile.component'
 
-import { PendingTenantComponent } from './components/superadmin/component/pendingTenant/pendingTenantcomponent';
-import { PendingTenantDetailsComponent } from './components/superadmin/component/pendingTenantDetails/pendingTenantDetails.component';
+import { PendingTenantComponent } from './components/superadmin/pendingTenant/pendingTenantcomponent';
+import { PendingTenantDetailsComponent } from './components/superadmin/pendingTenantDetails/pendingTenantDetails.component';
+
 import { WidgetUserComponent } from './components/widget-user/widget-user.component';
 
-import { TenantAccountListComponent } from './components/superadmin/component/tenantAccountList/tenantAccountList.component';
+import { DashboardComponent } from './components/tenant/component/dashboard-tenant/dashboard-tenant.component';
+import { TenantAccountListComponent } from './components/superadmin/tenantAccountList/tenantAccountList.component';
 
 import { TenantManagementComponent } from './components/tenant/component/profile/edit-profile/TenantManagementComponent/tenant-management.component';
 import { ReportManagementComponent } from './shared/reports/report-management/report-management.component';
@@ -21,14 +26,14 @@ import { SubscriptionManagementComponent } from './components/tenant/component/s
 import { BillingHistoryComponent } from './components/tenant/component/billing/billing-history/billing-history.component';
 import { BillingHistoryDetailComponent } from './components/tenant/component/billing/billing-history-detail/billing-history-detail.component';
 import { DocumentManagementComponent } from './components/tenant/component/document-management/document-management.component';
-import { DashboardComponent } from './components/tenant/component/dashboard-tenant/dashboard-tenant.component';
-import { DashboardSuperadminComponent } from './components/superadmin/component/dashboard-superadmin/dashboard-superadmin.component';
+
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 
   //SA Profile Section
+  {path: 'dashboard_superadmin', component: MainSuperadminDashboardComponent},
   { path: 'profile', component: ProfileComponent, },
   { path: 'edit-profile', component: EditProfileComponent, },
 
@@ -73,8 +78,10 @@ export const routes: Routes = [
     component: BillingHistoryDetailComponent,
   },
   { path: 'document', component: DocumentManagementComponent },
+
+  // Dashboard
   {path: 'dashboard_tenant', component: DashboardComponent}, // Dashboard cho Tenant
-  {path: 'dashboard_superadmin', component: DashboardSuperadminComponent},
+
   // --- End of added routes ---
 
   // Optional: Add fallback route

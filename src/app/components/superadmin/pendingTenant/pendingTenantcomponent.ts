@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs'; // Import Subscription for cleanup
 import {
   SuperAdminService,
   TenantListItem,
-} from '../../../../core/superadmin.service';
+} from '../../../core/superadmin.service';
 
 @Component({
   selector: 'app-pending-tenant-list',

@@ -1,18 +1,18 @@
 <!-- EDIT MODE -->
 <div *ngIf="!isLoading && !error && isEditMode" class="account-management-container">
   <div class="content">
-    <!-- Section Title ngoài border -->
+
+    <!-- Section Title -->
     <div class="section-title">
       <h2>Account Management</h2>
       <div class="underline"></div>
     </div>
 
-    <!-- Admin Title ngoài border -->
+    <!-- Admin Title -->
     <h3 class="admin-title">Super Admin Information</h3>
 
-    <!-- Card chỉ chứa form -->
+    <!-- Card -->
     <div class="admin-card">
-      <!-- Personal Info Header bên trong border nếu bạn muốn -->
       <div class="personal-info-header">
         <span class="personal-info-label">Edit Personal Information</span>
       </div>
@@ -24,36 +24,43 @@
           <div class="info-group">
             <label for="name">Name:</label>
             <input id="name" formControlName="name" class="form-input"
-                   [class.error]="formControls['name'].invalid && formControls['name'].touched">
-            <span *ngIf="formControls['name'].invalid && formControls['name'].touched"
+                   [class.error]="f['name'].invalid && f['name'].touched">
+            <span *ngIf="f['name'].invalid && f['name'].touched"
                   class="error-message">*Name is required</span>
           </div>
+
           <div class="info-group">
             <label for="phone">Phone:</label>
             <input id="phone" maxlength="12" formControlName="phone" class="form-input"
                    placeholder="+84XXXXXXXXX or 0XXXXXXXXX"
-                   [class.error]="formControls['phone'].invalid && formControls['phone'].touched">
-            <span *ngIf="formControls['phone'].invalid && formControls['phone'].touched"
+                   [class.error]="f['phone'].invalid && f['phone'].touched">
+            <span *ngIf="f['phone'].invalid && f['phone'].touched"
                   class="error-message">*Invalid phone number</span>
           </div>
+
           <div class="info-group">
             <label for="email">Email:</label>
             <input id="email" formControlName="email" class="form-input"
-                   [class.error]="formControls['email'].invalid && formControls['email'].touched">
-            <span *ngIf="formControls['email'].invalid && formControls['email'].touched"
+                   [class.error]="f['email'].invalid && f['email'].touched">
+            <span *ngIf="f['email'].invalid && f['email'].touched"
                   class="error-message">*Invalid email format</span>
           </div>
         </div>
 
         <div class="action-buttons">
-          <button type="submit" class="update-btn" [disabled]="isSubmitting">Update</button>
-          <button type="button" class="cancel-btn" (click)="cancelEdit()" [disabled]="isSubmitting">Cancel</button>
+          <button type="submit"
+                  class="update-btn"
+                  [disabled]="userForm.invalid || isSubmitting">Update</button>
+
+          <button type="button"
+                  class="cancel-btn"
+                  (click)="cancelEdit()"
+                  [disabled]="isSubmitting">Cancel</button>
         </div>
       </form>
     </div>
   </div>
 </div>
-
 
 <!-- PASSWORD CHANGE UI -->
 <div *ngIf="isChangePasswordMode" class="password-change-container">
@@ -100,12 +107,10 @@
 
     <div class="action-buttons">
       <button type="submit" class="update-btn">UPDATE</button>
-      <!-- Nút Cancel dành cho Change Password -->
       <button type="button" class="cancel-btn" (click)="backToProfile()">Cancel</button>
     </div>
   </form>
 </div>
-
 
 <!-- NOTIFICATION MODAL -->
 <div *ngIf="notificationVisible" class="notification-overlay">
