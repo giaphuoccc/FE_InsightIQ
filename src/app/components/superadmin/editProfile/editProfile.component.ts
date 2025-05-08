@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { switchMap, tap } from 'rxjs';
 
 import {
   ProfileService,
@@ -22,7 +23,6 @@ import {
   styleUrls: ['./editProfile.component.css']
 })
 export class EditProfileComponent implements OnInit {
-  /* ── FORM & STATE ───────────────────────────────────────── */
   userForm!: FormGroup;
   passwordForm!: FormGroup;
   isLoading = false;
@@ -31,13 +31,12 @@ export class EditProfileComponent implements OnInit {
   isSubmitting         = false;
   error: string | null = null;
 
-  /* ── NOTIFICATION MODAL ─────────────────────────────────── */
-  notificationVisible = false;
-  notificationMessage = '';
+  notificationVisible  = false;
+  notificationMessage  = '';
   private lastAction: 'edit' | 'password' | null = null;
 
-  /* ── INTERNAL ───────────────────────────────────────────── */
   private userId!: string;
+  private superAdminId!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -47,16 +46,14 @@ export class EditProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // 1️⃣  Fetch IDs
     this.profileSvc.getMyInfo().subscribe({
-      next: (ids: MyInfoIds) => {
-        this.userId = ids.userId.toString();
+      next: ({ superAdminId, userId }: MyInfoIds) => {
+        this.superAdminId = superAdminId.toString();
+        this.userId       = userId.toString();
 
-        // 2️⃣  Init forms
         this.initProfileForm();
         this.initPasswordForm();
 
-        // 3️⃣  Listen for ?mode=edit or ?mode=password
         this.route.queryParams.subscribe(p => {
           if (p['mode'] === 'edit') {
             this.lastAction = 'edit';
@@ -73,7 +70,6 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
-  /* ── PROFILE FORM ───────────────────────────────────────── */
   private initProfileForm(): void {
     this.userForm = this.fb.group({
       name:  ['', Validators.required],
@@ -89,9 +85,7 @@ export class EditProfileComponent implements OnInit {
       ]
     });
   }
-  get f() {
-    return this.userForm.controls;
-  }
+  get f() { return this.userForm.controls; }
 
   updateProfile(): void {
     if (this.userForm.invalid) {
@@ -101,14 +95,30 @@ export class EditProfileComponent implements OnInit {
     this.isSubmitting = true;
     this.error = null;
 
-    // Mock save
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.isEditMode = false;
-      this.notificationMessage = 'Profile updated successfully (mock).';
-      this.notificationVisible = true;
-      this.lastAction = 'edit';
-    }, 800);
+    const { name, email, phone } = this.userForm.value;
+
+    // 1) Cập nhật username ở SuperAdmin
+    this.profileSvc.updateSuperAdmin({ id: this.superAdminId, username: name })
+      .pipe(
+        // 2) Sau khi xong, cập nhật email & phone ở User
+        switchMap(() => this.profileSvc.updateUser({ id: this.userId, email, phoneNumber: phone }))
+      )
+      .subscribe({
+        next: resp => {
+          this.isSubmitting = false;
+          const msg = resp.message || 'Updated successfully';
+          this.notificationMessage = msg;
+          this.notificationVisible = true;
+          this.isEditMode = false;
+          this.lastAction = 'edit';
+        },
+        error: () => {
+          this.isSubmitting = false;
+          this.notificationMessage = 'Failed to update account information.';
+          this.notificationVisible = true;
+          this.lastAction = 'edit';
+        }
+      });
   }
 
   editInformation(): void {
@@ -117,11 +127,9 @@ export class EditProfileComponent implements OnInit {
   }
 
   cancelEdit(): void {
-    // Navigate back to profile view
     this.router.navigate(['/profile'], { queryParams: { id: this.userId } });
   }
 
-  /* ── PASSWORD FORM ───────────────────────────────────────── */
   private initPasswordForm(): void {
     this.passwordForm = this.fb.group(
       {
@@ -166,7 +174,6 @@ export class EditProfileComponent implements OnInit {
     const curPw = this.passwordForm.get('currentPassword')!.value;
     const newPw = this.passwordForm.get('newPassword')!.value;
 
-    // 1️⃣  Fetch current password from backend
     this.profileSvc.getCurrentPassword(this.userId).subscribe({
       next: r => {
         const serverPw = r.password;
@@ -184,7 +191,6 @@ export class EditProfileComponent implements OnInit {
           return;
         }
 
-        // 2️⃣  Call change-password API
         this.profileSvc.updatePassword(this.userId, newPw).subscribe({
           next: resp => {
             this.notificationMessage = resp.success
@@ -211,7 +217,6 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
-  /* ── MODAL “DONE / ✕” ─────────────────────────────────────── */
   onDone(): void {
     this.notificationVisible = false;
     this.router.navigate(['/profile'], { queryParams: { id: this.userId } });
