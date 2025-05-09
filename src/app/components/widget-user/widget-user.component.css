@@ -325,32 +325,131 @@
 }
 
 /* Feedback Buttons */
+/* Feedback Buttons */
 .feedback-buttons {
   display: flex;
-  gap: 10px;
+  gap: 8px; /* Reduced gap slightly */
   margin-top: 8px;
-  padding-left: 5px; /* Indent slightly */
-  justify-content: flex-start; /* Align left */
+  justify-content: flex-start; /* Align left for bot messages */
 }
 
-.feedback-buttons i {
+.feedback-btn {
+  background: none;
+  border: none;
   cursor: pointer;
-  color: #aaa; /* Default gray color */
-  font-size: 16px; /* Adjust size */
-  transition: color 0.3s, transform 0.2s;
+  color: #757575; /* Default icon color (medium grey) */
+  font-size: 15px; /* Slightly smaller icons */
+  padding: 2px; /* Minimal padding for better click area */
+  transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
-.feedback-buttons i:hover {
-  transform: scale(1.15); /* Slightly larger hover effect */
-  color: #777;
+.feedback-btn:hover {
+  color: #333; /* Darker grey on hover */
+  transform: scale(1.1);
 }
 
-.feedback-buttons .active-like {
-  color: #42a5f5; /* Blue for liked */
+.feedback-btn.active {
+  transform: scale(1.05); /* Slight emphasis when active */
 }
 
-.feedback-buttons .active-dislike {
-  color: #ef5350; /* Red for disliked */
+.feedback-btn.like-btn.active {
+  color: #1e88e5; /* Blue for active like */
+}
+
+.feedback-btn.dislike-btn.active {
+  color: #e53935; /* Red for active dislike */
+}
+
+.feedback-btn i {
+  /* Target Font Awesome icons if you're using them */
+  display: inline-block;
+}
+
+/* Dislike Reason Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1002; /* Ensure it's above the chat widget */
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 320px; /* Max width for the modal */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-content h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.modal-content textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: vertical; /* Allow vertical resize */
+  min-height: 60px;
+  font-size: 0.9rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.modal-btn.submit-btn {
+  background-color: #1e88e5;
+  color: white;
+}
+.modal-btn.submit-btn:hover {
+  background-color: #1565c0;
+}
+
+.modal-btn.cancel-btn {
+  background-color: #f1f1f1;
+  color: #333;
+}
+.modal-btn.cancel-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.feedback-error-message {
+  color: #d9534f; /* Red for errors */
+  font-size: 0.85em;
+  margin-top: 5px;
+}
+
+.feedback-success-message {
+  /* You might want to display success messages too */
+  color: #5cb85c; /* Green for success */
+  font-size: 0.85em;
+  margin-top: 5px;
 }
 
 /* --- Loading Animation Styles --- */

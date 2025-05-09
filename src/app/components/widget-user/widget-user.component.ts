@@ -1,3 +1,4 @@
+// FrontEnd/components/widget-user/widget-user.component.ts
 import {
   Component,
   ViewChild,
@@ -9,21 +10,30 @@ import {
   OnDestroy,
   Inject,
   PLATFORM_ID,
+  inject,
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Subscription, throwError } from 'rxjs';
-import { catchError, tap, switchMap } from 'rxjs/operators'; // Ensured switchMap is here
+import { catchError, tap, switchMap } from 'rxjs/operators';
 
-// Import child components and service
 import { ProductInfoComponent } from './product-info/product-info.component';
 import { ProductComparisonComponent } from './product-comparison/product-comparison.component';
 import { ProductPromotionComponent } from './product-promotion/product-promotion.component';
-import { SocketService } from '../../core/chatBot/socket.service';
+import {
+  SocketService,
+  ServiceChatMessage,
+} from '../../core/chatBot/socket.service'; // Import ServiceChatMessage
+import { FeedbackService, FeedbackPayload } from '../../core/feedback.service';
+import { Rating } from '../../core/chatBot/feedback.enum';
 
-export interface ChatMessage {
-  id?: string;
+const API_BASE_URL = 'http://localhost:3001';
+
+// Interface for messages stored and displayed within this component
+export interface ComponentChatMessage {
+  id: string; // Always a client-side unique string ID for *ngFor keys
+  dbMessageId?: number; // Actual database ID for bot messages (used for feedback)
   sender: 'user' | 'bot';
   type: 'text' | 'productInfo' | 'productComparison' | 'productPromotion';
   content: any;
@@ -31,8 +41,6 @@ export interface ChatMessage {
   liked?: boolean;
   disliked?: boolean;
 }
-
-const API_BASE_URL = 'http://localhost:3001'; // Replace with your actual backend URL
 
 @Component({
   selector: 'chatbot',
@@ -52,9 +60,10 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
   showChatbox = false;
   isChatting = false;
   messageText: string = '';
-  messages: ChatMessage[] = [];
+  messages: ComponentChatMessage[] = []; // Uses local ComponentChatMessage
   isBotResponding: boolean = false;
   private messageSubscription: Subscription | null = null;
+  private sessionDetailsSubscription: Subscription | null = null;
 
   userName: string = '';
   userPhoneNumber: string = '';
@@ -63,17 +72,23 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private currentSessionId: number | undefined = undefined;
   private currentSessionToken: string | undefined = undefined;
-  retrievedTenantId: number | null = 1;
+  retrievedTenantId: number | null = 1; // Default to null, ensure it's set
 
   @ViewChild('chatBox') chatBoxRef!: ElementRef;
 
-  constructor(
-    private cdRef: ChangeDetectorRef,
-    private ngZone: NgZone,
-    private socketService: SocketService,
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
+  showDislikeModal = false;
+  dislikeReason = '';
+  messageToDislike: ComponentChatMessage | null = null;
+  feedbackError: string | null = null;
+  feedbackSuccessMessage: string | null = null;
+
+  private feedbackService = inject(FeedbackService);
+  private socketService = inject(SocketService);
+  private http = inject(HttpClient);
+  private cdRef = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     console.log('>>> WidgetUserComponent CONSTRUCTOR running');
   }
 
@@ -81,36 +96,40 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('>>> WidgetUserComponent ngOnInit running');
     this.retrieveTenantIdFromScript();
 
-    this.messages = [
-      {
-        id: this.generateId(),
-        sender: 'bot',
-        type: 'text',
-        content: 'Xin chào! Bạn cần InsightIQ hỗ trợ về sản phẩm nào ạ?',
-        timestamp: new Date(),
-      },
-    ];
-
-    if (this.messageSubscription) {
-      this.messageSubscription.unsubscribe();
+    if (this.messages.length === 0) {
+      this.messages = [
+        {
+          id: this.generateId(),
+          sender: 'bot',
+          type: 'text',
+          content: 'Xin chào! Bạn cần InsightIQ hỗ trợ về sản phẩm nào ạ?',
+          timestamp: new Date(),
+          liked: false,
+          disliked: false,
+        },
+      ];
     }
+
+    this.messageSubscription?.unsubscribe();
+    this.sessionDetailsSubscription?.unsubscribe();
 
     this.messageSubscription = this.socketService
       .listenForNewMessages()
       .subscribe({
-        next: (botMessage: ChatMessage) => {
+        next: (botMsgFromService: ServiceChatMessage) => {
           console.log(
             '>>> WidgetUserComponent: Received message from service:',
-            botMessage
+            botMsgFromService
           );
-          const finalMessage: ChatMessage = {
-            ...botMessage,
-            timestamp: botMessage.timestamp
-              ? new Date(botMessage.timestamp)
-              : new Date(),
-            liked: botMessage.liked ?? false,
-            disliked: botMessage.disliked ?? false,
-            id: botMessage.id ?? this.generateId(),
+          const finalMessage: ComponentChatMessage = {
+            id: this.generateId(), // Client-side unique string ID
+            dbMessageId: botMsgFromService.dbMessageId, // Numeric DB ID from service
+            sender: botMsgFromService.sender,
+            type: botMsgFromService.type,
+            content: botMsgFromService.content,
+            timestamp: new Date(botMsgFromService.timestamp), // Ensure it's a Date object
+            liked: botMsgFromService.liked ?? false,
+            disliked: botMsgFromService.disliked ?? false,
           };
           this.messages.push(finalMessage);
           this.isBotResponding = false;
@@ -136,11 +155,17 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
         },
       });
 
-    this.socketService.listenForSessionDetails().subscribe((details) => {
-      console.log('>>> WidgetUserComponent: Received session details', details);
-      if (details.sessionId) this.currentSessionId = details.sessionId;
-      if (details.sessionToken) this.currentSessionToken = details.sessionToken;
-    });
+    this.sessionDetailsSubscription = this.socketService
+      .listenForSessionDetails()
+      .subscribe((details) => {
+        console.log(
+          '>>> WidgetUserComponent: Received session details',
+          details
+        );
+        if (details.sessionId) this.currentSessionId = details.sessionId;
+        if (details.sessionToken)
+          this.currentSessionToken = details.sessionToken;
+      });
   }
 
   retrieveTenantIdFromScript(): void {
@@ -149,8 +174,7 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
         'chatbot-script'
       ) as HTMLScriptElement;
       if (scriptTag && scriptTag.dataset['tenantId']) {
-        // Fixed: Use bracket notation
-        const tenantIdNum = parseInt(scriptTag.dataset['tenantId'], 10); // Fixed: Use bracket notation
+        const tenantIdNum = parseInt(scriptTag.dataset['tenantId'], 10);
         if (!isNaN(tenantIdNum)) {
           this.retrievedTenantId = tenantIdNum;
           console.log(
@@ -169,6 +193,7 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
           '>>> Chatbot script tag with data-tenant-id not found or attribute missing.'
         );
         if (!this.retrievedTenantId) {
+          // Check if still null
           this.authError = 'Lỗi cấu hình: Không thể xác định Tenant ID.';
           console.error(
             '>>> CRITICAL: Tenant ID could not be determined for the widget.'
@@ -186,11 +211,11 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     console.log('>>> WidgetUserComponent ngOnDestroy');
-    if (this.messageSubscription) {
-      this.messageSubscription.unsubscribe();
-      this.messageSubscription = null;
+    this.messageSubscription?.unsubscribe();
+    this.sessionDetailsSubscription?.unsubscribe();
+    if (this.socketService) {
+      this.socketService.disconnect();
     }
-    this.socketService.disconnect();
   }
 
   toggleChatbox(): void {
@@ -209,15 +234,13 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.retrievedTenantId === null) {
       this.authError =
         'Lỗi cấu hình: Không thể xác định Tenant ID. Không thể tiếp tục.';
-      console.error('>>> processStartChat: Tenant ID is null.');
-      this.isLoadingAuth = false; // Ensure loading state is reset
-      this.cdRef.detectChanges(); // Update view with error
+      this.isLoadingAuth = false;
+      this.cdRef.detectChanges();
       return;
     }
 
     this.isLoadingAuth = true;
     this.cdRef.detectChanges();
-
     const loginPayload = {
       name: this.userName,
       phoneNumber: this.userPhoneNumber,
@@ -230,16 +253,9 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
         { withCredentials: true }
       )
       .pipe(
-        tap((loginResponse) => {
-          console.log('>>> Login successful on first attempt:', loginResponse);
-          this.completeAuthentication();
-        }),
+        tap(() => this.completeAuthentication()),
         catchError((loginError) => {
           if (loginError.status === 400 || loginError.status === 401) {
-            console.log(
-              '>>> Login failed, attempting signup:',
-              loginError.error?.message
-            );
             return this.attemptSignUpAndLogin();
           }
           this.authError =
@@ -253,10 +269,11 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         error: (finalError) => {
           if (!this.isChatting) {
+            // Only update error if auth process hasn't completed
             this.authError =
               this.authError ||
               finalError.error?.message ||
-              'Đã có lỗi xảy ra. Vui lòng thử lại.'; // Preserve signup error if it exists
+              'Đã có lỗi xảy ra. Vui lòng thử lại.';
             this.isLoadingAuth = false;
             this.cdRef.detectChanges();
           }
@@ -266,29 +283,22 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private attemptSignUpAndLogin() {
-    // tenantId null check is already done in processStartChat, but good for safety
     if (this.retrievedTenantId === null) {
+      // Should be caught by caller, but good for safety
       this.authError = 'Không thể đăng ký: Thiếu Tenant ID.';
       this.isLoadingAuth = false;
       this.cdRef.detectChanges();
       return throwError(() => new Error('Missing Tenant ID for signup'));
     }
-
     const signUpPayload = {
       name: this.userName,
       phoneNumber: this.userPhoneNumber,
       tenantId: this.retrievedTenantId,
     };
-
     return this.http
       .post<any>(`${API_BASE_URL}/user_chatbot/create`, signUpPayload)
       .pipe(
-        tap((signUpResponse) =>
-          console.log('>>> Signup successful:', signUpResponse)
-        ),
         switchMap(() => {
-          // Chained after successful signup
-          console.log('>>> Attempting login after successful signup...');
           const loginPayload = {
             name: this.userName,
             phoneNumber: this.userPhoneNumber,
@@ -299,19 +309,8 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
             { withCredentials: true }
           );
         }),
-        tap((loginAfterSignupResponse) => {
-          console.log(
-            '>>> Login after signup successful:',
-            loginAfterSignupResponse
-          );
-          this.completeAuthentication();
-        }),
+        tap(() => this.completeAuthentication()),
         catchError((error) => {
-          console.error(
-            '>>> Error during signup or login after signup:',
-            error
-          );
-          // Prioritize error message from the backend response if available
           this.authError =
             error.error?.message ||
             'Không thể hoàn tất đăng ký hoặc đăng nhập sau đăng ký.';
@@ -326,9 +325,7 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isChatting = true;
     this.isLoadingAuth = false;
     this.authError = null;
-    console.log('Chat started. Attempting to connect/reconnect socket.');
-    this.socketService.connect();
-    console.log(`Current tenant: ${this.retrievedTenantId}`);
+    if (this.socketService) this.socketService.connect();
     this.cdRef.detectChanges();
     setTimeout(() => this.scrollToBottomIfNeeded(), 0);
   }
@@ -349,7 +346,7 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
   onSendMessage(): void {
     const text = this.messageText.trim();
     if (text && this.socketService) {
-      const userMessage: ChatMessage = {
+      const userMessage: ComponentChatMessage = {
         id: this.generateId(),
         sender: 'user',
         type: 'text',
@@ -358,71 +355,48 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
       };
       this.messages.push(userMessage);
       this.messageText = '';
-
       const textarea = document.querySelector(
         '.message-input .chat-input'
       ) as HTMLTextAreaElement;
-      if (textarea) {
-        textarea.style.height = 'auto';
-      }
+      if (textarea) textarea.style.height = 'auto';
 
       this.isBotResponding = true;
       this.cdRef.detectChanges();
       this.scrollToBottomIfNeeded();
 
-      const tenantIdToSend = this.retrievedTenantId;
-
-      if (typeof tenantIdToSend !== 'number' || tenantIdToSend === null) {
-        console.error(
-          '>>> WidgetUserComponent: Tenant ID is missing! Cannot send message.'
-        );
+      if (typeof this.retrievedTenantId !== 'number') {
         this.isBotResponding = false;
         this.messages.push({
           id: this.generateId(),
           sender: 'bot',
           type: 'text',
-          content:
-            'Lỗi: Không thể gửi tin nhắn do thiếu thông tin định danh (Tenant ID). Vui lòng tải lại trang hoặc liên hệ hỗ trợ.',
+          content: 'Lỗi: Không thể gửi tin nhắn do thiếu Tenant ID.',
           timestamp: new Date(),
         });
         this.cdRef.detectChanges();
         this.scrollToBottomIfNeeded();
         return;
       }
-
       const dataToSend = {
-        text: text,
-        tenantId: tenantIdToSend,
+        text,
+        tenantId: this.retrievedTenantId,
         sessionId: this.currentSessionId,
         sessionToken: this.currentSessionToken,
       };
-
-      console.log(
-        '>>> WidgetUserComponent: Sending message via socket',
-        dataToSend
-      );
       this.socketService.sendMessage(dataToSend);
     }
   }
 
   scrollToBottom(): void {
     if (this.chatBoxRef?.nativeElement) {
-      try {
-        const element = this.chatBoxRef.nativeElement;
-        element.scrollTop = element.scrollHeight;
-      } catch (err) {
-        console.error('Could not scroll to bottom:', err);
-      }
+      this.chatBoxRef.nativeElement.scrollTop =
+        this.chatBoxRef.nativeElement.scrollHeight;
     }
   }
 
   scrollToBottomIfNeeded(): void {
     this.ngZone.runOutsideAngular(() => {
-      setTimeout(() => {
-        this.ngZone.run(() => {
-          this.scrollToBottom();
-        });
-      }, 0);
+      setTimeout(() => this.ngZone.run(() => this.scrollToBottom()), 0);
     });
   }
 
@@ -442,39 +416,150 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
     this.currentSessionId = undefined;
     this.currentSessionToken = undefined;
-    console.log('Chat cleared. Chat session ID and token reset.');
     this.cdRef.detectChanges();
     this.scrollToBottomIfNeeded();
   }
 
-  toggleLike(msg: ChatMessage): void {
-    if (!msg.id) return;
-    msg.liked = !msg.liked;
-    if (msg.liked) msg.disliked = false;
-    console.log(`Message ${msg.id} Liked: ${msg.liked}`);
-    this.cdRef.detectChanges();
-  }
-
-  toggleDislike(msg: ChatMessage): void {
-    if (!msg.id) return;
-    msg.disliked = !msg.disliked;
-    if (msg.disliked) msg.liked = false;
-    console.log(`Message ${msg.id} Disliked: ${msg.disliked}`);
-    this.cdRef.detectChanges();
-  }
-
   stopBotResponse(): void {
-    console.log(
-      '>>> WidgetUserComponent: Stop bot response requested by user.'
-    );
     this.isBotResponding = false;
     this.cdRef.detectChanges();
   }
 
   renderMarkdownBold(text: any): string {
-    if (typeof text !== 'string') {
-      return '';
+    return typeof text === 'string'
+      ? text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      : '';
+  }
+
+  trackByMessageId(index: number, message: ComponentChatMessage): string {
+    return message.id; // Always use the client-side unique string ID for trackBy
+  }
+
+  handleLike(message: ComponentChatMessage): void {
+    if (message.dbMessageId === undefined) return;
+    message.liked = !message.liked;
+    if (message.liked) message.disliked = false;
+    this.clearFeedbackMessages();
+    this.cdRef.detectChanges();
+
+    if (message.liked) {
+      const payload: FeedbackPayload = {
+        messageId: message.dbMessageId,
+        rating: Rating.Positive,
+      };
+      this.submitFeedbackToServer(payload, message, 'Message Liked!');
+    } else {
+      // Optional: To "unlike" and remove from DB, backend needs to support it.
+      // For now, this only updates UI if backend doesn't have "remove positive feedback" logic.
+      // The backend "update or create" will turn this into a "Negative" if it was the only option.
+      // To truly "remove" a like, a different backend approach is needed (e.g. delete feedback by messageId)
+      // Or, send a specific "NEUTRAL" rating if backend supports it.
+      console.log(`Message ${message.dbMessageId} unliked. UI updated.`);
     }
-    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  handleDislike(message: ComponentChatMessage): void {
+    if (message.dbMessageId === undefined) return;
+    message.disliked = !message.disliked; // Toggle dislike state
+    if (message.disliked) {
+      message.liked = false;
+      this.messageToDislike = message;
+      this.dislikeReason = '';
+      this.showDislikeModal = true;
+    } else {
+      // User is "un-disliking"
+      this.clearFeedbackMessages();
+      console.log(`Message ${message.dbMessageId} un-disliked (UI only).`);
+      // Similar to "unlike", removing/neutralizing negative feedback would need backend support.
+    }
+    this.cdRef.detectChanges();
+  }
+
+  closeDislikeModal(): void {
+    // If modal is cancelled, revert optimistic dislike if no successful submission for this instance
+    if (this.messageToDislike && this.messageToDislike.disliked) {
+      const wasSuccessfullySubmitted =
+        this.feedbackSuccessMessage && this.messageToDislike.dbMessageId
+          ? this.feedbackSuccessMessage.includes(
+              this.messageToDislike.dbMessageId.toString()
+            )
+          : false;
+
+      if (!wasSuccessfullySubmitted) {
+        this.messageToDislike.disliked = false; // Revert UI
+      }
+    }
+    this.showDislikeModal = false;
+    this.messageToDislike = null;
+    this.dislikeReason = '';
+    this.clearFeedbackMessages(); // Clear any pending error/success from modal context
+    this.cdRef.detectChanges();
+  }
+
+  submitDislikeReason(): void {
+    if (
+      !this.messageToDislike ||
+      this.messageToDislike.dbMessageId === undefined
+    )
+      return;
+    const payload: FeedbackPayload = {
+      messageId: this.messageToDislike.dbMessageId,
+      rating: Rating.Negative,
+      comment: this.dislikeReason.trim() || undefined,
+    };
+    this.submitFeedbackToServer(
+      payload,
+      this.messageToDislike,
+      `Feedback submitted.`
+    );
+    this.showDislikeModal = false; // Close modal after initiating submission
+    // messageToDislike.disliked is already true from handleDislike method
+  }
+
+  private submitFeedbackToServer(
+    payload: FeedbackPayload,
+    message: ComponentChatMessage,
+    successMsg: string
+  ): void {
+    this.isLoadingAuth = true; // Use general loading flag
+    this.feedbackError = null;
+    this.feedbackSuccessMessage = null;
+
+    this.feedbackService.submitFeedback(payload).subscribe({
+      next: () => {
+        // Ensure UI is consistent with backend (it should be due to backend's update/create logic)
+        if (payload.rating === Rating.Positive) {
+          message.liked = true;
+          message.disliked = false;
+        } else if (payload.rating === Rating.Negative) {
+          message.disliked = true;
+          message.liked = false;
+        }
+        this.feedbackSuccessMessage = successMsg;
+        this.isLoadingAuth = false;
+        this.cdRef.detectChanges();
+        setTimeout(() => {
+          this.feedbackSuccessMessage = null;
+          this.cdRef.detectChanges();
+        }, 3000);
+      },
+      error: (err) => {
+        this.feedbackError = err.message || 'Could not submit feedback.';
+        // Revert optimistic UI if submission fails
+        // This can be complex; for simplicity, show error, user might need to retry toggle
+        if (payload.rating === Rating.Positive) message.liked = false;
+        // If it was a dislike, the 'disliked' flag was already set.
+        // Setting it to false here might be incorrect if the user *intended* to dislike.
+        // else if (payload.rating === Rating.Negative) message.disliked = false; // Reconsider this revert
+
+        this.isLoadingAuth = false;
+        this.cdRef.detectChanges();
+      },
+    });
+  }
+
+  private clearFeedbackMessages(): void {
+    this.feedbackError = null;
+    this.feedbackSuccessMessage = null;
   }
 }

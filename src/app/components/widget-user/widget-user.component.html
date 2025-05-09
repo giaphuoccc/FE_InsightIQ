@@ -76,7 +76,7 @@
   <div *ngIf="isChatting" class="chat-container">
     <div class="chat-box" #chatBox>
       <div
-        *ngFor="let msg of messages"
+        *ngFor="let msg of messages; trackBy: trackByMessageId"
         class="message-wrapper"
         [ngClass]="{
           'user-message-wrapper': msg?.sender === 'user',
@@ -103,7 +103,6 @@
               *ngSwitchCase="'productPromotion'"
               [promotionData]="msg?.content"
             ></product-promotion>
-
             <p
               *ngSwitchDefault
               [innerHTML]="renderMarkdownBold(msg?.content)"
@@ -114,34 +113,56 @@
             {{ msg.timestamp | date : "shortTime" }}
           </span>
 
-          <div *ngIf="msg?.sender === 'bot'" class="feedback-buttons">
-            <i
-              class="fas fa-thumbs-up"
-              [ngClass]="{ 'active-like': msg?.liked }"
-              (click)="toggleLike(msg)"
+          <div
+            *ngIf="msg?.sender === 'bot' && msg.id !== undefined"
+            class="feedback-buttons"
+          >
+            <button
+              class="feedback-btn like-btn"
+              [class.active]="msg.liked"
+              (click)="handleLike(msg)"
               title="Like response"
+              aria-label="Like this message"
             >
-            </i>
-            <i
-              class="fas fa-thumbs-down"
-              [ngClass]="{ 'active-dislike': msg?.disliked }"
-              (click)="toggleDislike(msg)"
+              <i class="fas fa-thumbs-up"></i>
+            </button>
+            <button
+              class="feedback-btn dislike-btn"
+              [class.active]="msg.disliked"
+              (click)="handleDislike(msg)"
               title="Dislike response"
+              aria-label="Dislike this message"
             >
-            </i>
+              <i class="fas fa-thumbs-down"></i>
+            </button>
           </div>
         </div>
       </div>
+    </div>
 
-      <div
-        *ngIf="isBotResponding"
-        class="bot-message-wrapper loading-indicator"
-      >
-        <div class="message bot-message typing-indicator">
-          <span></span>
-          <span></span>
-          <span></span>
+    <div
+      *ngIf="showDislikeModal"
+      class="modal-overlay"
+      (click)="closeDislikeModal()"
+    >
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h4>Why did you dislike this message?</h4>
+        <textarea
+          [(ngModel)]="dislikeReason"
+          placeholder="Please provide a reason (optional)"
+          rows="3"
+        ></textarea>
+        <div class="modal-actions">
+          <button (click)="submitDislikeReason()" class="modal-btn submit-btn">
+            Submit
+          </button>
+          <button (click)="closeDislikeModal()" class="modal-btn cancel-btn">
+            Cancel
+          </button>
         </div>
+        <p *ngIf="feedbackError" class="feedback-error-message">
+          {{ feedbackError }}
+        </p>
       </div>
     </div>
 
