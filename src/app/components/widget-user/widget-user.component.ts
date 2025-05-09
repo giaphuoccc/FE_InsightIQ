@@ -7,32 +7,32 @@ import {
   OnInit,
   NgZone,
   OnDestroy,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Subscription, throwError } from 'rxjs';
+import { catchError, tap, switchMap } from 'rxjs/operators'; // Ensured switchMap is here
 
 // Import child components and service
 import { ProductInfoComponent } from './product-info/product-info.component';
 import { ProductComparisonComponent } from './product-comparison/product-comparison.component';
 import { ProductPromotionComponent } from './product-promotion/product-promotion.component';
-import { SocketService } from '../../core/chatBot/socket.service'; // Ensure path is correct
+import { SocketService } from '../../core/chatBot/socket.service';
 
-// --- Define ChatMessage Interface ---
-// Content can now be string or specific object types
 export interface ChatMessage {
-  id?: string; // Optional ID, useful for feedback
+  id?: string;
   sender: 'user' | 'bot';
-  type: 'text' | 'productInfo' | 'productComparison' | 'productPromotion'; // Add other types if needed
-  content: any; // Can be string or object (ProductDataDto, ProductComparisonDataDto, etc.)
+  type: 'text' | 'productInfo' | 'productComparison' | 'productPromotion';
+  content: any;
   timestamp: Date;
   liked?: boolean;
   disliked?: boolean;
 }
 
-// --- NOTE: ProductData and ProductComparisonData interfaces are NO LONGER NEEDED HERE ---
-// --- They should be defined in the respective child components (ProductInfoComponent, ProductComparisonComponent) ---
-// --- Or kept in a shared types file if used elsewhere. ---
+const API_BASE_URL = 'http://localhost:3001'; // Replace with your actual backend URL
 
 @Component({
   selector: 'chatbot',
@@ -40,6 +40,7 @@ export interface ChatMessage {
   imports: [
     CommonModule,
     FormsModule,
+    HttpClientModule,
     ProductInfoComponent,
     ProductComparisonComponent,
     ProductPromotionComponent,
@@ -48,7 +49,6 @@ export interface ChatMessage {
   styleUrls: ['./widget-user.component.css'],
 })
 export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
-  // --- Component Properties ---
   showChatbox = false;
   isChatting = false;
   messageText: string = '';
@@ -56,25 +56,31 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
   isBotResponding: boolean = false;
   private messageSubscription: Subscription | null = null;
 
-  // Session info (EXAMPLE - GET FROM ACTUAL SOURCE)
+  userName: string = '';
+  userPhoneNumber: string = '';
+  authError: string | null = null;
+  isLoadingAuth: boolean = false;
+
   private currentSessionId: number | undefined = undefined;
   private currentSessionToken: string | undefined = undefined;
-  private currentTenantId: number = 1; // GET FROM ACTUAL SOURCE
+  retrievedTenantId: number | null = 1;
 
   @ViewChild('chatBox') chatBoxRef!: ElementRef;
 
-  // --- Constructor ---
   constructor(
     private cdRef: ChangeDetectorRef,
     private ngZone: NgZone,
-    private socketService: SocketService // Inject SocketService
+    private socketService: SocketService,
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
     console.log('>>> WidgetUserComponent CONSTRUCTOR running');
   }
 
-  // --- Lifecycle Hooks ---
   ngOnInit(): void {
     console.log('>>> WidgetUserComponent ngOnInit running');
+    this.retrieveTenantIdFromScript();
+
     this.messages = [
       {
         id: this.generateId(),
@@ -85,43 +91,31 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
       },
     ];
 
-    // Unsubscribe from previous subscription if it exists
     if (this.messageSubscription) {
       this.messageSubscription.unsubscribe();
     }
 
-    // Subscribe to new messages from the SocketService
     this.messageSubscription = this.socketService
       .listenForNewMessages()
       .subscribe({
         next: (botMessage: ChatMessage) => {
-          // --- NO MORE PARSING NEEDED HERE ---
           console.log(
             '>>> WidgetUserComponent: Received message from service:',
             botMessage
           );
-          console.log('>>> Message Content Type:', typeof botMessage.content);
-          console.log('>>> Message Content Value:', botMessage.content);
-
-          // Directly use the received message structure
           const finalMessage: ChatMessage = {
             ...botMessage,
-            // Ensure timestamp is a Date object
             timestamp: botMessage.timestamp
               ? new Date(botMessage.timestamp)
               : new Date(),
-            // Set default like/dislike state if not provided
             liked: botMessage.liked ?? false,
             disliked: botMessage.disliked ?? false,
-            // Assign a unique ID if the backend didn't provide one (useful for feedback)
             id: botMessage.id ?? this.generateId(),
           };
-
-          // Add the message to the display array
           this.messages.push(finalMessage);
-          this.isBotResponding = false; // Bot has responded
-          this.cdRef.detectChanges(); // Trigger change detection
-          this.scrollToBottomIfNeeded(); // Scroll to the new message
+          this.isBotResponding = false;
+          this.cdRef.detectChanges();
+          this.scrollToBottomIfNeeded();
         },
         error: (err: any) => {
           console.error(
@@ -129,7 +123,6 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
             err
           );
           this.isBotResponding = false;
-          // Add an error message to the chat
           this.messages.push({
             id: this.generateId(),
             sender: 'bot',
@@ -143,17 +136,49 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
         },
       });
 
-    // Listen for session details updates from the backend (if applicable)
     this.socketService.listenForSessionDetails().subscribe((details) => {
       console.log('>>> WidgetUserComponent: Received session details', details);
       if (details.sessionId) this.currentSessionId = details.sessionId;
       if (details.sessionToken) this.currentSessionToken = details.sessionToken;
-      // Optionally save to local storage/session storage
     });
   }
 
+  retrieveTenantIdFromScript(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const scriptTag = document.getElementById(
+        'chatbot-script'
+      ) as HTMLScriptElement;
+      if (scriptTag && scriptTag.dataset['tenantId']) {
+        // Fixed: Use bracket notation
+        const tenantIdNum = parseInt(scriptTag.dataset['tenantId'], 10); // Fixed: Use bracket notation
+        if (!isNaN(tenantIdNum)) {
+          this.retrievedTenantId = tenantIdNum;
+          console.log(
+            '>>> Tenant ID retrieved from script tag:',
+            this.retrievedTenantId
+          );
+        } else {
+          console.error(
+            '>>> Invalid Tenant ID format in script tag data attribute.'
+          );
+          this.authError =
+            'Lỗi cấu hình: Không tìm thấy mã định danh hợp lệ (Tenant ID).';
+        }
+      } else {
+        console.warn(
+          '>>> Chatbot script tag with data-tenant-id not found or attribute missing.'
+        );
+        if (!this.retrievedTenantId) {
+          this.authError = 'Lỗi cấu hình: Không thể xác định Tenant ID.';
+          console.error(
+            '>>> CRITICAL: Tenant ID could not be determined for the widget.'
+          );
+        }
+      }
+    }
+  }
+
   ngAfterViewInit(): void {
-    // Scroll to bottom when chat becomes visible
     if (this.isChatting && this.showChatbox) {
       this.scrollToBottomIfNeeded();
     }
@@ -161,98 +186,197 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     console.log('>>> WidgetUserComponent ngOnDestroy');
-    // Unsubscribe from observables to prevent memory leaks
     if (this.messageSubscription) {
       this.messageSubscription.unsubscribe();
       this.messageSubscription = null;
     }
-    // Disconnect the socket when the component is destroyed
     this.socketService.disconnect();
   }
-
-  // --- Event Handlers and Other Methods ---
 
   toggleChatbox(): void {
     this.showChatbox = !this.showChatbox;
     if (this.showChatbox && this.isChatting) {
-      // Use setTimeout to ensure the element is visible before scrolling
       setTimeout(() => this.scrollToBottomIfNeeded(), 0);
     }
   }
 
-  startChat(): void {
-    this.isChatting = true;
-    console.log('Chat started. Attempting to connect/reconnect socket.');
-    // Ensure socket connection is established when chat starts
-    this.socketService.connect(); // Make sure connect method exists and handles reconnection
+  async processStartChat(): Promise<void> {
+    this.authError = null;
+    if (!this.userName.trim() || !this.userPhoneNumber.trim()) {
+      this.authError = 'Vui lòng nhập tên và số điện thoại.';
+      return;
+    }
+    if (this.retrievedTenantId === null) {
+      this.authError =
+        'Lỗi cấu hình: Không thể xác định Tenant ID. Không thể tiếp tục.';
+      console.error('>>> processStartChat: Tenant ID is null.');
+      this.isLoadingAuth = false; // Ensure loading state is reset
+      this.cdRef.detectChanges(); // Update view with error
+      return;
+    }
 
-    // TODO: Implement logic to retrieve existing session ID/Token from storage
-    // if (!this.currentSessionId) {
-    //   const storedSession = /* get from localStorage/sessionStorage */ ;
-    //   if (storedSession) {
-    //      this.currentSessionId = storedSession.id;
-    //      this.currentSessionToken = storedSession.token;
-    //   }
-    // }
-    console.log(
-      `Current session info - ID: ${this.currentSessionId}, Token: ${this.currentSessionToken}, Tenant: ${this.currentTenantId}`
-    );
+    this.isLoadingAuth = true;
+    this.cdRef.detectChanges();
+
+    const loginPayload = {
+      name: this.userName,
+      phoneNumber: this.userPhoneNumber,
+    };
+
+    this.http
+      .post<{ token: string }>(
+        `${API_BASE_URL}/auth/user_chatbot/login`,
+        loginPayload,
+        { withCredentials: true }
+      )
+      .pipe(
+        tap((loginResponse) => {
+          console.log('>>> Login successful on first attempt:', loginResponse);
+          this.completeAuthentication();
+        }),
+        catchError((loginError) => {
+          if (loginError.status === 400 || loginError.status === 401) {
+            console.log(
+              '>>> Login failed, attempting signup:',
+              loginError.error?.message
+            );
+            return this.attemptSignUpAndLogin();
+          }
+          this.authError =
+            loginError.error?.message ||
+            'Đăng nhập thất bại. Vui lòng thử lại.';
+          this.isLoadingAuth = false;
+          this.cdRef.detectChanges();
+          return throwError(() => loginError);
+        })
+      )
+      .subscribe({
+        error: (finalError) => {
+          if (!this.isChatting) {
+            this.authError =
+              this.authError ||
+              finalError.error?.message ||
+              'Đã có lỗi xảy ra. Vui lòng thử lại.'; // Preserve signup error if it exists
+            this.isLoadingAuth = false;
+            this.cdRef.detectChanges();
+          }
+          console.error('>>> Final error in processStartChat:', finalError);
+        },
+      });
+  }
+
+  private attemptSignUpAndLogin() {
+    // tenantId null check is already done in processStartChat, but good for safety
+    if (this.retrievedTenantId === null) {
+      this.authError = 'Không thể đăng ký: Thiếu Tenant ID.';
+      this.isLoadingAuth = false;
+      this.cdRef.detectChanges();
+      return throwError(() => new Error('Missing Tenant ID for signup'));
+    }
+
+    const signUpPayload = {
+      name: this.userName,
+      phoneNumber: this.userPhoneNumber,
+      tenantId: this.retrievedTenantId,
+    };
+
+    return this.http
+      .post<any>(`${API_BASE_URL}/user_chatbot/create`, signUpPayload)
+      .pipe(
+        tap((signUpResponse) =>
+          console.log('>>> Signup successful:', signUpResponse)
+        ),
+        switchMap(() => {
+          // Chained after successful signup
+          console.log('>>> Attempting login after successful signup...');
+          const loginPayload = {
+            name: this.userName,
+            phoneNumber: this.userPhoneNumber,
+          };
+          return this.http.post<{ token: string }>(
+            `${API_BASE_URL}/auth/user_chatbot/login`,
+            loginPayload,
+            { withCredentials: true }
+          );
+        }),
+        tap((loginAfterSignupResponse) => {
+          console.log(
+            '>>> Login after signup successful:',
+            loginAfterSignupResponse
+          );
+          this.completeAuthentication();
+        }),
+        catchError((error) => {
+          console.error(
+            '>>> Error during signup or login after signup:',
+            error
+          );
+          // Prioritize error message from the backend response if available
+          this.authError =
+            error.error?.message ||
+            'Không thể hoàn tất đăng ký hoặc đăng nhập sau đăng ký.';
+          this.isLoadingAuth = false;
+          this.cdRef.detectChanges();
+          return throwError(() => error);
+        })
+      );
+  }
+
+  private completeAuthentication(): void {
+    this.isChatting = true;
+    this.isLoadingAuth = false;
+    this.authError = null;
+    console.log('Chat started. Attempting to connect/reconnect socket.');
+    this.socketService.connect();
+    console.log(`Current tenant: ${this.retrievedTenantId}`);
+    this.cdRef.detectChanges();
     setTimeout(() => this.scrollToBottomIfNeeded(), 0);
   }
 
   autoExpand(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto'; // Reset height
-    textarea.style.height = textarea.scrollHeight + 'px'; // Set to content height
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
   }
 
   handleKeyDown(event: KeyboardEvent): void {
-    // Send message on Enter key (unless Shift is pressed)
     if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault(); // Prevent default newline behavior
+      event.preventDefault();
       this.onSendMessage();
     }
   }
 
   onSendMessage(): void {
     const text = this.messageText.trim();
-    // Check if there's text and the socket service is available
     if (text && this.socketService) {
-      // Create the user message object
       const userMessage: ChatMessage = {
-        id: this.generateId(), // Generate a temporary ID for the user message
+        id: this.generateId(),
         sender: 'user',
         type: 'text',
         content: text,
         timestamp: new Date(),
       };
-      this.messages.push(userMessage); // Add user message to the display
-      this.messageText = ''; // Clear the input field
+      this.messages.push(userMessage);
+      this.messageText = '';
 
-      // Reset textarea height after sending
       const textarea = document.querySelector(
         '.message-input .chat-input'
       ) as HTMLTextAreaElement;
       if (textarea) {
-        textarea.style.height = 'auto'; // Or set to a specific min-height
+        textarea.style.height = 'auto';
       }
 
-      this.isBotResponding = true; // Show bot responding indicator
-      this.cdRef.detectChanges(); // Update the view
-      this.scrollToBottomIfNeeded(); // Scroll down
+      this.isBotResponding = true;
+      this.cdRef.detectChanges();
+      this.scrollToBottomIfNeeded();
 
-      // Prepare data to send via socket
-      const tenantIdToSend = this.currentTenantId;
-      const sessionIdToSend = this.currentSessionId;
-      const sessionTokenToSend = this.currentSessionToken;
+      const tenantIdToSend = this.retrievedTenantId;
 
-      // Basic validation: Ensure tenant ID is present
-      if (typeof tenantIdToSend === 'undefined' || tenantIdToSend === null) {
+      if (typeof tenantIdToSend !== 'number' || tenantIdToSend === null) {
         console.error(
           '>>> WidgetUserComponent: Tenant ID is missing! Cannot send message.'
         );
         this.isBotResponding = false;
-        // Display an error message in the chat
         this.messages.push({
           id: this.generateId(),
           sender: 'bot',
@@ -263,27 +387,25 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
         });
         this.cdRef.detectChanges();
         this.scrollToBottomIfNeeded();
-        return; // Stop execution
+        return;
       }
 
       const dataToSend = {
         text: text,
         tenantId: tenantIdToSend,
-        sessionId: sessionIdToSend, // Send undefined if no session yet
-        sessionToken: sessionTokenToSend, // Send undefined if no session yet
+        sessionId: this.currentSessionId,
+        sessionToken: this.currentSessionToken,
       };
 
       console.log(
         '>>> WidgetUserComponent: Sending message via socket',
         dataToSend
       );
-      // Send the message using the SocketService
       this.socketService.sendMessage(dataToSend);
     }
   }
 
   scrollToBottom(): void {
-    // Scrolls the chatbox to the bottom
     if (this.chatBoxRef?.nativeElement) {
       try {
         const element = this.chatBoxRef.nativeElement;
@@ -295,23 +417,20 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   scrollToBottomIfNeeded(): void {
-    // Ensures scrolling happens after the view updates
     this.ngZone.runOutsideAngular(() => {
       setTimeout(() => {
         this.ngZone.run(() => {
           this.scrollToBottom();
         });
-      }, 0); // Timeout ensures it runs after the current digest cycle
+      }, 0);
     });
   }
 
   generateId(): string {
-    // Simple ID generator
     return Math.random().toString(36).substring(2, 15);
   }
 
   clearChat(): void {
-    // Resets the chat to the initial state
     this.messages = [
       {
         id: this.generateId(),
@@ -321,31 +440,26 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
         timestamp: new Date(),
       },
     ];
-    // Consider resetting session ID/token if clearing implies starting fresh
-    // this.currentSessionId = undefined;
-    // this.currentSessionToken = undefined;
-    console.log('Chat cleared.');
+    this.currentSessionId = undefined;
+    this.currentSessionToken = undefined;
+    console.log('Chat cleared. Chat session ID and token reset.');
     this.cdRef.detectChanges();
     this.scrollToBottomIfNeeded();
   }
 
   toggleLike(msg: ChatMessage): void {
-    if (!msg.id) return; // Need message ID for feedback
+    if (!msg.id) return;
     msg.liked = !msg.liked;
-    if (msg.liked) msg.disliked = false; // Can't like and dislike
+    if (msg.liked) msg.disliked = false;
     console.log(`Message ${msg.id} Liked: ${msg.liked}`);
-    // TODO: Send feedback to server via SocketService
-    // this.socketService.sendFeedback({ messageId: msg.id, rating: msg.liked ? 'Positive' : null, comment: '' });
     this.cdRef.detectChanges();
   }
 
   toggleDislike(msg: ChatMessage): void {
-    if (!msg.id) return; // Need message ID for feedback
+    if (!msg.id) return;
     msg.disliked = !msg.disliked;
-    if (msg.disliked) msg.liked = false; // Can't like and dislike
+    if (msg.disliked) msg.liked = false;
     console.log(`Message ${msg.id} Disliked: ${msg.disliked}`);
-    // TODO: Send feedback to server via SocketService
-    // this.socketService.sendFeedback({ messageId: msg.id, rating: msg.disliked ? 'Negative' : null, comment: '' });
     this.cdRef.detectChanges();
   }
 
@@ -353,24 +467,14 @@ export class WidgetUserComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(
       '>>> WidgetUserComponent: Stop bot response requested by user.'
     );
-    // TODO: Implement logic to signal the backend to stop processing via SocketService
-    // this.socketService.cancelCurrentRequest(); // Example method name
-    this.isBotResponding = false; // Immediately update UI
+    this.isBotResponding = false;
     this.cdRef.detectChanges();
   }
 
-  // --- REMOVED PARSING FUNCTIONS ---
-  // private parseProductInfoContent(content: string): Partial<ProductData> { ... }
-  // private parseProductComparisonContent(content: string): ProductComparisonData { ... }
-
-  // --- RENDER MARKDOWN BOLD (for text messages) ---
   renderMarkdownBold(text: any): string {
-    // Only apply to strings
     if (typeof text !== 'string') {
-      // If content is an object, return empty string or handle differently
       return '';
     }
-    // Replace **text** with <strong>text</strong>
     return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   }
 }

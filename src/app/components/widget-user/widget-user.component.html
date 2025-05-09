@@ -36,18 +36,40 @@
       <div class="input-group">
         <input
           type="text"
-          placeholder="Please enter your phone number"
-          class="chat-input"
-        />
-      </div>
-      <div class="input-group">
-        <input
-          type="text"
           placeholder="Please enter your name"
           class="chat-input"
+          [(ngModel)]="userName"
+          [disabled]="isLoadingAuth"
         />
       </div>
-      <button class="start-btn" (click)="startChat()">START CHAT</button>
+      <input
+        type="tel"
+        placeholder="Please enter your phone number"
+        class="chat-input"
+        [(ngModel)]="userPhoneNumber"
+        [disabled]="isLoadingAuth"
+        pattern="[0-9]*"
+        inputmode="numeric"
+        maxlength="10"
+        oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+      />
+
+      <div class="auth-error" *ngIf="authError">
+        {{ authError }}
+      </div>
+
+      <button
+        class="start-btn"
+        (click)="processStartChat()"
+        [disabled]="
+          isLoadingAuth ||
+          !userName.trim() ||
+          !userPhoneNumber.trim() ||
+          retrievedTenantId === null
+        "
+      >
+        {{ isLoadingAuth ? "PROCESSING..." : "START CHAT" }}
+      </button>
     </div>
   </ng-container>
 
