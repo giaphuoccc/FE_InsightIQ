@@ -8,7 +8,7 @@ import { MainSuperadminDashboardComponent } from './components/superadmin/dashbo
 import { ProfileComponent } from './components/superadmin/profile/profile.component';
 import { EditProfileComponent } from './components/superadmin/editProfile/editProfile.component'
 
-import { PendingTenantComponent } from './components/superadmin/pendingTenant/pendingTenantcomponent';
+import { PendingTenantComponent } from './components/superadmin/pendingTenant/pendingTenant.component';
 import { PendingTenantDetailsComponent } from './components/superadmin/pendingTenantDetails/pendingTenantDetails.component';
 
 import { WidgetUserComponent } from './components/widget-user/widget-user.component';

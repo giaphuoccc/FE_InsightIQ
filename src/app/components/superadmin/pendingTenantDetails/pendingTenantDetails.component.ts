@@ -1,115 +1,102 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common'; // Needed for *ngIf, *ngFor, etc.
-import {
-  SuperAdminService,
-  TenantDetail,
-} from '../../../core/superadmin.service';
-import { Subscription } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
+import { SuperAdminService, TenantDetail, TenantUserDto } from '../../../core/validateTenant.service';
 
 @Component({
-  selector: 'app-tenant-detail',
+  selector: 'app-pending-tenant-details',
   standalone: true,
-  imports: [CommonModule], // Import CommonModule for standalone
+  imports: [CommonModule],
   templateUrl: './pendingTenantDetails.component.html',
   styleUrls: ['./pendingTenantDetails.component.css'],
 })
 export class PendingTenantDetailsComponent implements OnInit {
-  tenant: TenantDetail | null = null;
-  isLoading = true; // Start in loading state
-  errorMessage: string | null = null;
   tenantId: string | null = null;
-  private routeSub: Subscription | null = null;
-  private tenantSub: Subscription | null = null;
+  tenant: (TenantDetail & { email: string; phone: string; taxCode?: string }) | null = null;
+  isLoading = false;
+  errorMessage: string | null = null;
+
+  showNotification = false;
+  notificationMessage = '';
 
   constructor(
-    private route: ActivatedRoute, // To get route parameters (like ID)
-    private router: Router, // To navigate programmatically (e.g., after approve/reject)
-    private superAdminService: SuperAdminService // Service to fetch data
+    private route: ActivatedRoute,
+    private router: Router,
+    private superAdminService: SuperAdminService
   ) {}
 
   ngOnInit(): void {
-    this.routeSub = this.route.paramMap.subscribe((params) => {
-      const id = params.get('id'); // Get the 'id' from the URL path
-      if (id) {
-        this.loadTenantDetails(id);
-      } else {
-        // Handle case where ID is missing (optional)
-        this.isLoading = false;
-        this.showErrorPopup('Tenant ID is missing in the URL.');
-        console.error('Tenant ID not found in route parameters.');
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    // Unsubscribe to prevent memory leaks
-    this.routeSub?.unsubscribe();
-    this.tenantSub?.unsubscribe();
+    this.tenantId = this.route.snapshot.paramMap.get('id');
+    if (!this.tenantId) {
+      this.errorMessage = 'No tenant ID provided.';
+      return;
+    }
+    this.loadTenantDetails(this.tenantId);
   }
 
   loadTenantDetails(id: string): void {
     this.isLoading = true;
     this.errorMessage = null;
-    this.tenant = null; // Reset tenant data
-
-    this.tenantSub = this.superAdminService.getTenantById(id).subscribe({
-      next: (data) => {
-        this.tenant = data;
+    this.superAdminService.getTenantById(id).pipe(
+      switchMap(detail =>
+        this.superAdminService.getUser(detail.userId).pipe(
+          map((user: TenantUserDto) => ({
+            ...detail,
+            email: user.email,
+            phone: user.phoneNumber,
+            taxId: detail.taxId // explicitly include taxCode
+          }))
+        )
+      )
+    ).subscribe({
+      next: merged => {
+        this.tenant = merged;
         this.isLoading = false;
-        console.log('Tenant data loaded:', this.tenant);
       },
-      error: (err) => {
-        console.error('Error loading tenant details:', err);
+      error: err => {
+        this.errorMessage = err.message || 'Failed to load tenant details.';
         this.isLoading = false;
-        // Use the error message processed by the service's handleError
-        const displayMessage = `Failed to load tenant information. ${
-          err.message || 'Please try again later.'
-        }`;
-        this.showErrorPopup(displayMessage); // Show popup
-        this.errorMessage = displayMessage; // Store error for potential display in template
-      },
+      }
     });
   }
 
-  // --- Action Methods ---
   approve(): void {
     if (!this.tenant) return;
-    console.log('Approving tenant:', this.tenant.id);
-    // Call service, handle response/error, maybe navigate back
-    this.superAdminService.approveTenant(this.tenant.id).subscribe({
-      next: () => {
-        alert('Tenant Approved!'); // Simple feedback
-        this.router.navigate(['/pendingtenant']); // Navigate back to list
-      },
-      error: (err) =>
-        this.showErrorPopup(`Failed to approve tenant: ${err.message}`),
-    });
+    this.superAdminService.updateTenantStatus(this.tenant.id, 'Approved')
+      .subscribe({
+        next: () => {
+          this.tenant!.status = 'Approved';
+          this.notificationMessage = 'Approved';
+          this.showNotification = true;
+        },
+        error: err => {
+          this.errorMessage = err.message || 'Failed to approve tenant.';
+        }
+      });
   }
 
   reject(): void {
     if (!this.tenant) return;
-    console.log('Rejecting tenant:', this.tenant.id);
-    // Call service, handle response/error, maybe navigate back
-    this.superAdminService.rejectTenant(this.tenant.id).subscribe({
-      next: () => {
-        alert('Tenant Rejected!'); // Simple feedback
-        this.router.navigate(['/pendingtenant']); // Navigate back to list
-      },
-      error: (err) =>
-        this.showErrorPopup(`Failed to reject tenant: ${err.message}`),
-    });
+    this.superAdminService.updateTenantStatus(this.tenant.id, 'Rejected')
+      .subscribe({
+        next: () => {
+          this.tenant!.status = 'Rejected';
+          this.notificationMessage = 'Rejected';
+          this.showNotification = true;
+        },
+        error: err => {
+          this.errorMessage = err.message || 'Failed to reject tenant.';
+        }
+      });
   }
 
-  // --- Error Popup ---
-  showErrorPopup(message: string): void {
-    // Using basic browser alert as requested for simplicity
-    window.alert(message);
-    // In a real app, use a dedicated Modal/Toast/Snackbar component service
+  closeNotification(): void {
+    this.showNotification = false;
+    this.router.navigate(['/pendingtenant']);
   }
 
-  // --- Helper to go back (optional) ---
   goBack(): void {
-    this.router.navigate(['/pendingtenant']); // Navigate back to the list view
+    this.router.navigate(['/pendingtenant']);
   }
 }

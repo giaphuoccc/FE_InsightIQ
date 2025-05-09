@@ -30,6 +30,22 @@
   border: 1px solid #e0e0e0; /* Subtle border */
 }
 
+/* Status Styles */
+.status-approved {
+  color: #4caf50; /* Green */
+  font-weight: 600;
+}
+
+.status-rejected {
+  color: #f44336; /* Red */
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #ff9800; /* Orange */
+  font-weight: 600;
+}
+
 .table-card h3 {
   font-size: 1.2rem;
   font-weight: 600;
@@ -67,22 +83,6 @@ th {
 
 tbody tr:hover {
   background-color: #f1f1f1; /* Slight hover effect for rows */
-}
-
-/* Status Styles */
-.status-approved {
-  color: #4caf50; /* Green */
-  font-weight: 500;
-}
-
-.status-rejected {
-  color: #f44336; /* Red */
-  font-weight: 500;
-}
-
-.status-pending {
-  color: #ff9800; /* Orange */
-  font-weight: 500;
 }
 
 /* Details Button Styles */

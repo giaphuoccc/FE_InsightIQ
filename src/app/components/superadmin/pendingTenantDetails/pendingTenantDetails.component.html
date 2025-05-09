@@ -23,7 +23,7 @@
           <div class="info-grid">
             <div class="info-item">
               <label>Name:</label>
-              <span>{{ tenant.name }}</span>
+              <span>{{ tenant.fullName }}</span>
             </div>
             <div class="info-item">
               <label>Phone:</label>
@@ -41,7 +41,7 @@
           <div class="info-grid">
             <div class="info-item">
               <label>Business name:</label>
-              <span>{{ tenant.businessName }}</span>
+              <span>{{ tenant.companyName }}</span>
             </div>
             <div class="info-item">
               <label>Business website link:</label>
@@ -53,7 +53,7 @@
             </div>
             <div class="info-item">
               <label>Tax code:</label>
-              <span>{{ tenant.taxCode || "N/A" }}</span>
+              <span>{{ tenant.taxId || "N/A" }}</span>
             </div>
             <div class="info-item">
               <label>Business sector:</label>
@@ -72,8 +72,36 @@
         <button class="reject-button" (click)="reject()">Reject</button>
       </div>
     </section>
+
     <div class="back-button-container" *ngIf="!isLoading && !errorMessage">
       <button (click)="goBack()">Back to List</button>
     </div>
   </main>
+</div>
+
+<!-- Notification Modal -->
+<div class="modal-overlay" *ngIf="showNotification">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">Notification</h3>
+      <button class="close-btn" (click)="closeNotification()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>
+        Successful status update
+        <span 
+          class="status-text" 
+          [ngClass]="{
+            'status-approved-text': notificationMessage === 'Approved',
+            'status-rejected-text': notificationMessage === 'Rejected'
+          }"
+        >
+          "{{ notificationMessage }}"
+        </span>
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="done-btn" (click)="closeNotification()">Done</button>
+    </div>
+  </div>
 </div>
