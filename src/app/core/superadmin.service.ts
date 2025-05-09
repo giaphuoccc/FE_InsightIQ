@@ -36,7 +36,7 @@ export interface TenantDetail {
 })
 export class SuperAdminService {
   // Keep apiUrl and HttpClient for other methods or future use
-  private apiUrl = 'http://localhost:3000/api/tenants';
+  private apiUrl = 'http://localhost:3001/tenant';
 
   // --- MOCK DATA ---
   // Use the structure from your previous PendingTenantComponent hardcoded data
@@ -122,18 +122,12 @@ export class SuperAdminService {
 
   constructor(private http: HttpClient) {}
 
-  // --- Get all tenants (MOCKED) ---
+  // --- Hàm lấy tất cả Tenant ---
   getTenants(): Observable<TenantListItem[]> {
-    console.log(`TenantService: Returning MOCKED tenant list.`);
-    // Use 'of' to return the mock data array as an Observable
-    // Add 'delay' to simulate network latency (e.g., 500ms)
-    return of(this.mockTenants).pipe(
-      delay(500) // Simulate half-second delay
-    );
-    // --- Comment out the real HTTP call ---
-    // return this.http.get<TenantListItem[]>(this.apiUrl).pipe(
-    //   catchError(this.handleError)
-    // );
+
+    return this.http.get<TenantListItem[]>(this.apiUrl, {withCredentials: true}).pipe(
+      catchError(this.handleError)
+    )
   }
 
   // --- Get single tenant by ID (MOCKED) ---
