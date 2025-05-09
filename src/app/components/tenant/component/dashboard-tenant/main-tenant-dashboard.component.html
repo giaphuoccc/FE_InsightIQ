@@ -3,21 +3,25 @@
 <div class="button-container">
     <dashboard-action-button-tenant
       title="Management Doument"
-      icon="assets/icon/tenant/dashboard/icon-manage-document.png">
+      icon="assets/icon/tenant/dashboard/icon-manage-document.png"
+      (pressed)="goto('/document')">
     </dashboard-action-button-tenant>
   
     <dashboard-action-button-tenant
       title="Account Management"
-      icon="assets/icon/tenant/dashboard/icon-account-management.png">
+      icon="assets/icon/tenant/dashboard/icon-account-management.png"
+      (pressed)="goto('/dashboard_tenant')">
     </dashboard-action-button-tenant>
   
     <dashboard-action-button-tenant
       title="Billing and Subscription"
-      icon="assets/icon/tenant/dashboard/icon-billing-and-subscription.png">
+      icon="assets/icon/tenant/dashboard/icon-billing-and-subscription.png"
+      (pressed)="goto('/dashboard_tenant')">
     </dashboard-action-button-tenant>
   
     <dashboard-action-button-tenant
       title="Reporting And Statistics"
-      icon="assets/icon/tenant/dashboard/icon-reporting-and-statistics.png">
+      icon="assets/icon/tenant/dashboard/icon-reporting-and-statistics.png"
+      (pressed)="goto('/viewreport')">
     </dashboard-action-button-tenant>
 </div>

@@ -1,7 +1,7 @@
 <div class="reports-container">
   <h2 class="page-title">Reports and Statistics</h2>
 
-  <section class="filter-section card">
+  <!-- <section class="filter-section card">
     <div class="filter-controls">
       <div class="form-group">
         <label for="start-date">Start date</label>
@@ -27,7 +27,7 @@
         Filter Data
       </button>
     </div>
-  </section>
+  </section> -->
 
   <div *ngIf="isLoadingStats || isLoadingComments" class="loading-message">
     Loading report data...
@@ -40,27 +40,27 @@
     <div class="stats-grid">
       <div class="stat-box card">
         <span class="stat-label">Likes</span>
-        <span class="stat-value">{{ stats.likes }}</span>
+        <span class="stat-value">{{ stats.positive }}</span>
       </div>
       <div class="stat-box card">
         <span class="stat-label">Dislikes</span>
-        <span class="stat-value">{{ stats.dislikes }}</span>
+        <span class="stat-value">{{ stats.negative }}</span>
       </div>
       <div class="stat-box card">
         <span class="stat-label">Response time</span>
-        <span class="stat-value">{{ stats.responseTime }}s</span>
+        <span class="stat-value">0s</span>
       </div>
       <div class="stat-box card">
         <span class="stat-label">Number of stops</span>
-        <span class="stat-value">{{ stats.stops }}</span>
+        <span class="stat-value">0</span>
       </div>
       <div class="stat-box card">
         <span class="stat-label">Chat time</span>
-        <span class="stat-value">{{ stats.chatTime }}s</span>
+        <span class="stat-value">0s</span>
       </div>
       <div class="stat-box card">
         <span class="stat-label">Rate out of range</span>
-        <span class="stat-value">{{ stats.rateOutOfRange }}</span>
+        <span class="stat-value">0</span>
       </div>
     </div>
   </section>
@@ -72,8 +72,11 @@
     </div>
     <div class="comments-list" *ngIf="comments.length > 0">
       <div *ngFor="let comment of comments" class="comment-item">
-        <p class="comment-text">"{{ comment.text }}"</p>
-        <button class="detail-button" (click)="onSeeCommentDetail(comment.id)">
+        <p class="comment-text">"{{ comment.comment }}"</p>
+        <button
+          class="detail-button"
+          (click)="onSeeCommentDetail(comment.messageId)"
+        >
           See detail
         </button>
       </div>

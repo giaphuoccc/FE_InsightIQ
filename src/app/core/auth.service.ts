@@ -21,9 +21,8 @@ export class AuthService {
       .post<{ role: string }>(this.LOGIN_URL, credentials, { withCredentials: true })
       .pipe(
         tap((response) => {
-          // TODO: Lưu token nếu cần thiết
-          // localStorage.setItem('access_token', token);
-
+          localStorage.setItem('user_role', response.role);
+  
           // Điều hướng dựa vào vai trò
           if (response.role === 'SUPERADMIN') {
             this.router.navigate(['/dashboard_superadmin']);
@@ -36,22 +35,28 @@ export class AuthService {
         catchError((error) => throwError(() => error))
       );
   }
-
+  
   /** Gọi API logout rồi chuyển về login */
   logout(): void {
     this.http
       .post(this.LOGOUT_URL, {}, { withCredentials: true })
       .subscribe({
         next: () => {
+          // Xóa role khỏi localStorage
+          localStorage.removeItem('user_role');
+          // Điều hướng về login
           this.router.navigate(['/login']);
         },
         error: (err) => {
           console.error('Logout failed', err);
-          // Dù logout thất bại vẫn điều hướng về login
+          // Vẫn xóa localStorage dù logout thất bại
+          localStorage.removeItem('user_role');
+          // Điều hướng về login
           this.router.navigate(['/login']);
         }
       });
   }
+  
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem('access_token');

@@ -13,11 +13,11 @@ import { PendingTenantDetailsComponent } from './components/superadmin/pendingTe
 
 import { WidgetUserComponent } from './components/widget-user/widget-user.component';
 
-import { DashboardComponent } from './components/tenant/component/dashboard-tenant/dashboard-tenant.component';
+import { MainTenantDashboardComponent } from './components/tenant/component/dashboard-tenant/main-tenant-dashboard.component';
 import { TenantAccountListComponent } from './components/superadmin/tenantAccountList/tenantAccountList.component';
 
 import { TenantManagementComponent } from './components/tenant/component/profile/edit-profile/TenantManagementComponent/tenant-management.component';
-import { ReportManagementComponent } from './shared/reports/report-management/report-management.component';
+import { ReportManagementComponent } from './shared/reports/report-management/reportManagement.component';
 
 import { CommentDetailComponent } from './shared/reports/comment-detail/comment-detail.component';
 import { PaymentComponent } from './components/tenant/component/payment/payment.component';
@@ -80,7 +80,7 @@ export const routes: Routes = [
   { path: 'document', component: DocumentManagementComponent },
 
   // Dashboard
-  {path: 'dashboard_tenant', component: DashboardComponent}, // Dashboard cho Tenant
+  {path: 'dashboard_tenant', component: MainTenantDashboardComponent}, // Dashboard cho Tenant
 
   // --- End of added routes ---
 

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReportManagementComponent } from './report-management.component';
+import { ReportManagementComponent } from './reportManagement.component';
 
 describe('ReportManagementComponent', () => {
   let component: ReportManagementComponent;
