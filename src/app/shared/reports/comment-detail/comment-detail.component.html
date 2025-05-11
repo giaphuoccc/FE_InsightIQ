@@ -1,4 +1,4 @@
-<!-- <div class="detail-container">
+<div class="detail-container">
   <h2 class="detail-title">Chat Conversation Detail</h2>
 
   <div *ngIf="isLoading" class="loading-indicator card">
@@ -10,38 +10,34 @@
     <button (click)="goBack()" class="back-button">Back to Reports</button>
   </div>
 
-  <div *ngIf="!isLoading && !errorMessage">
+  <div *ngIf="!isLoading && !errorMessage && conversationSnippet.length > 0">
     <div class="comment-metadata card">
-      <strong>Details for Comment ID:</strong> {{ commentId || "N/A" }}
+      <p>
+        <strong>Displaying conversation around message ID:</strong>
+        {{ dislikedMessageId || "N/A" }}
+      </p>
     </div>
 
     <div class="chat-log card">
-      <h3 class="chat-log-title">Conversation Log</h3>
-
-      <div *ngIf="chatMessage.length === 0" class="empty-chat">
-        No chat messages found for this comment.
-      </div>
+      <h3 class="chat-log-title">Conversation Snippet</h3>
 
       <div
-        *ngFor="let message of chatMessage"
+        *ngFor="let message of conversationSnippet"
         class="chat-message"
         [class.user-message]="message.sender === 'user'"
         [class.bot-message]="message.sender === 'bot'"
+        [class.disliked-message]="message.isDisliked"
       >
-        <p
-          class="message-text"
-          [class.disliked-message-text]="message.isDisliked"
-        >
+        <p class="message-text">
           {{ message.text }}
         </p>
-        <span class="message-timestamp">{{
-          message.timestamp | date : "yyyy-MM-dd HH:mm:ss"
-        }}</span>
-
+        <span class="message-timestamp">
+          {{ message.timestamp | date : "yyyy-MM-dd HH:mm:ss" }}
+        </span>
         <span
           *ngIf="message.isDisliked"
           class="disliked-indicator"
-          title="User disliked this message"
+          title="This is the disliked message"
           >❗</span
         >
       </div>
@@ -51,4 +47,14 @@
       <button class="back-button" (click)="goBack()">Back to Reports</button>
     </div>
   </div>
-</div> -->
+
+  <div
+    *ngIf="!isLoading && !errorMessage && conversationSnippet.length === 0"
+    class="empty-chat card"
+  >
+    No conversation snippet to display for this comment.
+    <div class="actions-area" style="margin-top: 15px">
+      <button class="back-button" (click)="goBack()">Back to Reports</button>
+    </div>
+  </div>
+</div>
