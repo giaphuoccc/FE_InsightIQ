@@ -205,7 +205,7 @@ handleNotificationConfirm(): void{
   // Nếu không lỗi thì mới tiến hành chuyển trang
   if (!wasErorr) {
     this.showNotificationModal = false; // Ẩn model
-    this.router.navigate(['/login']);
+    this.router.navigate(['']);
   }
 }
 }

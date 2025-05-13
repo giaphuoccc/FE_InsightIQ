@@ -45,14 +45,14 @@ export class AuthService {
           // Xóa role khỏi localStorage
           localStorage.removeItem('user_role');
           // Điều hướng về login
-          this.router.navigate(['/login']);
+          this.router.navigate(['']);
         },
         error: (err) => {
           console.error('Logout failed', err);
           // Vẫn xóa localStorage dù logout thất bại
           localStorage.removeItem('user_role');
           // Điều hướng về login
-          this.router.navigate(['/login']);
+          this.router.navigate(['']);
         }
       });
   }

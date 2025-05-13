@@ -5,13 +5,13 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NotificationComponent } from '../../../shared/notification/notification.component';
 import { AuthService } from '../../../core/auth.service';
-
+import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule, NotificationComponent]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule, NotificationComponent, NavbarComponent]
 })
 export class LoginComponent implements OnInit {
   /** Reactive form for login */
@@ -28,6 +28,7 @@ export class LoginComponent implements OnInit {
   notificationMessage: string = '';
   notificationIsErorr: boolean = false;
   notificationConfirmText: string = 'Confirm';
+
 
   constructor(
     private fb: FormBuilder,
