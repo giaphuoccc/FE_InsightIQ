@@ -1,37 +1,38 @@
-// src/app/core/auth.guard.ts
+// // src/app/core/auth.guard.ts
+// import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+// import {
+//   CanActivate,
+//   Router,
+//   ActivatedRouteSnapshot,
+//   RouterStateSnapshot,
+// } from '@angular/router';
+// import { isPlatformBrowser } from '@angular/common';
 
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import {
-  CanActivate,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot,
-  Router
-} from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
+// @Injectable({ providedIn: 'root' })
+// export class AuthGuard implements CanActivate {
+//   constructor(
+//     private router: Router,
+//     @Inject(PLATFORM_ID) private platformId: Object
+//   ) {}
 
-@Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate {
-  constructor(
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+//   canActivate(
+//     _route: ActivatedRouteSnapshot,
+//     _state: RouterStateSnapshot
+//   ): boolean {
+//     // Only evaluate in the browser
+//     if (!isPlatformBrowser(this.platformId)) return false;
 
-  private hasAuthToken(): boolean {
-    if (!isPlatformBrowser(this.platformId)) return false;
-    return document.cookie
-      .split(';')
-      .some(c => c.trim().startsWith('access_token='));
-  }
+//     // Check for auth_token cookie
+//     const hasToken = document.cookie
+//       .split(';')
+//       .some(c => c.trim().startsWith('auth_token='));
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean {
-    if (this.hasAuthToken()) {
-      return true;
-    }
-    // no token → redirect to login
-    this.router.navigate(['']);
-    return false;
-  }
-}
+//     if (hasToken) {
+//       return true;
+//     }
+
+//     // Not logged in → go to login
+//     this.router.navigate(['']);
+//     return false;
+//   }
+// }

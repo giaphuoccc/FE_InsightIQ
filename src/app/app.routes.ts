@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/auth.guard';
+//import { AuthGuard } from './core/auth.guard';
 
 import { LoginComponent } from './components/authentication/login/login.component';
 import { RegisterComponent } from './components/authentication/register/register.component';
@@ -34,27 +34,27 @@ export const routes: Routes = [
 
   //SA Profile Section
   { path: 'dashboard_superadmin', component: MainSuperadminDashboardComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
   { path: 'profile', component: ProfileComponent, 
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
   { path: 'edit-profile', component: EditProfileComponent, 
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
   // PENDING TENANT SECTION
   { path: 'pendingtenant', component: PendingTenantComponent, 
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
   { path: 'pendingtenant/:id', component: PendingTenantDetailsComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
   // TENANT SECTION
   {path: 'dashboard_tenant', component: MainTenantDashboardComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
   // TENANT MANAGEMENT
@@ -65,31 +65,31 @@ export const routes: Routes = [
   // BILLING SECTION (Tenant)
   {
     path: 'billing', component: SubscriptionManagementComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
   {
     path: 'billing/plans', component: ChangePlanComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
   {
     path: 'billing/pay/:planId', component: PaymentComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
   {
     path: 'billing/pay-invoice', component: PaymentComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
   { path: 'billing/history', component: BillingHistoryComponent, 
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
   {
     path: 'billing/history/:invoiceId', component: BillingHistoryDetailComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
 
@@ -107,7 +107,7 @@ export const routes: Routes = [
   
 
   { path: 'document', component: DocumentManagementComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
   },
 
 
