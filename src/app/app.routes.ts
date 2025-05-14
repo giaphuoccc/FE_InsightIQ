@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-
+import { AuthGuard } from './core/auth.guard';
 
 import { LoginComponent } from './components/authentication/login/login.component';
 import { RegisterComponent } from './components/authentication/register/register.component';
@@ -33,54 +33,83 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
 
   //SA Profile Section
-  {path: 'dashboard_superadmin', component: MainSuperadminDashboardComponent},
-  { path: 'profile', component: ProfileComponent, },
-  { path: 'edit-profile', component: EditProfileComponent, },
+  { path: 'dashboard_superadmin', component: MainSuperadminDashboardComponent,
+    canActivate: [AuthGuard]
+  },
+  { path: 'profile', component: ProfileComponent, 
+    canActivate: [AuthGuard]
+  },
+  { path: 'edit-profile', component: EditProfileComponent, 
+    canActivate: [AuthGuard]
+  },
 
   // PENDING TENANT SECTION
-  { path: 'pendingtenant', component: PendingTenantComponent },
-  { path: 'pendingtenant/:id', component: PendingTenantDetailsComponent },
+  { path: 'pendingtenant', component: PendingTenantComponent, 
+    canActivate: [AuthGuard]
+  },
 
-  // Default Route
-  // { path: '', redirectTo: '/pendingtenant', pathMatch: 'full' },
+  { path: 'pendingtenant/:id', component: PendingTenantDetailsComponent,
+    canActivate: [AuthGuard]
+  },
 
-  // WIDGET
-  { path: 'widget-user', component: WidgetUserComponent },
+  // TENANT SECTION
+  {path: 'dashboard_tenant', component: MainTenantDashboardComponent,
+    canActivate: [AuthGuard]
+  },
 
   // TENANT MANAGEMENT
   { path: 'tenant-management', component: TenantAccountListComponent },
   //{ path: 'management', component: TenantAccountListComponent},
 
+
+  // BILLING SECTION (Tenant)
+  {
+    path: 'billing', component: SubscriptionManagementComponent,
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'billing/plans', component: ChangePlanComponent,
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'billing/pay/:planId', component: PaymentComponent,
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'billing/pay-invoice', component: PaymentComponent,
+    canActivate: [AuthGuard]
+  },
+
+  { path: 'billing/history', component: BillingHistoryComponent, 
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'billing/history/:invoiceId', component: BillingHistoryDetailComponent,
+    canActivate: [AuthGuard]
+  },
+
+
   // REPORTING SECTION
   { path: 'viewreport', component: ReportManagementComponent },
   { path: 'report-conversation/:id', component: CommentDetailComponent },
 
-  // BILLING SECTION (Tenant)
-  {
-    path: 'billing',
-    component: SubscriptionManagementComponent,
-  },
-  {
-    path: 'billing/plans',
-    component: ChangePlanComponent,
-  },
-  {
-    path: 'billing/pay/:planId',
-    component: PaymentComponent,
-  },
-  {
-    path: 'billing/pay-invoice',
-    component: PaymentComponent,
-  },
-  { path: 'billing/history', component: BillingHistoryComponent },
-  {
-    path: 'billing/history/:invoiceId',
-    component: BillingHistoryDetailComponent,
-  },
-  { path: 'document', component: DocumentManagementComponent },
 
-  // Dashboard
-  {path: 'dashboard_tenant', component: MainTenantDashboardComponent}, // Dashboard cho Tenant
+
+
+  // WIDGET
+  { path: 'widget-user', component: WidgetUserComponent },
+
+
+  
+
+  { path: 'document', component: DocumentManagementComponent,
+    canActivate: [AuthGuard]
+  },
+
 
   // --- End of added routes ---
 
