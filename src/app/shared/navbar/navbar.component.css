@@ -116,3 +116,7 @@ cursor: pointer; /* Thêm dòng này */
 .confirm-btn:hover {
   background-color: #c82333;
 }
+
+.navbar-logo:hover {
+  cursor: pointer;
+}
