@@ -1,32 +1,47 @@
-// InsightIQ FE BE/FrontEnd/shared/reports/comment-detail/comment-detail.component.ts
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router'; // Added Router
-import { Location, CommonModule, DatePipe } from '@angular/common'; // Added DatePipe
-import { HttpClient, HttpErrorResponse } from '@angular/common/http'; // Added HttpClient, HttpErrorResponse
-import { forkJoin, of } from 'rxjs'; // Added forkJoin, of
-import { switchMap, catchError, map } from 'rxjs/operators'; // Added switchMap, catchError, map
+// gemini_fn/FrontEnd/shared/reports/comment-detail/comment-detail.component.ts
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Location, CommonModule, DatePipe } from '@angular/common';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { of } from 'rxjs';
+import { switchMap, catchError, map, finalize } from 'rxjs/operators';
 
-// Interfaces (define these here or import from a shared file)
+// Import structured content display components
+import { ProductInfoComponent } from '../../../components/widget-user/product-info/product-info.component';
+import { ProductComparisonComponent } from '../../../components/widget-user/product-comparison/product-comparison.component';
+import { ProductPromotionComponent } from '../../../components/widget-user/product-promotion/product-promotion.component';
+
+// Interface for data fetched from /message/detail/:id (the disliked message)
 interface MessageDetailDto {
   id: number;
   sender: string; // 'User' | 'Chatbot' from backend
-  content: string;
+  content: string; // This will be the string (plain or JSON string)
+  type: string; // Type of the message (e.g., 'text', 'productInfo')
   chatSessionId: number;
   createdAt: string;
 }
 
+// Interface for data fetched from /message/:chatSessionId (all messages in session)
 interface ChatMessageDto {
   id: number;
   sender: string; // 'User' | 'Chatbot' from backend
-  content: string;
+  content: string; // This will be the string (plain or JSON string)
+  type: string; // Type of the message
   chatSessionId: number;
   createdAt: string;
 }
 
+// Interface for messages prepared for display in the template
 export interface DisplayChatMessage {
   id: number;
   sender: 'user' | 'bot';
-  text: string;
+  content: any; // Changed from 'text: string' to 'content: any' to hold parsed objects or strings
+  type:
+    | 'text'
+    | 'productInfo'
+    | 'productComparison'
+    | 'productPromotion'
+    | string; // Added type, ensure it covers all backend types
   timestamp: Date;
   isDisliked?: boolean;
 }
@@ -34,7 +49,13 @@ export interface DisplayChatMessage {
 @Component({
   selector: 'app-comment-detail',
   standalone: true,
-  imports: [CommonModule, DatePipe], // Make sure DatePipe is here
+  imports: [
+    CommonModule,
+    DatePipe,
+    ProductInfoComponent,
+    ProductComparisonComponent,
+    ProductPromotionComponent,
+  ],
   templateUrl: './comment-detail.component.html',
   styleUrls: ['./comment-detail.component.css'],
 })
@@ -42,22 +63,22 @@ export class CommentDetailComponent implements OnInit {
   conversationSnippet: DisplayChatMessage[] = [];
   isLoading: boolean = true;
   errorMessage: string | null = null;
-  dislikedMessageId: number | null = null; // Changed from commentId to reflect it's a message ID
-  originalCommentText: string | null = null; // You might want to fetch this too if needed
+  dislikedMessageId: number | null = null;
 
-  private apiBaseUrl = 'http://localhost:3001'; // Your backend API base URL
+  private apiBaseUrl = 'http://localhost:3001';
+  private cdRef = inject(ChangeDetectorRef);
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private location: Location,
-    private router: Router // Injected Router
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
-      this.dislikedMessageId = +idParam; // Convert string param to number
+      this.dislikedMessageId = +idParam;
       if (!isNaN(this.dislikedMessageId)) {
         this.loadConversationSnippet(this.dislikedMessageId);
       } else {
@@ -73,7 +94,6 @@ export class CommentDetailComponent implements OnInit {
     this.errorMessage = null;
     this.conversationSnippet = [];
 
-    // Step 1: Fetch the disliked message to get its chatSessionId
     this.http
       .get<MessageDetailDto>(
         `${this.apiBaseUrl}/message/detail/${dislikedMsgId}`,
@@ -83,72 +103,97 @@ export class CommentDetailComponent implements OnInit {
         switchMap((messageDetail) => {
           if (
             !messageDetail ||
-            typeof messageDetail.chatSessionId !== 'number'
+            typeof messageDetail.chatSessionId !== 'number' ||
+            !messageDetail.type
           ) {
+            console.error('Invalid message detail received:', messageDetail);
             throw new Error(
-              'Chat session ID not found or invalid for the disliked message.'
+              'Chat session ID or message type not found or invalid for the disliked message.'
             );
           }
-          // Store original comment text if you need it (e.g., to display what the user initially wrote as feedback)
-          // this.originalCommentText = "Fetch this from feedback details if needed"; // Placeholder
           console.log(
-            `Workspaceed disliked message detail, chatSessionId: ${messageDetail.chatSessionId}`
+            `Workspaceed disliked message detail, chatSessionId: ${messageDetail.chatSessionId}, type: ${messageDetail.type}`
           );
-          // Step 2: Fetch all messages for that chatSessionId
           return this.http.get<ChatMessageDto[]>(
             `${this.apiBaseUrl}/message/${messageDetail.chatSessionId}`,
             { withCredentials: true }
           );
         }),
-        map((allMessages) => {
-          // Step 3: Process messages to create the snippet
+        map((allMessages: ChatMessageDto[]) => {
           const dislikedMessageIndex = allMessages.findIndex(
             (msg) => msg.id === dislikedMsgId
           );
           if (dislikedMessageIndex === -1) {
-            // Should not happen if step 1 succeeded with the same ID, but good for robustness
             throw new Error(
               'Disliked message not found in the session conversation.'
             );
           }
 
-          const snippetRange = 2; // Show 2 messages before and 2 after
+          const snippetRange = 2; // Number of messages before and after the disliked one
           const startIndex = Math.max(0, dislikedMessageIndex - snippetRange);
           const endIndex = Math.min(
             allMessages.length - 1,
             dislikedMessageIndex + snippetRange
           );
-
           const snippetDto = allMessages.slice(startIndex, endIndex + 1);
 
-          return snippetDto.map((dto) => ({
-            id: dto.id,
-            sender: dto.sender.toLowerCase() as 'user' | 'bot', // Normalize sender
-            text: dto.content,
-            timestamp: new Date(dto.createdAt),
-            isDisliked: dto.id === dislikedMsgId,
-          }));
+          return snippetDto.map((dto: ChatMessageDto) => {
+            let parsedContent: any = dto.content;
+            const messageType = (
+              dto.type || 'text'
+            ).toLowerCase() as DisplayChatMessage['type'];
+
+            if (messageType !== 'text' && typeof dto.content === 'string') {
+              try {
+                parsedContent = JSON.parse(dto.content);
+              } catch (e) {
+                console.error(
+                  `Failed to parse content for message ID ${dto.id} of type ${messageType}:`,
+                  e,
+                  '\nRaw Content:',
+                  dto.content
+                );
+                // Fallback: use the original string content if parsing fails
+                parsedContent = dto.content;
+                // Optionally, you might want to force the type to 'text' here if parsing fails
+                // messageType = 'text';
+              }
+            }
+
+            return {
+              id: dto.id,
+              sender: dto.sender.toLowerCase() as 'user' | 'bot',
+              content: parsedContent,
+              type: messageType,
+              timestamp: new Date(dto.createdAt),
+              isDisliked: dto.id === dislikedMsgId,
+            };
+          });
         }),
         catchError((err: HttpErrorResponse | Error) => {
           console.error('Error loading conversation snippet:', err);
           let message = 'Failed to load conversation details.';
           if (err instanceof HttpErrorResponse) {
-            message = err.error?.message || err.message || message;
+            message = `Server error ${err.status}: ${
+              err.error?.message || err.message
+            }`;
           } else if (err instanceof Error) {
             message = err.message;
           }
           this.handleError(message);
-          return of([]); // Return an empty array on error to prevent breaking the chain
+          return of([]);
+        }),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdRef.detectChanges();
         })
       )
-      .subscribe((snippet) => {
+      .subscribe((snippet: DisplayChatMessage[]) => {
         this.conversationSnippet = snippet;
-        this.isLoading = false;
         if (snippet.length === 0 && !this.errorMessage) {
-          // This case can happen if the try/catchError returns of([]) successfully
-          // but the logic before that (e.g. map) resulted in no items.
           this.errorMessage = 'No conversation data to display.';
         }
+        this.cdRef.detectChanges();
       });
   }
 
@@ -156,16 +201,14 @@ export class CommentDetailComponent implements OnInit {
     this.errorMessage = message;
     this.isLoading = false;
     this.conversationSnippet = [];
+    this.cdRef.detectChanges();
   }
 
   goBack(): void {
-    // Check if there's a previous location in history
     if (window.history.length > 1) {
       this.location.back();
     } else {
-      // Otherwise, navigate to a default route (e.g., reports list)
-      // Adjust the fallback route as per your application structure
-      this.router.navigate(['/viewreport']);
+      this.router.navigate(['/viewreport']); // Default fallback
     }
   }
 }

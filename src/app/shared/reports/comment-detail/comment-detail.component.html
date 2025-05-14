@@ -28,9 +28,27 @@
         [class.bot-message]="message.sender === 'bot'"
         [class.disliked-message]="message.isDisliked"
       >
-        <p class="message-text">
-          {{ message.text }}
-        </p>
+        <div [ngSwitch]="message.type" class="message-content-wrapper">
+          <app-product-info
+            *ngSwitchCase="'productinfo'"
+            [productData]="message.content"
+          ></app-product-info>
+
+          <app-product-comparison
+            *ngSwitchCase="'productcomparison'"
+            [data]="message.content"
+          ></app-product-comparison>
+
+          <product-promotion
+            *ngSwitchCase="'productpromotion'"
+            [promotionData]="message.content"
+          ></product-promotion>
+
+          <p *ngSwitchDefault class="message-text">
+            {{ (typeof message.content === 'object' ? ('Could not display structured content: ' + message.type) : message.content) || 'No content to display' }}
+          </p>
+        </div>
+
         <span class="message-timestamp">
           {{ message.timestamp | date : "yyyy-MM-dd HH:mm:ss" }}
         </span>
