@@ -94,7 +94,7 @@ export class DocumentManagementComponent implements OnInit {
       );
       return {
         id: undefined,
-        name: 'Lỗi dữ liệu',
+        name: 'Error',
         modified: 'N/A',
         size: 'N/A',
         fileUrl: undefined,
@@ -117,7 +117,7 @@ export class DocumentManagementComponent implements OnInit {
       this.fileToUpload = input.files[0];
       const tempSize = this.formatBytes(this.fileToUpload.size);
       // Clear previous upload messages when new file is selected
-      this.uploadMessage = `Đã chọn file: ${this.fileToUpload.name} (${tempSize})`;
+      this.uploadMessage = `File Selected: ${this.fileToUpload.name} (${tempSize})`;
       this.uploadError = false;
       this.deleteMessage = null; // Also clear delete message
       console.log(
@@ -139,7 +139,7 @@ export class DocumentManagementComponent implements OnInit {
 
     // --- Combine Validation Checks ---
     if (!this.fileToUpload) {
-      this.uploadMessage = 'Vui lòng chọn một file để tải lên.';
+      this.uploadMessage = 'Please select a file to upload.';
       this.uploadError = true;
       console.log('Error: No file selected.');
       return;
@@ -157,14 +157,13 @@ export class DocumentManagementComponent implements OnInit {
     // }
     // --- Add Date Validation ---
     if (!this.validFrom) {
-      this.uploadMessage = 'Vui lòng chọn ngày bắt đầu hiệu lực (Valid From).';
+      this.uploadMessage = 'Please select a valid start date (Valid From).';
       this.uploadError = true;
       console.log('Error: Valid From date missing.');
       return;
     }
     if (!this.validUntil) {
-      this.uploadMessage =
-        'Vui lòng chọn ngày kết thúc hiệu lực (Valid Until).';
+      this.uploadMessage = 'Please select a valid end date (Valid Until).';
       this.uploadError = true;
       console.log('Error: Valid Until date missing.');
       return;
@@ -172,7 +171,7 @@ export class DocumentManagementComponent implements OnInit {
     // Optional: Check if validUntil is after validFrom
     if (this.validFrom > this.validUntil) {
       this.uploadMessage =
-        'Lỗi: Ngày kết thúc hiệu lực phải sau hoặc bằng ngày bắt đầu.';
+        'Error: Valid Until date must be after Valid From date.';
       this.uploadError = true;
       console.log('Error: Valid Until date is before Valid From date.');
       return;
@@ -185,7 +184,7 @@ export class DocumentManagementComponent implements OnInit {
     console.log('--- Input checks passed ---');
 
     this.isUploading = true;
-    this.uploadMessage = 'Đang tải lên...';
+    this.uploadMessage = 'Uploading...';
     this.uploadError = false;
     this.deleteMessage = null;
 
@@ -221,7 +220,7 @@ export class DocumentManagementComponent implements OnInit {
               newDocument
             );
             this.uploadMessage =
-              'Lỗi: Phản hồi từ server không đúng định dạng.';
+              'Error: Invalid response structure from backend.';
             this.uploadError = true;
             return;
           }
@@ -253,14 +252,12 @@ export class DocumentManagementComponent implements OnInit {
               err.message ||
               JSON.stringify(err.error);
             if (err.status === 0) {
-              this.uploadMessage = 'Lỗi mạng: Không thể kết nối đến máy chủ.';
+              this.uploadMessage = 'Error: Cannot connect to server.';
             } else {
-              this.uploadMessage = `Lỗi ${err.status}: ${detail}`;
+              this.uploadMessage = `Error ${err.status}: ${detail}`;
             }
           } else {
-            this.uploadMessage = `Đã xảy ra lỗi không xác định: ${
-              err?.message || err
-            }`;
+            this.uploadMessage = `Unknown Error: ${err?.message || err}`;
           }
         },
       });
@@ -280,25 +277,21 @@ export class DocumentManagementComponent implements OnInit {
       if (
         docToDelete &&
         confirm(
-          `Dữ liệu "${docToDelete.name}" không có ID. Xóa khỏi danh sách?`
+          `"${docToDelete.name}" does not exist on the server. Do you want to remove it from the list?`
         )
       ) {
         this.documents.splice(index, 1);
       }
       return;
     }
-    if (
-      confirm(
-        `Bạn có chắc muốn xóa vĩnh viễn file "${docToDelete.name}" không?`
-      )
-    ) {
+    if (confirm(`Do you want to delete "${docToDelete.name}" ?`)) {
       console.log(`Attempting to delete document with ID: ${docToDelete.id}`);
       this.documentService.deleteDocument(docToDelete.id).subscribe({
         next: () => {
           console.log(
             `Successfully deleted document with ID: ${docToDelete.id} from backend.`
           );
-          this.deleteMessage = `Đã xóa thành công file "${docToDelete.name}".`;
+          this.deleteMessage = `Deleted succesfully "${docToDelete.name}".`;
           this.deleteError = false;
           this.documents.splice(index, 1); // Remove from UI
         },

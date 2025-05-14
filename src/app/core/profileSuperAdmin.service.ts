@@ -75,25 +75,25 @@ export class ProfileService {
 
   updatePassword(userId: string|number, newPassword: string) {
     return this.http.put<{ success: boolean; message?: string }>(
-      `${this.API_BASE}/user/updatepassword`,
-      { id: userId, newPassword },
+      `${this.API_BASE}/user/updatepassword/${userId}`,
+      { newPassword },
       { headers: this.withAuthHeaders(), withCredentials: true }
     );
   }
 
-  /** NEW: Cập nhật username superadmin */
+  /** Cập nhật username superadmin */
   updateSuperAdmin(payload: UpdateSuperAdminPayload): Observable<{ success: boolean; message?: string }> {
     return this.http.put<{ success: boolean; message?: string }>(
-      `${this.API_BASE}/superadmin/update`,
+      `${this.API_BASE}/superadmin/${payload.id}`,
       payload,
       { headers: this.withAuthHeaders(), withCredentials: true }
     );
   }
 
-  /** NEW: Cập nhật email & phoneNumber của user */
+  /** Cập nhật email & phoneNumber của user */
   updateUser(payload: UpdateUserPayload): Observable<{ success: boolean; message?: string }> {
     return this.http.put<{ success: boolean; message?: string }>(
-      `${this.API_BASE}/user/update`,
+      `${this.API_BASE}/user/${payload.id}`,
       payload,
       { headers: this.withAuthHeaders(), withCredentials: true }
     );

@@ -1,11 +1,44 @@
-/* (Dán CSS từ bước trước vào đây) */
 .product-info-layout {
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-  /* ... (các style khác) ... */
-  .product-specs li span {
-    font-weight: 500;
-    min-width: 80px;
-    display: inline-block;
-  }
+  font-size: 0.9rem;
+  line-height: 1.5;
+  background-color: #e9f4ff; /* Option 1: Same light blue as productComparison's inner wrapper */
+  padding: 1rem; /* Add padding */
+  border-radius: 10px; /* Inner rounded corners */
+  color: #333; /* Ensure text color is readable on the blue background */
+}
+
+.product-info-layout .product-name {
+  margin-top: 0;
+  color: #1e3a8a; /* Darker blue for the product name for better contrast if needed */
+}
+
+.product-info-layout .product-manufacturer strong,
+.product-info-layout .product-category strong,
+.product-info-layout .product-price strong,
+.product-info-layout .product-specs strong {
+  color: #0056b3; /* Adjust strong tag colors for readability on blue */
+}
+
+.product-specs ul {
+  list-style-type: disc; /* Or none, or other as preferred */
+  padding-left: 20px; /* Indent list items */
+}
+
+.product-specs li {
+  margin-bottom: 0.3rem;
+}
+
+.product-specs li span {
+  font-weight: 500;
+  min-width: 80px; /* This style was present, keeping it */
+  display: inline-block; /* This style was present, keeping it */
+}
+
+/* Ensure any paragraph text within product-info-layout also has good contrast */
+.product-info-layout p {
+  color: #2d3748; /* A slightly darker grey for better readability */
+  margin-bottom: 0.5rem; /* Add some spacing between paragraphs */
+}
+.product-info-layout p:last-child {
+  margin-bottom: 0; /* Remove margin from the last paragraph if no further elements follow */
+}
