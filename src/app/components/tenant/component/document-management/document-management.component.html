@@ -30,13 +30,12 @@
             <tr>
               <th>Document Name</th>
               <th>Date Modified</th>
-              <!-- <th>Size</th> -->
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="!isLoadingDocuments && documents.length === 0">
-              <td colspan="4" class="empty-message">
+              <td colspan="3" class="empty-message">
                 Chưa có tài liệu nào được tải lên.
               </td>
             </tr>

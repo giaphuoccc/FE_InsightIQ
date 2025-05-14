@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';  // for ngModel binding
+import { Router } from '@angular/router';
 
 import { TenantAccountListService, TenantDTO } from '../../../core/superAdmin/tenantAccountList.service';
+import { TenantAccountDetailsComponent } from '../tenantAccountDetails/tenantAccountDetails.component';
 import { forkJoin, of } from 'rxjs';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 
@@ -44,7 +46,9 @@ export class TenantAccountListComponent implements OnInit {
   resultMessage = ''; //Biến lưu thông báo kết quả sau khi thực hiện hành động
 
   // Inject service vào
-  constructor(private tenantService: TenantAccountListService) {}
+  constructor(private tenantService: TenantAccountListService,
+    private router: Router
+  ) {}
 
   // Hàm ngOnIt
   ngOnInit(): void {
@@ -219,5 +223,12 @@ export class TenantAccountListComponent implements OnInit {
 
   closeResult(): void {
     this.showResultModal = false;
+  }
+
+  // 3. TẠO HÀM viewDetails để chuyển hướng tới xem chi tiết tenant
+  viewDetails(id: number): void {
+    // SỬA ĐỔI DÒNG NÀY để khớp với path trong app.routes.ts
+    this.router.navigate(['/tenant-account-details', id]);
+    console.log('Navigating to details for tenant ID:', id);
   }
 }

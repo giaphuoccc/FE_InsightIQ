@@ -1,0 +1,164 @@
+.tenant-management {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background-color: #f9f9f9;
+}
+
+.main {
+  max-width: 900px;
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 20px 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+.page-title-section {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.main-title {
+  color: #007bff;
+  font-size: 30px;
+  padding-bottom: 2px;
+  border-bottom: 3px solid #007bff;
+  display: flex;
+  justify-content: left;
+  margin-left: 30px;
+  font-family: "Karla", sans-serif;
+}
+
+.subtitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+  font-family: "Karla", sans-serif;
+  text-align: center;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.info-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.info-section {
+  padding: 15px 30px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.info-section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  font-style: italic;
+  font-size: 16px;
+  font-weight: 100;
+  color: #007bff;
+  font-family: "IBM Plex Sans", sans-serif;
+  margin-bottom: 10px;
+}
+.section-title2 {
+  font-size: 16px;
+  font-weight: 100;
+  color: #007bff;
+  font-family: "IBM Plex Sans", sans-serif;
+  margin-bottom: 10px;
+  font-style: italic;
+  padding-left: 30px;
+}
+.info-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-right: 10px;
+}
+
+.value {
+  color: #000000;
+  flex: 2;
+  text-align: left;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 5px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 15px 30px;
+  text-align: left;
+  font-size: 15px;
+  font-family: "IBM Plex Sans", sans-serif;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.data-table th {
+  font-weight: 700;
+  color: #080b0f;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+.documents-section {
+}
+.action-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.delete-button {
+  background-color: #e44040;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: "Karla", sans-serif;
+  font-weight: 700;
+  transition: background-color 0.3s;
+}
+
+.delete-button:hover {
+  background-color: #cc2d2d;
+}

@@ -14,11 +14,21 @@ export interface BackendDocument {
   size?: number; // Thêm size nếu backend trả về
 }
 
+// Interface TenantInfo để lấy thông tin Tenant
+export interface TenantInfo{
+  userId: number;
+  email: string;
+  role: string;
+  tenantId: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class DocumentService {
   private baseApiUrl = '/documents';
+
+  private tenantApiUrl = 'http://localhost:3001/documents/tenantInfo';
 
   constructor(private http: HttpClient) {}
 
@@ -61,6 +71,17 @@ export class DocumentService {
     return this.http.get<BackendDocument[]>(this.baseApiUrl);
   }
 
+  // Phương thức lấy document theo Tenant
+  getDocumentsByTenantId(tenantId: string | number): Observable<BackendDocument[]> {
+    // URL sẽ là ví dụ: http://localhost:3001/documents/123
+    // Điều này khớp với router.get('/:tenantId', ...) trong DocumentController.ts backend
+    const apiUrlWithTenantId = `${this.baseApiUrl}/${tenantId}`;
+    console.log(
+      `[Angular DocumentService] Sending GET request to: ${apiUrlWithTenantId} for tenant-specific documents`
+    );
+    // Giả sử API này yêu cầu credentials (cookies)
+    return this.http.get<BackendDocument[]>(apiUrlWithTenantId, { withCredentials: true });
+  }
   /**
    * Xóa một document dựa vào ID.
    */
@@ -71,4 +92,11 @@ export class DocumentService {
     );
     return this.http.delete(deleteUrl);
   }
+
+  getCurrentTenantInfo(): Observable<TenantInfo> {
+  const apiUrl = 'http://localhost:3001/tenant/api/myInfo';
+  console.log (this.http.get<TenantInfo>(apiUrl, { withCredentials: true }));
+  return this.http.get<TenantInfo>(apiUrl, { withCredentials: true });
+}
+
 }

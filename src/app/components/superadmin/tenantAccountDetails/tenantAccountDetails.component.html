@@ -1,1 +1,114 @@
-<p>tenant-account-details works!</p>
+<main class="tenant-management">
+  <section class="page-title-section">
+    <h1 class="main-title">{{ title }}</h1>
+  </section>
+
+  <div class="main">
+    <h2 class="subtitle">{{ subtitle }}</h2>
+
+    <!-- Hiển thị loading khi đang tải -->
+    <div *ngIf="isLoading">Loading...</div>
+
+    <!-- Hiển thị lỗi nếu có -->
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <div class="content-container">
+      <header class="header-container">
+        <div class="title-wrapper">
+          <div class="title-underline"></div>
+        </div>
+      </header>
+
+      <div class="info-container">
+        <section class="info-section">
+          <h3 class="section-title">Personal Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Name:</span>
+              <span class="value">{{ personalInfo.name }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Phone:</span>
+              <span class="value">{{ personalInfo.phone }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-section">
+          <h3 class="section-title">Business Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Business Name:</span>
+              <span class="value">{{ businessInfo.name }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Website:</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="documents-section">
+          <h3 class="section-title2">Uploaded Documents</h3>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Document Name</th>
+                  <th>Date Modified</th>
+                  <th>Size</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let doc of documents">
+                  <td>{{ doc.name }}</td>
+                  <td>{{ doc.dateModified }}</td>
+                  <td>{{ doc.size }}</td>
+                </tr>
+                <tr *ngIf="!documents || documents.length === 0">
+                  <td colspan="3" style="text-align: center;">No documents uploaded.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="finance-section">
+          <h3 class="section-title2">Tenant Finance</h3>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fee Name</th>
+                  <th>Payable</th>
+                  <th>Paid</th>
+                  <th>Discount</th>
+                  <th>Debt</th>
+                  <th>Payment Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let record of financeRecords">
+                  <td>{{ record.feeName }}</td>
+                  <td>{{ record.payable }}</td>
+                  <td>{{ record.paid }}</td>
+                  <td>{{ record.discount }}</td>
+                  <td>{{ record.debt }}</td>
+                  <td>{{ record.paymentDate }}</td>
+                </tr>
+                <tr *ngIf="!financeRecords || financeRecords.length === 0">
+                  <td colspan="6" style="text-align: center;">No finance records available.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div class="action-container">
+        <button class="delete-button">Delete Tenant</button>
+      </div>
+    </div>
+  </div>
+</main>

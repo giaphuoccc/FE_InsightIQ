@@ -1,5 +1,6 @@
 // src/app/features/document-management/document-management.component.ts
 
+import { Input } from '@angular/core';
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
@@ -8,6 +9,7 @@ import { HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import {
   DocumentService,
   BackendDocument,
+  TenantInfo
 } from '../../../../core/document/document.service';
 import { finalize } from 'rxjs/operators';
 
@@ -24,10 +26,12 @@ interface DisplayDocument {
   selector: 'app-manage-document',
   templateUrl: './document-management.component.html',
   styleUrls: ['./document-management.component.css'],
-  imports: [CommonModule, FormsModule, HttpClientModule],
-  providers: [DocumentService],
+  imports: [CommonModule, FormsModule, HttpClientModule]
 })
 export class DocumentManagementComponent implements OnInit {
+
+  tenantId: string | number | null = null;
+
   documents: DisplayDocument[] = [];
   fileToUpload: File | null = null;
   // tenantId: number | null = null;
@@ -51,41 +55,37 @@ export class DocumentManagementComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadDocuments();
-    } else {
-      console.log('Skipping loadDocuments on server during SSR.');
-      // Optionally initialize documents to an empty array or handle server state differently
-      this.documents = [];
-      this.isLoadingDocuments = false;
-    }
-    console.log('DocumentManagementComponent initialized');
-  }
+  console.log('DocumentManagementComponent initialized. Attempting to fetch tenant info...');
 
-  loadDocuments(): void {
-    console.log('Loading documents...');
-    this.isLoadingDocuments = true;
-    this.documentService
-      .getDocuments()
-      .pipe(finalize(() => (this.isLoadingDocuments = false)))
-      .subscribe({
-        next: (backendDocs: BackendDocument[]) => {
-          console.log('Received documents from backend:', backendDocs);
-          this.documents = backendDocs.map((doc) =>
-            this.mapBackendToDisplay(doc)
-          );
-          console.log('Mapped documents for display:', this.documents);
-        },
-        error: (err: HttpErrorResponse) => {
-          console.error('Error loading documents:', err);
-          this.uploadMessage = `Lỗi tải danh sách tài liệu: ${
-            err.statusText || err.message
-          }`;
+  if (isPlatformBrowser(this.platformId)) {
+    this.documentService.getCurrentTenantInfo().subscribe({
+      next: (tenantInfo: TenantInfo) => {
+        if (tenantInfo?.tenantId != null) {
+          this.tenantId = tenantInfo.tenantId;
+          console.log('Fetched tenantId:', this.tenantId);
+          this.loadDocuments();
+        } else {
+          console.warn('Không lấy được tenantId từ tenantInfo:', tenantInfo);
+          this.uploadMessage = 'Không thể xác định thông tin Tenant.';
           this.uploadError = true;
-          this.documents = [];
-        },
-      });
+        }
+      },
+      error: (error: HttpErrorResponse) => {
+        console.error('Lỗi khi lấy tenant info:', error);
+        this.uploadMessage = 'Không thể lấy thông tin đăng nhập.';
+        this.uploadError = true;
+      }
+    });
+  } else {
+    console.log('Skipping loadDocuments on server during SSR.');
+    this.documents = [];
+    this.isLoadingDocuments = false;
   }
+}
+
+
+
+  
 
   private mapBackendToDisplay(doc: BackendDocument): DisplayDocument {
     if (!doc) {
@@ -316,6 +316,51 @@ export class DocumentManagementComponent implements OnInit {
         },
       });
     }
+  }
+
+  // Hàm load document
+    loadDocuments(): void {
+    // Bước 1.1: Thêm kiểm tra tenantId ngay đầu hàm
+    if (!this.tenantId) {
+      console.error('loadDocuments called, but tenantId is missing or invalid.');
+      this.isLoadingDocuments = false;
+      this.documents = [];
+      this.uploadMessage = 'Lỗi: Không thể xác định Tenant để tải tài liệu.';
+      this.uploadError = true;
+      return; // Dừng thực thi hàm nếu không có tenantId
+    }
+
+    console.log(`Loading documents for tenant ID: ${this.tenantId}...`);
+    this.isLoadingDocuments = true;
+    this.uploadMessage = null;
+    this.uploadError = false;
+
+    // Bước 1.2: Sửa dòng này để truyền this.tenantId
+    this.documentService
+      .getDocumentsByTenantId(this.tenantId) // <<<< THAY ĐỔI CHÍNH Ở ĐÂY
+      .pipe(finalize(() => {
+          this.isLoadingDocuments = false;
+          console.log('Finished loading documents attempt for DocumentManagementComponent.');
+      }))
+      .subscribe({
+        next: (backendDocs: BackendDocument[]) => {
+          console.log(`Received ${backendDocs.length} documents for tenant ${this.tenantId} in DocumentManagementComponent:`, backendDocs);
+          this.documents = backendDocs.map((doc) =>
+            this.mapBackendToDisplay(doc)
+          );
+          if (backendDocs.length === 0) {
+            this.uploadMessage = 'Không tìm thấy tài liệu nào cho Tenant này.';
+          }
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error(`Error loading documents for tenant ${this.tenantId} in DocumentManagementComponent:`, err);
+          this.uploadMessage = `Lỗi tải danh sách tài liệu: ${
+            err.statusText || err.message
+          }`;
+          this.uploadError = true;
+          this.documents = [];
+        },
+      });
   }
 
   // formatBytes method remains the same

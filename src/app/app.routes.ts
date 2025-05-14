@@ -15,6 +15,7 @@ import { WidgetUserComponent } from './components/widget-user/widget-user.compon
 
 import { MainTenantDashboardComponent } from './components/tenant/component/dashboard-tenant/main-tenant-dashboard.component';
 import { TenantAccountListComponent } from './components/superadmin/tenantAccountList/tenantAccountList.component';
+import { TenantAccountDetailsComponent } from './components/superadmin/tenantAccountDetails/tenantAccountDetails.component';
 
 //import { TenantManagementComponent } from './components/tenant/component/profile/edit-profile/TenantManagementComponent/tenant-management.component';
 import { ReportManagementComponent } from './shared/reports/report-management/reportManagement.component';
@@ -49,7 +50,7 @@ export const routes: Routes = [
 
   // TENANT MANAGEMENT
   { path: 'tenant-management', component: TenantAccountListComponent },
-  //{ path: 'management', component: TenantAccountListComponent},
+  {path: 'tenant-account-details/:id', component: TenantAccountDetailsComponent},
 
   // REPORTING SECTION
   { path: 'viewreport', component: ReportManagementComponent },
