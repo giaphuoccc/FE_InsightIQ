@@ -1,8 +1,8 @@
-<h1>Hello, Tenant</h1>
+<h1>Hello, {{ tenantFullName }}</h1>
 
 <div class="button-container">
     <dashboard-action-button-tenant
-      title="Management Doument"
+      title="Doument Management"
       icon="assets/icon/tenant/dashboard/icon-manage-document.png"
       (pressed)="goto('/document')">
     </dashboard-action-button-tenant>
