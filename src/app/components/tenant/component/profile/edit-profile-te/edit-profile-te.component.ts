@@ -8,48 +8,53 @@ import {
 } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { switchMap, tap } from 'rxjs';
+import { switchMap } from 'rxjs';
 
 import {
-  ProfileService,
-  MyInfoIds
-} from '../../../core/profileSuperAdmin.service';
+  ProfileTenantService,
+  MyTenantInfoIds
+} from '../../../../../core/profileTenant.service';
 
 @Component({
-  selector: 'app-editProfile',
+  selector: 'app-editProfileTenant',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
-  templateUrl: './editProfile.component.html',
-  styleUrls: ['./editProfile.component.css']
+  templateUrl: './edit-profile-te.component.html',
+  styleUrls: ['./edit-profile-te.component.css']
 })
-export class EditProfileComponent implements OnInit {
+export class EditProfileTEComponent implements OnInit {
+  /* ---------------- State ---------------- */
   userForm!: FormGroup;
   passwordForm!: FormGroup;
+
   isLoading = false;
   isEditMode           = false;
   isChangePasswordMode = false;
   isSubmitting         = false;
   error: string | null = null;
 
-  notificationVisible  = false;
-  notificationMessage  = '';
+  notificationVisible = false;
+  notificationMessage = '';
+  /** true  = modal báo lỗi \n false = modal thành công */
+  private modalError = false;
   private lastAction: 'edit' | 'password' | null = null;
 
-  private userId!: string;
-  private superAdminId!: string;
+  private tenantId!: string;
+  private userId!:   string;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private profileSvc: ProfileService
+    private profileSvc: ProfileTenantService
   ) {}
 
+  /* ---------------- Life-cycle ---------------- */
   ngOnInit(): void {
     this.profileSvc.getMyInfo().subscribe({
-      next: ({ superAdminId, userId }: MyInfoIds) => {
-        this.superAdminId = superAdminId.toString();
-        this.userId       = userId.toString();
+      next: ({ tenantId, userId }: MyTenantInfoIds) => {
+        this.tenantId = tenantId.toString();
+        this.userId   = userId.toString();
 
         this.initProfileForm();
         this.initPasswordForm();
@@ -70,6 +75,7 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
+  /* ---------------- Profile form ---------------- */
   private initProfileForm(): void {
     this.userForm = this.fb.group({
       name:  ['', Validators.required],
@@ -82,7 +88,9 @@ export class EditProfileComponent implements OnInit {
             /^(?:\+84|0)(?:3[2-9]|5[689]|7[06789]|8[1-9]|9[0-46-9])\d{7}$/
           )
         ]
-      ]
+      ],
+      companyName: ['', Validators.required],
+      taxId: ['', Validators.required]
     });
   }
   get f() { return this.userForm.controls; }
@@ -95,41 +103,53 @@ export class EditProfileComponent implements OnInit {
     this.isSubmitting = true;
     this.error = null;
 
-    const { name, email, phone } = this.userForm.value;
+    const { name, email, phone, companyName, taxId } = this.userForm.value;
 
-    // 1) Cập nhật username ở SuperAdmin
-    this.profileSvc.updateSuperAdmin({ id: this.superAdminId, username: name })
-      .pipe(
-        // 2) Sau khi xong, cập nhật email & phone ở User
-        switchMap(() => this.profileSvc.updateUser({ id: this.userId, email, phoneNumber: phone }))
+    /* 1) update tenant */
+    this.profileSvc.updateTenant({
+      id: this.tenantId,
+      fullName: name,
+      companyName,
+      taxId
+    })
+    /* 2) update user */
+    .pipe(
+      switchMap(() =>
+        this.profileSvc.updateUser({
+          id: this.userId,
+          email,
+          phoneNumber: phone
+        })
       )
-      .subscribe({
-        next: resp => {
-          this.isSubmitting = false;
-          const msg = resp.message || 'Updated successfully';
-          this.notificationMessage = msg;
-          this.notificationVisible = true;
-          this.isEditMode = false;
-          this.lastAction = 'edit';
-        },
-        error: () => {
-          this.isSubmitting = false;
-          this.notificationMessage = 'Failed to update account information.';
-          this.notificationVisible = true;
-          this.lastAction = 'edit';
-        }
-      });
+    )
+    .subscribe({
+      next: resp => {
+        this.isSubmitting = false;
+        this.notificationMessage = resp.message || 'Updated successfully';
+        this.notificationVisible = true;
+        this.modalError = false;            // ✅ success
+        this.isEditMode = false;
+        this.lastAction = 'edit';
+      },
+      error: () => {
+        this.isSubmitting = false;
+        this.notificationMessage = 'Failed to update account information.';
+        this.notificationVisible = true;
+        this.modalError = true;             // ❌ error
+        this.lastAction = 'edit';
+      }
+    });
   }
 
   editInformation(): void {
     this.isEditMode = true;
     this.isChangePasswordMode = false;
   }
-
   cancelEdit(): void {
-    this.router.navigate(['/profile'], { queryParams: { id: this.userId } });
+    this.router.navigate(['/tenant-profile']);
   }
 
+  /* ---------------- Password ---------------- */
   private initPasswordForm(): void {
     this.passwordForm = this.fb.group(
       {
@@ -147,26 +167,24 @@ export class EditProfileComponent implements OnInit {
       { validators: this.passwordMatchValidator }
     );
   }
-
-  private passwordMatchValidator(f: FormGroup) {
-    return f.get('newPassword')?.value === f.get('confirmPassword')?.value
-      ? null
-      : { mismatch: true };
+  private passwordMatchValidator(g: FormGroup) {
+    return g.get('newPassword')?.value === g.get('confirmPassword')?.value
+      ? null : { mismatch: true };
   }
 
   changePassword(): void {
     this.isChangePasswordMode = true;
     this.isEditMode = false;
   }
-
   backToProfile(): void {
-    this.router.navigate(['/profile'], { queryParams: { id: this.userId } });
+    this.router.navigate(['/tenant-profile']);
   }
 
   submitPasswordChange(): void {
     if (this.passwordForm.invalid) {
       this.notificationMessage = 'Please fix the highlighted errors.';
       this.notificationVisible = true;
+      this.modalError = true;
       this.lastAction = 'password';
       return;
     }
@@ -178,16 +196,11 @@ export class EditProfileComponent implements OnInit {
       next: r => {
         const serverPw = r.password;
         if (curPw !== serverPw) {
-          this.notificationMessage = 'Your current password is incorrect.';
-          this.notificationVisible = true;
-          this.lastAction = 'password';
+          this.showPwError('Your current password is incorrect.');
           return;
         }
         if (newPw === serverPw) {
-          this.notificationMessage =
-            'New password must be different from the current one.';
-          this.notificationVisible = true;
-          this.lastAction = 'password';
+          this.showPwError('New password must be different from the current one.');
           return;
         }
 
@@ -196,29 +209,32 @@ export class EditProfileComponent implements OnInit {
             this.notificationMessage = resp.success
               ? 'Password changed successfully!'
               : resp.message || 'Failed to change password.';
+            this.modalError = !resp.success;
             this.notificationVisible = true;
             this.isChangePasswordMode = !resp.success;
             this.lastAction = 'password';
           },
-          error: () => {
-            this.notificationMessage =
-              'Unable to change password. Please try again later.';
-            this.notificationVisible = true;
-            this.lastAction = 'password';
-          }
+          error: () => this.showPwError('Unable to change password. Please try again later.')
         });
       },
-      error: () => {
-        this.notificationMessage =
-          'Cannot verify current password. Try again later.';
-        this.notificationVisible = true;
-        this.lastAction = 'password';
-      }
+      error: () => this.showPwError('Cannot verify current password. Try again later.')
     });
   }
 
+  private showPwError(msg: string) {
+    this.notificationMessage = msg;
+    this.notificationVisible = true;
+    this.modalError = true;
+    this.lastAction = 'password';
+  }
+
+  /* ---------------- Modal ---------------- */
   onDone(): void {
     this.notificationVisible = false;
-    this.router.navigate(['/profile'], { queryParams: { id: this.userId } });
+
+    if (!this.modalError) {
+      // chỉ điều hướng khi không có lỗi
+      this.router.navigate(['/tenant-profile']);
+    }
   }
 }

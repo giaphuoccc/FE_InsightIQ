@@ -1,0 +1,61 @@
+<!-- Tenant Profile – unified classes with profileSA styles -->
+<div class="account-management-container">
+  <div class="content">
+    <!-- Title section (blue underline) -->
+    <div class="section-title">
+      <h2>Tenant Management</h2>
+      <div class="underline"></div>
+    </div>
+
+    <!-- Big centered title -->
+    <h3 class="admin-title">Tenant Information</h3>
+
+    <!-- Loading / error -->
+    <div *ngIf="isLoading" class="loading-indicator">
+      Loading tenant data…
+    </div>
+    <div *ngIf="error" class="error-message-container">
+      {{ error }}
+    </div>
+
+    <!-- Main card -->
+    <div *ngIf="data && !isLoading && !error" class="admin-card view-mode">
+      <!-- PERSONAL -->
+      <div class="personal-info-header">
+        <span class="personal-info-label">Personal information</span>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-group">
+          <label>Name:</label><span>{{ data.name }}</span>
+        </div>
+        <div class="info-group">
+          <label>Phone:</label><span>{{ data.phone }}</span>
+        </div>
+        <div class="info-group">
+          <label>Email:</label><span>{{ data.email }}</span>
+        </div>
+      </div>
+
+      <!-- BUSINESS -->
+      <div class="personal-info-header">
+        <span class="personal-info-label">Business information</span>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-group">
+          <label>Business name:</label><span>{{ data.companyName }}</span>
+        </div>
+        <div class="info-group">
+          <label>Tax code:</label><span>{{ data.taxId || 'N/A' }}</span>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="action-buttons">
+        <button class="edit-btn"    (click)="editInformation()">Edit Information</button>
+        <button class="password-btn" (click)="changePassword()">Change Password</button>
+      </div>
+    </div>
+  </div>
+</div>

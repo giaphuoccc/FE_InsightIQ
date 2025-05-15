@@ -5,8 +5,8 @@ import { LoginComponent } from './components/authentication/login/login.componen
 import { RegisterComponent } from './components/authentication/register/register.component';
 
 import { MainSuperadminDashboardComponent } from './components/superadmin/dashboard-superadmin/main-superadmin-dashboard.component';
-import { ProfileComponent } from './components/superadmin/profile/profile.component';
-import { EditProfileComponent } from './components/superadmin/editProfile/editProfile.component'
+import { ProfileComponent } from './components/superadmin/profile/profileSA.component';
+import { EditProfileComponent } from './components/superadmin/profile/editProfile/editProfileSA.component'
 
 import { PendingTenantComponent } from './components/superadmin/pendingTenant/pendingTenant.component';
 import { PendingTenantDetailsComponent } from './components/superadmin/pendingTenantDetails/pendingTenantDetails.component';
@@ -17,7 +17,9 @@ import { MainTenantDashboardComponent } from './components/tenant/component/dash
 import { TenantAccountListComponent } from './components/superadmin/tenantAccountList/tenantAccountList.component';
 import { TenantAccountDetailsComponent } from './components/superadmin/tenantAccountDetails/tenantAccountDetails.component';
 
-//import { TenantManagementComponent } from './components/tenant/component/profile/edit-profile/TenantManagementComponent/tenant-management.component';
+import { ProfileTEComponent } from './components/tenant/component/profile/profileTE.component';
+import { EditProfileTEComponent } from './components/tenant/component/profile/edit-profile-te/edit-profile-te.component';
+
 import { ReportManagementComponent } from './shared/reports/report-management/reportManagement.component';
 
 import { CommentDetailComponent } from './shared/reports/comment-detail/comment-detail.component';
@@ -33,14 +35,14 @@ export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 
-  //SA Profile Section
+                          ///// SA Section /////
   { path: 'dashboard_superadmin', component: MainSuperadminDashboardComponent,
     //canActivate: [AuthGuard]
   },
-  { path: 'profile', component: ProfileComponent, 
+  { path: 'superadmin-profile', component: ProfileComponent, 
     //canActivate: [AuthGuard]
   },
-  { path: 'edit-profile', component: EditProfileComponent, 
+  { path: 'superadmin-edit-profile', component: EditProfileComponent, 
     //canActivate: [AuthGuard]
   },
 
@@ -53,17 +55,29 @@ export const routes: Routes = [
     //canActivate: [AuthGuard]
   },
 
-  // TENANT SECTION
+  // TENANT MANAGEMENT
+  { path: 'tenant-management', 
+    component: TenantAccountListComponent 
+  },
+
+  {path: 'tenant-account-details/:id', 
+    component: TenantAccountDetailsComponent
+  },
+
+                          ///// TENANT SECTION /////
   {path: 'dashboard_tenant', component: MainTenantDashboardComponent,
     //canActivate: [AuthGuard]
   },
 
-  // TENANT MANAGEMENT
-  { path: 'tenant-management', component: TenantAccountListComponent },
-  {path: 'tenant-account-details/:id', component: TenantAccountDetailsComponent},
+  {path: 'tenant-profile', component: ProfileTEComponent,
+    //canActivate: [AuthGuard]
+  },
 
+  {path: 'tenant-edit-profile', component: EditProfileTEComponent,
+    //canActivate: [AuthGuard]
+  },
 
-  // BILLING SECTION (Tenant)
+                ///// BILLING SECTION (Tenant) /////
   {
     path: 'billing', component: SubscriptionManagementComponent,
     //canActivate: [AuthGuard]

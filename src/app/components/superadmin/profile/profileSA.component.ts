@@ -21,8 +21,8 @@ interface UserData {
   selector: 'app-profile',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  templateUrl: './profileSA.component.html',
+  styleUrls: ['./profileSA.component.css']
 })
 export class ProfileComponent implements OnInit {
   userData: UserData | null = null;
@@ -80,10 +80,10 @@ export class ProfileComponent implements OnInit {
 
   /* ---------- Navigation ---------- */
   editInformation(): void {
-    this.router.navigate(['/edit-profile'], { queryParams: { mode: 'edit' } });
+    this.router.navigate(['/superadmin-edit-profile'], { queryParams: { mode: 'edit' } });
   }
 
   changePassword(): void {
-    this.router.navigate(['/edit-profile'], { queryParams: { mode: 'password' } });
+    this.router.navigate(['/superadmin-edit-profile'], { queryParams: { mode: 'password' } });
   }
 }

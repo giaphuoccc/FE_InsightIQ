@@ -1,0 +1,159 @@
+<!-- EDIT MODE -->
+<div *ngIf="!isLoading && !error && isEditMode" class="account-management-container">
+  <div class="content">
+
+    <!-- Section Title -->
+    <div class="section-title">
+      <h2>Account Management</h2>
+      <div class="underline"></div>
+    </div>
+
+    <!-- Tenant Title -->
+    <h3 class="admin-title">Tenant Information</h3>
+
+    <!-- Card -->
+    <div class="admin-card">
+      <!-- Personal -->
+      <div class="personal-info-header">
+        <span class="personal-info-label">Edit Personal Information</span>
+      </div>
+
+      <form [formGroup]="userForm" (ngSubmit)="updateProfile()">
+        <div *ngIf="error" class="form-error-message">{{ error }}</div>
+
+        <div class="info-grid">
+          <!-- Name -->
+          <div class="info-group">
+            <label for="name">Name:</label>
+            <input id="name" formControlName="name" class="form-input"
+                   [class.error]="f['name'].invalid && f['name'].touched">
+            <span *ngIf="f['name'].invalid && f['name'].touched"
+                  class="error-message">*Name is required</span>
+          </div>
+
+          <!-- Phone -->
+          <div class="info-group">
+            <label for="phone">Phone:</label>
+            <input id="phone" maxlength="12" formControlName="phone" class="form-input"
+                   placeholder="+84XXXXXXXXX or 0XXXXXXXXX"
+                   [class.error]="f['phone'].invalid && f['phone'].touched">
+            <span *ngIf="f['phone'].invalid && f['phone'].touched"
+                  class="error-message">*Invalid phone number</span>
+          </div>
+
+          <!-- Email -->
+          <div class="info-group">
+            <label for="email">Email:</label>
+            <input id="email" formControlName="email" class="form-input"
+                   [class.error]="f['email'].invalid && f['email'].touched">
+            <span *ngIf="f['email'].invalid && f['email'].touched"
+                  class="error-message">*Invalid email format</span>
+          </div>
+        </div>
+
+        <!-- Business -->
+        <div class="personal-info-header">
+          <span class="personal-info-label">Edit Business Information</span>
+        </div>
+
+        <div class="info-grid">
+          <!-- Company Name -->
+          <div class="info-group">
+            <label for="companyName">Business name:</label>
+            <input id="companyName" formControlName="companyName" class="form-input"
+                   [class.error]="f['companyName'].invalid && f['companyName'].touched">
+            <span *ngIf="f['companyName']?.invalid && f['companyName']?.touched"
+                  class="error-message">*Required</span>
+          </div>
+
+          <!-- Tax Code -->
+          <div class="info-group">
+            <label for="taxId">Tax code:</label>
+            <input id="taxId" formControlName="taxId" class="form-input"
+                     [class.error]="f['taxId'].invalid && f['taxId'].touched">
+            <span *ngIf="f['taxId']?.invalid && f['taxId']?.touched"
+                  class="error-message">*Required</span>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="action-buttons">
+          <button type="submit"
+                  class="update-btn"
+                  [disabled]="userForm.invalid || isSubmitting">Update</button>
+
+          <button type="button"
+                  class="cancel-btn"
+                  (click)="cancelEdit()"
+                  [disabled]="isSubmitting">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- PASSWORD CHANGE UI (unchanged) -->
+<div *ngIf="isChangePasswordMode" class="password-change-container">
+  <h2 class="password-title">Change Password</h2>
+  <p>You are changing your account password. To secure your account, please follow these steps:</p>
+
+  <form [formGroup]="passwordForm" (ngSubmit)="submitPasswordChange()">
+    <div class="info-grid">
+      <div class="info-group">
+        <label for="currentPassword">Your Password</label>
+        <input id="currentPassword"
+               type="password"
+               formControlName="currentPassword"
+               class="form-input"
+               placeholder="Enter your current password" />
+        <span *ngIf="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched"
+              class="error-message">*This field is required.</span>
+      </div>
+
+      <div class="info-group">
+        <label for="newPassword">New Password</label>
+        <input id="newPassword"
+               type="password"
+               formControlName="newPassword"
+               class="form-input"
+               placeholder="Enter your new password" />
+        <span *ngIf="passwordForm.get('newPassword')?.errors?.['minlength'] && passwordForm.get('newPassword')?.touched"
+              class="error-message">*Minimum length is 8 characters.</span>
+        <span *ngIf="passwordForm.get('newPassword')?.errors?.['pattern'] && passwordForm.get('newPassword')?.touched"
+              class="error-message">*Must include one digit and special character.</span>
+      </div>
+
+      <div class="info-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input id="confirmPassword"
+               type="password"
+               formControlName="confirmPassword"
+               class="form-input"
+               placeholder="Re-enter the new password" />
+        <span *ngIf="passwordForm.errors?.['mismatch'] && passwordForm.get('confirmPassword')?.touched"
+              class="error-message">*Passwords do not match.</span>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button type="submit" class="update-btn">UPDATE</button>
+      <button type="button" class="cancel-btn" (click)="backToProfile()">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<!-- NOTIFICATION MODAL (unchanged) -->
+<div *ngIf="notificationVisible" class="notification-overlay">
+  <div class="notification-modal">
+    <div class="notification-header">
+      <h3>Notification</h3>
+      <button class="close-btn" (click)="onDone()">✕</button>
+    </div>
+    <div class="notification-body">
+      <p>{{ notificationMessage }}</p>
+    </div>
+    <div class="notification-footer">
+      <button class="done-btn" (click)="onDone()">Done</button>
+    </div>
+  </div>
+</div>
