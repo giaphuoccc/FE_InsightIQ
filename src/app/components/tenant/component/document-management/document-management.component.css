@@ -20,13 +20,13 @@
   font-weight: 500; /* Slightly less bold */
   margin-right: 15px;
   padding-bottom: 10px; /* Align active border */
-  font-size: 1rem;
+  font-size: 2rem;
 }
 
 .nav a.active {
   border-bottom: 3px solid #007bff;
   font-weight: 600;
-  color: #0056b3;
+  color: #015dbf;
 }
 
 /* Main Content Area */

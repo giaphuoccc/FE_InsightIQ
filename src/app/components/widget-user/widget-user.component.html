@@ -138,6 +138,16 @@
           </div>
         </div>
       </div>
+
+      <div *ngIf="isBotResponding" class="message-wrapper bot-message-wrapper">
+        <div class="message bot-message typing-indicator-container">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div

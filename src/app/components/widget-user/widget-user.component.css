@@ -325,7 +325,6 @@
 }
 
 /* Feedback Buttons */
-/* Feedback Buttons */
 .feedback-buttons {
   display: flex;
   gap: 8px; /* Reduced gap slightly */
@@ -452,27 +451,26 @@
   margin-top: 5px;
 }
 
-/* --- Loading Animation Styles --- */
-.loading-indicator {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 10px; /* Match gap */
+/* Typing Indicator Styles */
+.message.bot-message.typing-indicator-container {
+  background-color: #e1f5fe; /* Match bot message background */
+  padding: 10px 15px; /* Consistent padding */
+  border-radius: 10px;
+  border-bottom-left-radius: 4px; /* Bubble tail for bot */
+  display: inline-flex; /* To make it wrap content tightly */
+  align-items: center;
 }
 
 .typing-indicator {
-  background-color: #e1f5fe; /* Match bot message background */
-  padding: 12px 15px;
-  border-radius: 10px;
-  display: inline-flex;
+  display: flex; /* Use flex for the dots */
   align-items: center;
-  gap: 5px;
-  border-bottom-left-radius: 4px; /* Match bot bubble tail */
+  gap: 5px; /* Space between dots */
 }
 
 .typing-indicator span {
   height: 8px;
   width: 8px;
-  background-color: #90caf9;
+  background-color: #90caf9; /* Color of the dots */
   border-radius: 50%;
   opacity: 0.4;
   animation: bounce 1.3s infinite ease-in-out;
@@ -484,9 +482,7 @@
 .typing-indicator span:nth-of-type(2) {
   animation-delay: -0.16s;
 }
-.typing-indicator span:nth-of-type(3) {
-  animation-delay: 0s;
-}
+/* .typing-indicator span:nth-of-type(3) has no delay; animation-delay: 0s; */
 
 @keyframes bounce {
   0%,
@@ -500,4 +496,12 @@
     opacity: 1;
   }
 }
-/* --- END Loading Animation Styles --- */
+
+/* Auth Error Message in initial view */
+.auth-error {
+  color: #d9534f; /* Red for errors */
+  font-size: 0.85em;
+  margin-top: 10px;
+  margin-bottom: 10px; /* Add some space before the start button */
+  text-align: center;
+}
