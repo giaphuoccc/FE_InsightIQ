@@ -73,10 +73,10 @@ export class ProfileService {
     );
   }
 
-  updatePassword(userId: string|number, newPassword: string) {
+  updatePassword(userId: string|number, password: string) {
     return this.http.put<{ success: boolean; message?: string }>(
       `${this.API_BASE}/user/updatepassword/${userId}`,
-      { newPassword },
+      { password },
       { headers: this.withAuthHeaders(), withCredentials: true }
     );
   }
