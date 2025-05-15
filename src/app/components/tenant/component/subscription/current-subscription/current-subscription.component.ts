@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Observable, Subject, of } from 'rxjs';
 import { takeUntil, catchError } from 'rxjs/operators';
-import { CurrentSubscription } from '../../../../../core/subscription.model';
-import { SubscriptionService } from '../../../../../core/subscription.service';
+import { CurrentSubscription } from '../../../../../service/payment/subscription.model';
+import { SubscriptionService } from '../../../../../service/payment/subscription.service';
 import { ReplacePipe } from '../../../../../shared/pipes/replace.pipe';
 
 @Component({

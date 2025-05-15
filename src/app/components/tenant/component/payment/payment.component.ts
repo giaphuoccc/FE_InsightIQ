@@ -5,8 +5,8 @@ import { takeUntil, catchError } from 'rxjs/operators';
 import {
   InvoicePreview,
   PaymentResult,
-} from '../../../../core/subscription.model';
-import { PaymentService } from '../../../../core/payment.service';
+} from '../../../../service/payment/subscription.model';
+import { PaymentService } from '../../../../service/payment/payment.service';
 import { CommonModule, NgIf, AsyncPipe } from '@angular/common'; // Import NgIf, AsyncPipe
 
 @Component({

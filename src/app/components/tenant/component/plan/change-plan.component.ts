@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { SubscriptionPlan } from '../../../../core/subscription.model';
-import { SubscriptionService } from '../../../../core/subscription.service';
+import { SubscriptionPlan } from '../../../../service/payment/subscription.model';
+import { SubscriptionService } from '../../../../service/payment/subscription.service';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 // Optional: Import a notification service (e.g., Toastr)
 // import { NotificationService } from '../../../core/services/notification.service';

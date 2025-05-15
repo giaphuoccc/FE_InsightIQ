@@ -1,15 +1,20 @@
-import { Component, Input, OnInit } // Thêm Input và OnInit nếu cần
-from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit, // Thêm Input và OnInit nếu cần
+} from '@angular/core';
 import { CommonModule } from '@angular/common'; // Thêm CommonModule
 import { FormsModule } from '@angular/forms'; // Thêm FormsModule
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { fullTenantDetailData, TenantAccountListDetailService } from '../../../core/superAdmin/tenantAccountListDetail.service';
+import {
+  fullTenantDetailData,
+  TenantAccountListDetailService,
+} from '../../../service/superAdmin/tenantAccountListDetail.service';
 import { error } from 'console';
 import { Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
-
 
 // --- Các interface từ TenantManagementDetailComponent ---
 export interface PersonalInfo {
@@ -42,9 +47,10 @@ export interface FinanceRecord {
   standalone: true, // Thêm standalone: true
   imports: [CommonModule, FormsModule], // Thêm imports: [CommonModule, FormsModule]
   templateUrl: './tenantAccountDetails.component.html',
-  styleUrl: './tenantAccountDetails.component.css'
+  styleUrl: './tenantAccountDetails.component.css',
 })
-export class TenantAccountDetailsComponent implements OnInit { // Implement OnInit nếu bạn có logic khởi tạo
+export class TenantAccountDetailsComponent implements OnInit {
+  // Implement OnInit nếu bạn có logic khởi tạo
 
   // --- Các thuộc tính và @Input từ TenantManagementDetailComponent ---
   @Input() title: string = 'Tenant Management'; // Giữ lại hoặc thay đổi giá trị mặc định nếu cần
@@ -54,14 +60,15 @@ export class TenantAccountDetailsComponent implements OnInit { // Implement OnIn
   isLoading: boolean = true;
   errorMessage: string | null = null;
 
-
   // Dữ liệu mẫu, bạn sẽ thay thế bằng dữ liệu thật từ API hoặc service sau này
-  personalInfo: PersonalInfo = { // Thêm ví dụ cho PersonalInfo nếu cần
-      name: 'Tenant User Name',
-      phone: '0123456789'
+  personalInfo: PersonalInfo = {
+    // Thêm ví dụ cho PersonalInfo nếu cần
+    name: 'Tenant User Name',
+    phone: '0123456789',
   };
 
-  businessInfo: BusinessInfo = { // Thêm ví dụ cho BusinessInfo nếu cần
+  businessInfo: BusinessInfo = {
+    // Thêm ví dụ cho BusinessInfo nếu cần
     name: 'Tenant Business Name',
   };
 
@@ -110,68 +117,70 @@ export class TenantAccountDetailsComponent implements OnInit { // Implement OnIn
   ) {}
 
   ngOnInit(): void {
-  this.route.paramMap.subscribe(params => {
-    const idFromRoute = params.get('id');
-    if (idFromRoute) {
-      this.tenantId = idFromRoute;
-      if (isPlatformBrowser(this.platformId)) {
-        this.loadTenantDetails(this.tenantId);
+    this.route.paramMap.subscribe((params) => {
+      const idFromRoute = params.get('id');
+      if (idFromRoute) {
+        this.tenantId = idFromRoute;
+        if (isPlatformBrowser(this.platformId)) {
+          this.loadTenantDetails(this.tenantId);
+        } else {
+          console.log('Đang chạy trên server - bỏ qua gọi API.');
+          this.isLoading = false;
+        }
       } else {
-        console.log('Đang chạy trên server - bỏ qua gọi API.');
+        console.error('Không tìm thấy tenantId trong route.');
+        this.errorMessage = 'Không tìm thấy ID của Tenant trong đường dẫn.';
         this.isLoading = false;
       }
-    } else {
-      console.error('Không tìm thấy tenantId trong route.');
-      this.errorMessage = 'Không tìm thấy ID của Tenant trong đường dẫn.';
-      this.isLoading = false;
-    }
-  });
-}
+    });
+  }
 
-
-private mapServiceDocToDisplayDoc(serviceDoc: any): Document {
-  const dateModified = serviceDoc.createdAt
-    ? new Date(serviceDoc.createdAt).toLocaleString()
-    : 'N/A';
-  return {
-    name: serviceDoc.fileName,
-    dateModified: dateModified,
-    size: serviceDoc.size ? `${(serviceDoc.size / 1024 / 1024).toFixed(2)} MB` : 'N/A'
-  };
-}
-
+  private mapServiceDocToDisplayDoc(serviceDoc: any): Document {
+    const dateModified = serviceDoc.createdAt
+      ? new Date(serviceDoc.createdAt).toLocaleString()
+      : 'N/A';
+    return {
+      name: serviceDoc.fileName,
+      dateModified: dateModified,
+      size: serviceDoc.size
+        ? `${(serviceDoc.size / 1024 / 1024).toFixed(2)} MB`
+        : 'N/A',
+    };
+  }
 
   // Hàm tải thông tin Tenant
   loadTenantDetails(id: string): void {
-  this.isLoading = true;
-  this.errorMessage = null;
+    this.isLoading = true;
+    this.errorMessage = null;
 
-  this.tenantDetailService.getFullTenantDetails(id)
-    .pipe(finalize(() => this.isLoading = false))
-    .subscribe({
-      next: (data: fullTenantDetailData) => {
-        this.personalInfo = {
-          name: data.fullName,
-          phone: data.user?.phoneNumber || 'N/A'
-        };
-        this.businessInfo = {
-          name: data.companyName,
-          // website: data.website || 'N/A' // nếu có trường này
-        };
-        if (Array.isArray(data.documents)) {
-          this.documents = data.documents.map(doc => this.mapServiceDocToDisplayDoc(doc));
-        } else {
+    this.tenantDetailService
+      .getFullTenantDetails(id)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (data: fullTenantDetailData) => {
+          this.personalInfo = {
+            name: data.fullName,
+            phone: data.user?.phoneNumber || 'N/A',
+          };
+          this.businessInfo = {
+            name: data.companyName,
+            // website: data.website || 'N/A' // nếu có trường này
+          };
+          if (Array.isArray(data.documents)) {
+            this.documents = data.documents.map((doc) =>
+              this.mapServiceDocToDisplayDoc(doc)
+            );
+          } else {
+            this.documents = [];
+          }
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Lỗi khi lấy tenant: ', err);
+          this.errorMessage = `Không thể tải dữ liệu: ${err.status} - ${err.message}`;
+          this.personalInfo = { name: '', phone: '' };
+          this.businessInfo = { name: '' };
           this.documents = [];
-        }
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Lỗi khi lấy tenant: ', err);
-        this.errorMessage = `Không thể tải dữ liệu: ${err.status} - ${err.message}`;
-        this.personalInfo = { name: '', phone: '' };
-        this.businessInfo = { name: '' };
-        this.documents = [];
-      }
-    });
-}
-
+        },
+      });
+  }
 }

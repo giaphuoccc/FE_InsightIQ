@@ -24,9 +24,12 @@ import { ProductPromotionComponent } from './product-promotion/product-promotion
 import {
   SocketService,
   ServiceChatMessage,
-} from '../../core/chatBot/socket.service'; // Import ServiceChatMessage
-import { FeedbackService, FeedbackPayload } from '../../core/feedback.service';
-import { Rating } from '../../core/chatBot/feedback.enum';
+} from '../../service/chatBot/socket.service'; // Import ServiceChatMessage
+import {
+  FeedbackService,
+  FeedbackPayload,
+} from '../../service/report/feedback.service';
+import { Rating } from '../../service/chatBot/feedback.enum';
 
 const API_BASE_URL = 'http://localhost:3001';
 

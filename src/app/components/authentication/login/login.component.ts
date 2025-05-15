@@ -1,17 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NotificationComponent } from '../../../shared/notification/notification.component';
-import { AuthService } from '../../../core/auth.service';
+import { AuthService } from '../../../service/authentication/auth.service';
 import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule, NotificationComponent, NavbarComponent]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    HttpClientModule,
+    NotificationComponent,
+    NavbarComponent,
+  ],
 })
 export class LoginComponent implements OnInit {
   /** Reactive form for login */
@@ -29,16 +41,12 @@ export class LoginComponent implements OnInit {
   notificationIsErorr: boolean = false;
   notificationConfirmText: string = 'Confirm';
 
-
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService
-  ) {}
+  constructor(private fb: FormBuilder, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
+      password: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
 
@@ -67,17 +75,19 @@ export class LoginComponent implements OnInit {
         if (errorResponse.message === 'Role undefined!') {
           this.notificationMessage = 'Role undefined!';
         } else if (errorResponse.status === 400) {
-          this.notificationMessage = "Fail to login";
+          this.notificationMessage = 'Fail to login';
         } else if (errorResponse.status === 500) {
-          this.notificationMessage = "Something's wrong with user's email or password or your account!";
+          this.notificationMessage =
+            "Something's wrong with user's email or password or your account!";
         } else {
-          this.notificationMessage = (errorResponse.error && errorResponse.error.message)
-            ? errorResponse.error.message
-            : "An unexpected error occurred. Please try again!";
+          this.notificationMessage =
+            errorResponse.error && errorResponse.error.message
+              ? errorResponse.error.message
+              : 'An unexpected error occurred. Please try again!';
         }
 
         this.showNotificationModal = true;
-      }
+      },
     });
   }
 

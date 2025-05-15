@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject, of } from 'rxjs';
 import { takeUntil, catchError } from 'rxjs/operators';
-import { BillingHistoryItem } from '../../../../../core/subscription.model';
-import { BillingService } from '../../../../../core/billing.service';
+import { BillingHistoryItem } from '../../../../../service/payment/subscription.model';
+import { BillingService } from '../../../../../service/payment/billing.service';
 import {
   NgFor,
   NgIf,

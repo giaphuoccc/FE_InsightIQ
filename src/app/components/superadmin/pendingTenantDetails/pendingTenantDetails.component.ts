@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap, map } from 'rxjs/operators';
-import { SuperAdminService, TenantDetail, TenantUserDto } from '../../../core/validateTenant.service';
+import {
+  SuperAdminService,
+  TenantDetail,
+  TenantUserDto,
+} from '../../../service/authentication/validateTenant.service';
 
 @Component({
   selector: 'app-pending-tenant-details',
@@ -13,7 +17,9 @@ import { SuperAdminService, TenantDetail, TenantUserDto } from '../../../core/va
 })
 export class PendingTenantDetailsComponent implements OnInit {
   tenantId: string | null = null;
-  tenant: (TenantDetail & { email: string; phone: string; taxCode?: string }) | null = null;
+  tenant:
+    | (TenantDetail & { email: string; phone: string; taxCode?: string })
+    | null = null;
   isLoading = false;
   errorMessage: string | null = null;
 
@@ -38,56 +44,61 @@ export class PendingTenantDetailsComponent implements OnInit {
   loadTenantDetails(id: string): void {
     this.isLoading = true;
     this.errorMessage = null;
-    this.superAdminService.getTenantById(id).pipe(
-      switchMap(detail =>
-        this.superAdminService.getUser(detail.userId).pipe(
-          map((user: TenantUserDto) => ({
-            ...detail,
-            email: user.email,
-            phone: user.phoneNumber,
-            taxId: detail.taxId // explicitly include taxCode
-          }))
+    this.superAdminService
+      .getTenantById(id)
+      .pipe(
+        switchMap((detail) =>
+          this.superAdminService.getUser(detail.userId).pipe(
+            map((user: TenantUserDto) => ({
+              ...detail,
+              email: user.email,
+              phone: user.phoneNumber,
+              taxId: detail.taxId, // explicitly include taxCode
+            }))
+          )
         )
       )
-    ).subscribe({
-      next: merged => {
-        this.tenant = merged;
-        this.isLoading = false;
-      },
-      error: err => {
-        this.errorMessage = err.message || 'Failed to load tenant details.';
-        this.isLoading = false;
-      }
-    });
+      .subscribe({
+        next: (merged) => {
+          this.tenant = merged;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.errorMessage = err.message || 'Failed to load tenant details.';
+          this.isLoading = false;
+        },
+      });
   }
 
   approve(): void {
     if (!this.tenant) return;
-    this.superAdminService.updateTenantStatus(this.tenant.id, 'Approved')
+    this.superAdminService
+      .updateTenantStatus(this.tenant.id, 'Approved')
       .subscribe({
         next: () => {
           this.tenant!.status = 'Approved';
           this.notificationMessage = 'Approved';
           this.showNotification = true;
         },
-        error: err => {
+        error: (err) => {
           this.errorMessage = err.message || 'Failed to approve tenant.';
-        }
+        },
       });
   }
 
   reject(): void {
     if (!this.tenant) return;
-    this.superAdminService.updateTenantStatus(this.tenant.id, 'Rejected')
+    this.superAdminService
+      .updateTenantStatus(this.tenant.id, 'Rejected')
       .subscribe({
         next: () => {
           this.tenant!.status = 'Rejected';
           this.notificationMessage = 'Rejected';
           this.showNotification = true;
         },
-        error: err => {
+        error: (err) => {
           this.errorMessage = err.message || 'Failed to reject tenant.';
-        }
+        },
       });
   }
 

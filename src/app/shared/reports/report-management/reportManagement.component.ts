@@ -6,8 +6,8 @@ import { Router } from '@angular/router';
 import {
   ReportService,
   RatingSummary,
-  FeedbackItem
-} from '../../../core/reportManagement.service';
+  FeedbackItem,
+} from '../../../service/report/reportManagement.service';
 
 @Component({
   selector: 'app-report-management',
@@ -56,30 +56,31 @@ export class ReportManagementComponent implements OnInit {
     this.errorMessage = null;
 
     this.reportService.getRatingSummary().subscribe({
-      next: summary => {
+      next: (summary) => {
         console.log('SUPERADMIN rating summary:', summary);
         this.stats = summary;
         this.isLoadingStats = false;
       },
-      error: err => {
+      error: (err) => {
         console.error('Error loading SUPERADMIN stats:', err);
         this.errorMessage = 'Failed to load statistics.';
         this.isLoadingStats = false;
-      }
+      },
     });
 
     this.isLoadingComments = true;
     this.reportService.getAllFeedbacks().subscribe({
-      next: items => {
+      next: (items) => {
         console.log('SUPERADMIN all feedbacks:', items);
         this.comments = items;
         this.isLoadingComments = false;
       },
-      error: err => {
+      error: (err) => {
         console.error('Error loading SUPERADMIN comments:', err);
-        this.errorMessage = (this.errorMessage || '') + ' Failed to load comments.';
+        this.errorMessage =
+          (this.errorMessage || '') + ' Failed to load comments.';
         this.isLoadingComments = false;
-      }
+      },
     });
   }
 
@@ -89,42 +90,43 @@ export class ReportManagementComponent implements OnInit {
     this.errorMessage = null;
 
     this.reportService.getTenantInfo().subscribe({
-      next: info => {
+      next: (info) => {
         console.log('TENANT info:', info);
         const tid = info.tenantId;
 
         this.reportService.getTenantRatingSummary(tid).subscribe({
-          next: summary => {
+          next: (summary) => {
             console.log(`TENANT(${tid}) rating summary:`, summary);
             this.stats = summary;
             this.isLoadingStats = false;
           },
-          error: err => {
+          error: (err) => {
             console.error(`Error loading TENANT(${tid}) stats:`, err);
             this.errorMessage = 'Failed to load statistics.';
             this.isLoadingStats = false;
-          }
+          },
         });
 
         this.reportService.getTenantFeedbacks(tid).subscribe({
-          next: items => {
+          next: (items) => {
             console.log(`TENANT(${tid}) feedbacks:`, items);
             this.comments = items;
             this.isLoadingComments = false;
           },
-          error: err => {
+          error: (err) => {
             console.error(`Error loading TENANT(${tid}) comments:`, err);
-            this.errorMessage = (this.errorMessage || '') + ' Failed to load comments.';
+            this.errorMessage =
+              (this.errorMessage || '') + ' Failed to load comments.';
             this.isLoadingComments = false;
-          }
+          },
         });
       },
-      error: err => {
+      error: (err) => {
         console.error('Error fetching TENANT info:', err);
         this.errorMessage = 'Cannot fetch tenant info.';
         this.isLoadingStats = false;
         this.isLoadingComments = false;
-      }
+      },
     });
   }
 

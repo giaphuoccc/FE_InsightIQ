@@ -7,8 +7,8 @@ import { switchMap, map, catchError } from 'rxjs/operators';
 import {
   SuperAdminService,
   TenantListRaw,
-  TenantListItem
-} from '../../../core/validateTenant.service';
+  TenantListItem,
+} from '../../../service/authentication/validateTenant.service';
 
 @Component({
   selector: 'app-pending-tenant-list',
@@ -37,38 +37,42 @@ export class PendingTenantComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = null;
 
-    this.tenantsSub = this.superAdminService.getTenants()
+    this.tenantsSub = this.superAdminService
+      .getTenants()
       .pipe(
         switchMap((rawList: TenantListRaw[]) => {
           // For each raw tenant, fetch its user info:
-          const detailCalls = rawList.map(raw =>
+          const detailCalls = rawList.map((raw) =>
             this.superAdminService.getUser(raw.userId).pipe(
-              map(user => ({
-                tenantId:     raw.id,
-                userId:       raw.userId,
-                name:         raw.fullName,
-                businessName: raw.companyName,
-                status:       raw.status,
-                email:        user.email,
-                phone:        user.phoneNumber
-              } as TenantListItem))
+              map(
+                (user) =>
+                  ({
+                    tenantId: raw.id,
+                    userId: raw.userId,
+                    name: raw.fullName,
+                    businessName: raw.companyName,
+                    status: raw.status,
+                    email: user.email,
+                    phone: user.phoneNumber,
+                  } as TenantListItem)
+              )
             )
           );
           return forkJoin(detailCalls);
         }),
-        catchError(err => {
-          throw err;  // pass to subscriber
+        catchError((err) => {
+          throw err; // pass to subscriber
         })
       )
       .subscribe({
-        next: result => {
+        next: (result) => {
           this.tenants = result;
           this.isLoading = false;
         },
-        error: err => {
+        error: (err) => {
           this.errorMessage = err.message || 'Failed to load tenants';
           this.isLoading = false;
-        }
+        },
       });
   }
 
@@ -79,10 +83,14 @@ export class PendingTenantComponent implements OnInit, OnDestroy {
   /** CSS class for row status dot/color */
   getStatusClass(status: string): string {
     switch (status) {
-      case 'APPROVED': return 'status-approved';
-      case 'REJECTED': return 'status-rejected';
-      case 'PENDING':  return 'status-pending';
-      default:         return '';
+      case 'APPROVED':
+        return 'status-approved';
+      case 'REJECTED':
+        return 'status-rejected';
+      case 'PENDING':
+        return 'status-pending';
+      default:
+        return '';
     }
   }
 

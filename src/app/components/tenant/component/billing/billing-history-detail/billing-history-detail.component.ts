@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // Import RouterLink
 import { Observable, Subject, of } from 'rxjs';
 import { switchMap, takeUntil, catchError } from 'rxjs/operators';
-import { BillingHistoryDetail } from '../../../../../core/subscription.model';
-import { BillingService } from '../../../../../core/billing.service';
+import { BillingHistoryDetail } from '../../../../../service/payment/subscription.model';
+import { BillingService } from '../../../../../service/payment/billing.service';
 import {
   NgIf,
   AsyncPipe,

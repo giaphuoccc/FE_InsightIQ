@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, delay } from 'rxjs';
-import { SubscriptionPlan, CurrentSubscription } from './subscription.model';
+import {
+  SubscriptionPlan,
+  CurrentSubscription,
+} from '../payment//subscription.model';
 @Injectable({
   providedIn: 'root',
 })

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Rating } from './chatBot/feedback.enum';
+import { Rating } from '../chatBot/feedback.enum';
 
 const API_BASE_URL = 'http://localhost:3001'; // Your backend URL
 

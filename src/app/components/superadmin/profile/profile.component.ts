@@ -7,14 +7,14 @@ import {
   ProfileService,
   SuperAdminDto,
   UserDto,
-  MyInfoIds
-} from '../../../core/profileSuperAdmin.service';
+  MyInfoIds,
+} from '../../../service/profileSuperAdmin.service';
 
 /* View-model cho template */
 interface UserData {
-  name:  string;  // username (superadmin)
-  email: string;  // email (/user)
-  phone: string;  // phoneNumber (/user)
+  name: string; // username (superadmin)
+  email: string; // email (/user)
+  phone: string; // phoneNumber (/user)
 }
 
 @Component({
@@ -22,17 +22,14 @@ interface UserData {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
   userData: UserData | null = null;
   isLoading = false;
   error: string | null = null;
 
-  constructor(
-    private profileSvc: ProfileService,
-    private router: Router
-  ) {}
+  constructor(private profileSvc: ProfileService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadUserData();
@@ -43,38 +40,36 @@ export class ProfileComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.profileSvc.getMyInfo()
+    this.profileSvc
+      .getMyInfo()
       .pipe(
-        tap(ids => console.log('IDs:', ids)),             // <- xem superAdminId & userId
+        tap((ids) => console.log('IDs:', ids)), // <- xem superAdminId & userId
         switchMap(({ superAdminId, userId }: MyInfoIds) =>
           forkJoin({
             superadmin: this.profileSvc.getSuperAdmin(superAdminId),
-            user:       this.profileSvc.getUser(userId)
+            user: this.profileSvc.getUser(userId),
           })
         )
       )
       .subscribe({
         next: ({ superadmin, user }) => {
           this.isLoading = false;
-          this.userData  = this.mapToViewModel(superadmin, user);
+          this.userData = this.mapToViewModel(superadmin, user);
         },
-        error: err => {
+        error: (err) => {
           this.isLoading = false;
           this.error =
             (err as { message?: string })?.message ??
             'An error occurred while loading user data';
-        }
+        },
       });
   }
 
-  private mapToViewModel(
-    sa: SuperAdminDto,
-    user: UserDto
-  ): UserData {
+  private mapToViewModel(sa: SuperAdminDto, user: UserDto): UserData {
     return {
-      name:  sa.username,
+      name: sa.username,
       email: user.email,
-      phone: user.phoneNumber
+      phone: user.phoneNumber,
     };
   }
 
@@ -84,6 +79,8 @@ export class ProfileComponent implements OnInit {
   }
 
   changePassword(): void {
-    this.router.navigate(['/edit-profile'], { queryParams: { mode: 'password' } });
+    this.router.navigate(['/edit-profile'], {
+      queryParams: { mode: 'password' },
+    });
   }
 }
